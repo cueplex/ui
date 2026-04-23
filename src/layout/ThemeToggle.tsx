@@ -2,29 +2,25 @@ import { useRef } from 'react';
 import { Sun, MoonStar } from 'lucide-react';
 import { useTheme } from '../theme/useTheme';
 
-// Custom Disco-Ball SVG — Easteregg (10x rapid click).
-function DiscoBall({ size = 16 }: { size?: number }) {
+// Einhorn-Emoji mit custom font-size. Easteregg bei 10 rapid clicks.
+function Unicorn({ size = 16 }: { size?: number }) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ animation: 'cxl-disco-spin 3s linear infinite' }}
+    <span
+      aria-hidden
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: size,
+        height: size,
+        fontSize: size + 2,
+        lineHeight: 1,
+        // Subtiler Glanz-Effekt via drop-shadow
+        filter: 'drop-shadow(0 0 3px rgba(166, 112, 139, 0.35))',
+      }}
     >
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 3v18" />
-      <path d="M3 12h18" />
-      <path d="M5.6 5.6l12.8 12.8" />
-      <path d="M18.4 5.6L5.6 18.4" />
-      <circle cx="12" cy="12" r="4" />
-      <path d="M12 0v2" strokeWidth="1.5" />
-    </svg>
+      🦄
+    </span>
   );
 }
 
@@ -34,12 +30,21 @@ export function ThemeToggle() {
 
   const onClick = () => {
     const now = Date.now();
-    // Nur Clicks der letzten 2 Sekunden zaehlen
     clickTimes.current = [...clickTimes.current, now].filter((t) => now - t < 2000);
 
+    // Im Disco-Modus: NUR 10 rapid clicks koennen rausfuehren, normaler Klick ignorieren.
+    if (theme === 'disco') {
+      if (clickTimes.current.length >= 10) {
+        clickTimes.current = [];
+        setTheme('dark');
+      }
+      return;
+    }
+
+    // Normal-Modus: 10 rapid clicks -> disco, sonst toggle light/dark.
     if (clickTimes.current.length >= 10) {
       clickTimes.current = [];
-      setTheme(theme === 'disco' ? 'dark' : 'disco');
+      setTheme('disco');
       return;
     }
     toggleTheme();
@@ -47,7 +52,7 @@ export function ThemeToggle() {
 
   const label =
     theme === 'disco'
-      ? 'Wieder normal (10x klicken)'
+      ? '10x klicken um Disco zu verlassen'
       : theme === 'light'
         ? 'Dark Mode'
         : 'Light Mode';
@@ -74,7 +79,7 @@ export function ThemeToggle() {
         }}
       >
         {theme === 'disco' ? (
-          <DiscoBall size={16} />
+          <Unicorn size={16} />
         ) : theme === 'light' ? (
           <Sun size={16} />
         ) : (
