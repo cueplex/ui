@@ -156,22 +156,22 @@
   display: none;
 }
 
-/* Disco Easteregg — v0.1 Original (hell, rose, edel, gedeckte Pastelle). */
+/* Unicorn-Mode — gedecktes Pastell-Rosé, edel. Content satter als Sidebar (keine weisse Flaeche). */
 [data-theme="disco"] {
-  --bg-primary: #FDF3F7;
-  --bg-secondary: #F8E3EC;
-  --bg-tertiary: #F0CDDD;
-  --bg-card: #FDF3F7;
-  --bg-input: #FDF3F7;
+  --bg-primary: #EED8E3;
+  --bg-secondary: #F6E4EE;
+  --bg-tertiary: #DFBFD1;
+  --bg-card: #F6E4EE;
+  --bg-input: #F6E4EE;
   --text-primary: #4A1F35;
   --text-secondary: #7A4D63;
   --text-tertiary: #A877A1;
   --text-body: #5A3547;
-  --border-light: #F0CDDD;
-  --border-default: #E2B4CB;
-  --border-strong: #C88AAF;
-  --accent-primary: #C88AAF;
-  --accent-hover: #B57799;
+  --border-light: #E0C2D1;
+  --border-default: #CFA2B6;
+  --border-strong: #B07B99;
+  --accent-primary: #B07B99;
+  --accent-hover: #965F82;
   --status-abgelehnt: #C46E7A;
 }
 
