@@ -75,7 +75,7 @@ export function Sidebar({ navSections, moduleName, moduleVersion, onSettingsClic
         title="Engine wechseln"
         style={{
           height: HEADER_HEIGHT,
-          padding: sidebarCollapsed ? 0 : '0 20px',
+          padding: sidebarCollapsed ? 0 : '0 14px',
           borderBottom: '1px solid var(--border-light)',
           display: 'flex',
           alignItems: 'center',

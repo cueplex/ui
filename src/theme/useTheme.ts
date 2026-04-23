@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react';
 
-export type Theme = 'light' | 'dark';
+export type Theme = 'light' | 'dark' | 'disco';
 
 const THEME_KEY = 'cueplex-theme';
 const SIDEBAR_KEY = 'cueplex-sidebar-collapsed';
@@ -13,7 +13,7 @@ interface ThemeState {
 function readInitialTheme(): Theme {
   try {
     const stored = typeof localStorage !== 'undefined' ? localStorage.getItem(THEME_KEY) : null;
-    if (stored === 'light' || stored === 'dark') return stored;
+    if (stored === 'light' || stored === 'dark' || stored === 'disco') return stored;
   } catch {
     /* ignore */
   }
@@ -88,7 +88,12 @@ function setTheme(next: Theme): void {
 }
 
 function toggleTheme(): void {
-  setTheme(state.theme === 'light' ? 'dark' : 'light');
+  // Normal toggle cyclet light <-> dark. Von disco aus: zurueck zu dark.
+  if (state.theme === 'disco') {
+    setTheme('dark');
+  } else {
+    setTheme(state.theme === 'light' ? 'dark' : 'light');
+  }
 }
 
 function setSidebarCollapsed(v: boolean): void {

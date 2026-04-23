@@ -155,3 +155,28 @@
 .cxl-hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Disco Easteregg — hell, rosa, edel. Gedeckte Pastelle, kein Neon. */
+[data-theme="disco"] {
+  --bg-primary: #FDF3F7;
+  --bg-secondary: #F8E3EC;
+  --bg-tertiary: #F0CDDD;
+  --bg-card: #FFFFFF;
+  --bg-input: #FFFFFF;
+  --text-primary: #4A1F35;
+  --text-secondary: #7A4D63;
+  --text-tertiary: #A877A1;
+  --text-body: #5A3547;
+  --border-light: #F0CDDD;
+  --border-default: #E2B4CB;
+  --border-strong: #C88AAF;
+  --accent-primary: #C88AAF;
+  --accent-hover: #B57799;
+  --status-abgelehnt: #C46E7A;
+}
+
+/* Disco ball dreht sich beim Rendern */
+@keyframes cxl-disco-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
