@@ -156,11 +156,10 @@
   display: none;
 }
 
-/* Disco Easteregg — hell, rose, edel. Gedeckte Pastelle, kein Neon.
- * Primary + Secondary getauscht gegenueber v0.1: Hauptflaeche etwas satter, Sidebar lighter. */
+/* Disco Easteregg — v0.1 Original (hell, rose, edel, gedeckte Pastelle). */
 [data-theme="disco"] {
-  --bg-primary: #F8E3EC;
-  --bg-secondary: #FDF3F7;
+  --bg-primary: #FDF3F7;
+  --bg-secondary: #F8E3EC;
   --bg-tertiary: #F0CDDD;
   --bg-card: #FDF3F7;
   --bg-input: #FDF3F7;
