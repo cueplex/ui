@@ -52,7 +52,7 @@ export function UserMenu() {
           borderRadius: '50%',
           border: '1px solid var(--border-light)',
           background: 'transparent',
-          color: 'var(--text-secondary)',
+          color: 'var(--text-tertiary)',
           fontSize: 13,
           fontWeight: 500,
           lineHeight: 1,
@@ -70,7 +70,7 @@ export function UserMenu() {
         onMouseLeave={(e) => {
           if (!open) {
             e.currentTarget.style.borderColor = 'var(--border-light)';
-            e.currentTarget.style.color = 'var(--text-secondary)';
+            e.currentTarget.style.color = 'var(--text-tertiary)';
           }
         }}
       >

@@ -1,4 +1,4 @@
-import { Sun, Moon } from 'lucide-react';
+import { Sun, MoonStar } from 'lucide-react';
 import { useTheme } from '../theme/useTheme';
 
 export function ThemeToggle() {
@@ -18,7 +18,7 @@ export function ThemeToggle() {
         cursor: 'pointer',
       }}
     >
-      {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+      {theme === 'light' ? <Sun size={16} /> : <MoonStar size={16} />}
     </button>
   );
 }
