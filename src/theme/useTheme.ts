@@ -34,11 +34,22 @@ function readInitialSidebarCollapsed(): boolean {
   }
 }
 
-// Module-level store with simple pub-sub
-const state: ThemeState = {
+// Module-level store mit pub-sub. WICHTIG: state IMMER durch neue Object-Ref
+// ersetzen (nicht mutieren), sonst greift useSyncExternalStore nicht
+// (Object.is-Vergleich signalisiert sonst kein Change).
+let state: ThemeState = {
   theme: readInitialTheme(),
   sidebarCollapsed: readInitialSidebarCollapsed(),
 };
+
+// Initial data-theme Attribut setzen (wird sonst erst nach erstem Toggle gesetzt)
+try {
+  if (typeof document !== 'undefined') {
+    document.documentElement.setAttribute('data-theme', state.theme);
+  }
+} catch {
+  /* ignore */
+}
 
 const listeners = new Set<() => void>();
 
@@ -62,7 +73,7 @@ function getServerSnapshot(): ThemeState {
 }
 
 function setTheme(next: Theme): void {
-  state.theme = next;
+  state = { ...state, theme: next };
   try {
     localStorage.setItem(THEME_KEY, next);
   } catch {
@@ -81,7 +92,7 @@ function toggleTheme(): void {
 }
 
 function setSidebarCollapsed(v: boolean): void {
-  state.sidebarCollapsed = v;
+  state = { ...state, sidebarCollapsed: v };
   try {
     localStorage.setItem(SIDEBAR_KEY, v ? '1' : '0');
   } catch {
