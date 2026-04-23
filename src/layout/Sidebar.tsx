@@ -23,6 +23,10 @@ export interface SidebarProps {
   onSettingsClick?: () => void;
 }
 
+const SIDEBAR_WIDTH = 224;
+const SIDEBAR_COLLAPSED_WIDTH = 56;
+const HEADER_HEIGHT = 52;
+
 export function Sidebar({ navSections, moduleName, moduleVersion, onSettingsClick }: SidebarProps) {
   const { sidebarCollapsed, toggleSidebar } = useTheme();
   const location = useLocation();
@@ -33,7 +37,7 @@ export function Sidebar({ navSections, moduleName, moduleVersion, onSettingsClic
     display: 'flex',
     alignItems: 'center',
     gap: 10,
-    padding: '10px 12px',
+    padding: '9px 10px',
     borderRadius: 'var(--radius-sm)',
     border: 'none',
     background: active ? 'var(--bg-tertiary)' : 'transparent',
@@ -54,7 +58,7 @@ export function Sidebar({ navSections, moduleName, moduleVersion, onSettingsClic
   return (
     <aside
       style={{
-        width: sidebarCollapsed ? 56 : 'var(--sidebar-width, 260px)',
+        width: sidebarCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH,
         background: 'var(--bg-secondary)',
         borderRight: '1px solid var(--border-light)',
         display: 'flex',
@@ -65,39 +69,57 @@ export function Sidebar({ navSections, moduleName, moduleVersion, onSettingsClic
         height: '100vh',
       }}
     >
-      {/* Logo-Header — cueplex-launcher.js bindet sich an data-cxl-trigger */}
+      {/* Logo-Header — exakte Header-Hoehe (52px), keine Padding-Disparitaet */}
       <div
         data-cxl-trigger=""
         title="Engine wechseln"
         style={{
-          padding: sidebarCollapsed ? '16px 0' : '16px 20px',
+          height: HEADER_HEIGHT,
+          padding: sidebarCollapsed ? 0 : '0 16px',
           borderBottom: '1px solid var(--border-light)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
-          gap: 9,
-          minHeight: 56,
+          gap: 8,
           color: 'var(--text-primary)',
           cursor: 'pointer',
+          flexShrink: 0,
         }}
       >
         {sidebarCollapsed ? (
-          <CxLogoIcon size={24} />
+          <CxLogoIcon size={22} />
         ) : (
           <>
-            <CxLogoTextIcon height={20} />
-            <span style={{ fontSize: 12, color: 'var(--text-secondary)', whiteSpace: 'nowrap', fontWeight: 400 }}>
+            <CxLogoTextIcon height={18} />
+            <span style={{
+              fontSize: 12,
+              lineHeight: 1,
+              color: 'var(--text-secondary)',
+              whiteSpace: 'nowrap',
+              fontWeight: 400,
+            }}>
               {moduleName}
             </span>
-            <span style={{ fontSize: 10, color: 'var(--text-tertiary)', whiteSpace: 'nowrap', fontWeight: 400, opacity: 0.6 }}>
+            <span style={{
+              fontSize: 10,
+              lineHeight: 1,
+              color: 'var(--text-tertiary)',
+              whiteSpace: 'nowrap',
+              fontWeight: 400,
+              opacity: 0.6,
+              marginLeft: 'auto',
+            }}>
               v{moduleVersion}
             </span>
           </>
         )}
       </div>
 
-      {/* Navigation */}
-      <nav style={{ flex: 1, padding: '0 8px', overflowY: 'auto' }}>
+      {/* Navigation — keine Scrollbar sichtbar (Pattern-Regel cueplex-ci) */}
+      <nav
+        className="cxl-hide-scrollbar"
+        style={{ flex: 1, padding: '0 6px', overflowY: 'auto' }}
+      >
         {navSections.map((section) => (
           <div key={section.label}>
             {!sidebarCollapsed && (
@@ -106,7 +128,7 @@ export function Sidebar({ navSections, moduleName, moduleVersion, onSettingsClic
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em',
                 color: 'var(--text-tertiary)',
-                padding: '16px 12px 4px',
+                padding: '14px 10px 4px',
                 fontWeight: 600,
               }}>
                 {section.label}
@@ -140,15 +162,21 @@ export function Sidebar({ navSections, moduleName, moduleVersion, onSettingsClic
         ))}
       </nav>
 
-      {/* Settings + Collapse */}
-      <div style={{ padding: 8, borderTop: '1px solid var(--border-light)' }}>
+      {/* Footer: Settings + Collapse. Collapse rechts statt mittig. */}
+      <div style={{
+        padding: 6,
+        borderTop: '1px solid var(--border-light)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+      }}>
         <button
           title={sidebarCollapsed ? 'Einstellungen' : undefined}
           onClick={onSettingsClick}
           style={{
             width: '100%',
             display: 'flex', alignItems: 'center', gap: 10,
-            padding: '10px 12px',
+            padding: '9px 10px',
             borderRadius: 'var(--radius-sm)',
             border: 'none',
             background: 'transparent',
@@ -161,22 +189,36 @@ export function Sidebar({ navSections, moduleName, moduleVersion, onSettingsClic
           <Settings size={18} />
           {!sidebarCollapsed && <span>Einstellungen</span>}
         </button>
-        <button
-          onClick={toggleSidebar}
-          style={{
-            width: '100%',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: '8px',
-            borderRadius: 'var(--radius-sm)',
-            border: 'none',
-            background: 'transparent',
-            color: 'var(--text-tertiary)',
-            cursor: 'pointer',
-            marginTop: 4,
-          }}
-        >
-          {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-        </button>
+        <div style={{
+          display: 'flex',
+          justifyContent: sidebarCollapsed ? 'center' : 'flex-end',
+          padding: sidebarCollapsed ? 0 : '0 4px',
+        }}>
+          <button
+            onClick={toggleSidebar}
+            title={sidebarCollapsed ? 'Seitenleiste ausklappen' : 'Seitenleiste einklappen'}
+            style={{
+              width: 24, height: 24,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              borderRadius: 'var(--radius-sm)',
+              border: 'none',
+              background: 'transparent',
+              color: 'var(--text-tertiary)',
+              cursor: 'pointer',
+              transition: 'background 0.15s ease, color 0.15s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--bg-tertiary)';
+              e.currentTarget.style.color = 'var(--text-secondary)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = 'var(--text-tertiary)';
+            }}
+          >
+            {sidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+          </button>
+        </div>
       </div>
     </aside>
   );

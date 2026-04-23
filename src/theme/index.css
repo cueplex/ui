@@ -147,3 +147,11 @@
     opacity: 1;
   }
 }
+
+/* Hidden scrollbar — scrolling funktioniert, aber keine visuelle Scrollbar */
+.cxl-hide-scrollbar {
+  scrollbar-width: none;
+}
+.cxl-hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
