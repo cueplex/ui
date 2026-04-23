@@ -135,3 +135,15 @@
 
   --scrollbar-thumb: rgba(255, 255, 255, 0.09);
 }
+
+/* ThemeToggle Icon-Swap Animation */
+@keyframes cxl-theme-icon-swap {
+  from {
+    transform: rotate(-45deg) scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(0) scale(1);
+    opacity: 1;
+  }
+}

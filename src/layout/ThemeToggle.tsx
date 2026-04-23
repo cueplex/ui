@@ -18,7 +18,15 @@ export function ThemeToggle() {
         cursor: 'pointer',
       }}
     >
-      {theme === 'light' ? <Sun size={16} /> : <MoonStar size={16} />}
+      <span
+        key={theme}
+        style={{
+          display: 'inline-flex',
+          animation: 'cxl-theme-icon-swap 0.32s cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
+      >
+        {theme === 'light' ? <Sun size={16} /> : <MoonStar size={16} />}
+      </span>
     </button>
   );
 }
