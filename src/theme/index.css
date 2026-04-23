@@ -156,23 +156,23 @@
   display: none;
 }
 
-/* Disco Easteregg v2 — Invertiert: dunkle Pflaume als Main, Rose als Akzent.
- * "Berlin-Late-Night-Club" vibe. Gedeckte Farben, kein Neon. */
+/* Disco Easteregg — hell, rose, edel. Gedeckte Pastelle, kein Neon.
+ * Primary + Secondary getauscht gegenueber v0.1: Hauptflaeche etwas satter, Sidebar lighter. */
 [data-theme="disco"] {
-  --bg-primary: #2B1425;
-  --bg-secondary: #38182F;
-  --bg-tertiary: #47203E;
-  --bg-card: #3B1B32;
-  --bg-input: #3B1B32;
-  --text-primary: #F0D5E4;
-  --text-secondary: #B890A5;
-  --text-tertiary: #8A6B7E;
-  --text-body: #DBB8CD;
-  --border-light: #4D2541;
-  --border-default: #6B3B5A;
-  --border-strong: #A37399;
-  --accent-primary: #EDB2D0;
-  --accent-hover: #F5CEDD;
+  --bg-primary: #F8E3EC;
+  --bg-secondary: #FDF3F7;
+  --bg-tertiary: #F0CDDD;
+  --bg-card: #FDF3F7;
+  --bg-input: #FDF3F7;
+  --text-primary: #4A1F35;
+  --text-secondary: #7A4D63;
+  --text-tertiary: #A877A1;
+  --text-body: #5A3547;
+  --border-light: #F0CDDD;
+  --border-default: #E2B4CB;
+  --border-strong: #C88AAF;
+  --accent-primary: #C88AAF;
+  --accent-hover: #B57799;
   --status-abgelehnt: #C46E7A;
 }
 
