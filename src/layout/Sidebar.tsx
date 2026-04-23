@@ -75,22 +75,22 @@ export function Sidebar({ navSections, moduleName, moduleVersion, onSettingsClic
         title="Engine wechseln"
         style={{
           height: HEADER_HEIGHT,
-          padding: sidebarCollapsed ? 0 : '0 16px',
+          padding: sidebarCollapsed ? 0 : '0 20px',
           borderBottom: '1px solid var(--border-light)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
-          gap: 8,
+          gap: 9,
           color: 'var(--text-primary)',
           cursor: 'pointer',
           flexShrink: 0,
         }}
       >
         {sidebarCollapsed ? (
-          <CxLogoIcon size={22} />
+          <CxLogoIcon size={24} />
         ) : (
           <>
-            <CxLogoTextIcon height={18} />
+            <CxLogoTextIcon height={22} />
             <span style={{
               fontSize: 12,
               lineHeight: 1,
