@@ -2,25 +2,83 @@ import { useEffect, useMemo, useState, useCallback, type ReactNode } from 'react
 import { UserManager, WebStorageStateStore, type User } from 'oidc-client-ts';
 import { AuthContext, type AuthContextValue } from './useAuth';
 
-export interface AuthConfig {
-  /** Keycloak base URL, e.g. 'https://auth.cueplex.app' */
+/**
+ * SPA mode (default): OIDC + PKCE flow, browser-native.
+ * Fuer standalone SPAs wie cueplex-ops.
+ */
+export interface SpaAuthConfig {
+  mode?: 'spa';
   keycloakUrl: string;
-  /** Keycloak realm, e.g. 'zeusaudio' */
   realm: string;
-  /** OIDC client id, e.g. 'cueplex-ui' */
   clientId: string;
-  /** Base path under window.location.origin, e.g. '/ops'. Callback is `${origin}${redirectBasePath}/auth/callback`. */
   redirectBasePath: string;
-  /** OIDC scope, defaults to 'openid profile email'. */
   scope?: string;
 }
+
+/**
+ * Server mode: User wird server-side (via Express-Session + confidential Keycloak-Client)
+ * bereitgestellt und an den Client gegeben (z.B. via window.__CUEPLEX_USER__).
+ * Kein OIDC-Flow im Browser. Fuer crew, invoices, power.
+ */
+export interface ServerAuthConfig {
+  mode: 'server';
+  user: ServerAuthUser;
+  /** URL for logout redirect (server handles session teardown). Default: '/auth/logout'. */
+  logoutUrl?: string;
+}
+
+export interface ServerAuthUser {
+  name?: string;
+  preferred_username?: string;
+  email?: string;
+  sub?: string;
+  [key: string]: unknown;
+}
+
+export type AuthConfig = SpaAuthConfig | ServerAuthConfig;
 
 export interface AuthProviderProps {
   config: AuthConfig;
   children: ReactNode;
 }
 
+function ServerAuthProvider({ config, children }: { config: ServerAuthConfig; children: ReactNode }) {
+  const value = useMemo<AuthContextValue>(() => {
+    const mockUser = {
+      profile: config.user,
+      access_token: '',
+      id_token: '',
+      token_type: 'Bearer',
+      scope: '',
+      expires_at: 0,
+      expired: false,
+      state: null,
+      session_state: null,
+      refresh_token: '',
+    } as unknown as User;
+    return {
+      user: mockUser,
+      loading: false,
+      error: null,
+      login: async () => { /* no-op: server handles */ },
+      logout: async () => {
+        window.location.href = config.logoutUrl ?? '/auth/logout';
+      },
+      getAccessToken: async () => null,
+    };
+  }, [config.user, config.logoutUrl]);
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
 export function AuthProvider({ config, children }: AuthProviderProps) {
+  if (config.mode === 'server') {
+    return <ServerAuthProvider config={config} children={children} />;
+  }
+  return <SpaAuthProvider config={config} children={children} />;
+}
+
+function SpaAuthProvider({ config, children }: { config: SpaAuthConfig; children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
