@@ -2,7 +2,23 @@
 
 // Layout
 export { AppShell } from './layout/AppShell';
-export { Sidebar, type NavSection, type NavItem } from './layout/Sidebar';
+export {
+  SidebarShell,
+  SidebarLogo,
+  SidebarNav,
+  SidebarSection,
+  SidebarItem,
+  SidebarFooter,
+  SidebarSettingsButton,
+  SidebarCollapseButton,
+  type SidebarShellProps,
+  type SidebarLogoProps,
+  type SidebarNavProps,
+  type SidebarSectionProps,
+  type SidebarItemProps,
+  type SidebarFooterProps,
+  type SidebarSettingsButtonProps,
+} from './layout/SidebarPrimitives';
 export { Header } from './layout/Header';
 export { ThemeToggle } from './layout/ThemeToggle';
 
@@ -15,7 +31,29 @@ export { useAuth, type AuthContextValue } from './auth/useAuth';
 export { UserMenu } from './auth/UserMenu';
 
 // Visuals
-export { Gantt } from './visuals/Gantt';
+export { Gantt, type GanttItem, type GanttProps, type GanttHandle } from './visuals/Gantt';
+
+// Feedback
+export { Tooltip, useTooltip, type TooltipProps, type UseTooltipOptions } from './feedback/Tooltip';
+
+// Forms
+export { SearchBar, type SearchBarProps, type SearchResult } from './forms/SearchBar';
+export {
+  FormField,
+  FormInput,
+  FormTextarea,
+  FormSelect,
+  FormCheckbox,
+  FormSection,
+  StatusBadge,
+  type FormFieldProps,
+  type FormInputProps,
+  type FormTextareaProps,
+  type FormSelectProps,
+  type FormCheckboxProps,
+  type SelectOption,
+  type StatusBadgeProps,
+} from './forms/FormControls';
 
 // Theme-Store (Hook for consumers)
 export { useTheme } from './theme/useTheme';

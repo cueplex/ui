@@ -89,7 +89,7 @@ function SpaAuthProvider({ config, children }: { config: SpaAuthConfig; children
       authority: `${config.keycloakUrl}/realms/${config.realm}`,
       client_id: config.clientId,
       redirect_uri: `${appBase}/auth/callback`,
-      post_logout_redirect_uri: `${appBase}/`,
+      post_logout_redirect_uri: `${window.location.origin}/`,
       response_type: 'code',
       scope: config.scope ?? 'openid profile email',
       userStore: new WebStorageStateStore({ store: window.localStorage }),
@@ -125,8 +125,28 @@ function SpaAuthProvider({ config, children }: { config: SpaAuthConfig; children
             window.history.replaceState({}, document.title, `${appBase}/`);
             setUser(cbUser);
           } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
             console.error('[auth] signinRedirectCallback failed', err);
-            setError(err instanceof Error ? err.message : String(err));
+            // Stale-state Recovery: einmal versuchen, nicht in Endless-Loop laufen.
+            // sessionStorage-Flag verhindert zweiten Versuch in derselben Session.
+            const RECOVERY_FLAG = 'cx-oidc-recovery-attempted';
+            const alreadyTried = sessionStorage.getItem(RECOVERY_FLAG) === '1';
+            if (!alreadyTried && (msg.includes('No matching state') || msg.includes('state'))) {
+              sessionStorage.setItem(RECOVERY_FLAG, '1');
+              try {
+                for (const key of Object.keys(localStorage)) {
+                  if (key.startsWith('oidc.')) localStorage.removeItem(key);
+                }
+              } catch { /* ignore */ }
+              // URL cleanen damit isCallback beim naechsten Load false ist
+              window.history.replaceState({}, document.title, `${appBase}/`);
+              await userManager.signinRedirect();
+              return;
+            }
+            setError(alreadyTried
+              ? 'Auth-Recovery bereits versucht. Bitte Browser-localStorage manuell leeren (DevTools → Application → Local Storage → alle oidc.* keys löschen) und F5.'
+              : msg,
+            );
           }
           setLoading(false);
           return;

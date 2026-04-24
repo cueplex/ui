@@ -27,10 +27,15 @@ function readInitialTheme(): Theme {
 }
 
 function readInitialSidebarCollapsed(): boolean {
+  // Default: eingeklappt. User kann ueber Toggle-Button aufklappen, persistiert
+  // via localStorage. Nur wenn explizit "0" gespeichert ist -> aufgeklappt.
   try {
-    return typeof localStorage !== 'undefined' && localStorage.getItem(SIDEBAR_KEY) === '1';
+    if (typeof localStorage === 'undefined') return true;
+    const v = localStorage.getItem(SIDEBAR_KEY);
+    if (v === '0') return false;
+    return true;
   } catch {
-    return false;
+    return true;
   }
 }
 

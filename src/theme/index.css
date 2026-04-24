@@ -4,6 +4,7 @@
  */
 
 :root {
+  /* Spacing scale */
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
@@ -11,18 +12,60 @@
   --space-xl: 32px;
   --space-2xl: 48px;
 
+  /* Radius scale */
   --radius-sm: 8px;
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-full: 9999px;
 
+  /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
+  --font-size-xs: 10px;     /* Section labels, version, caption */
+  --font-size-sm: 11px;     /* Metadata, badges */
+  --font-size-body: 13px;   /* Default body, nav items, buttons */
+  --font-size-md: 14px;     /* Slightly larger body */
+  --font-size-lg: 16px;     /* Headings */
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  /* Icon sizes */
+  --icon-size-xs: 10px;     /* Inline tiny (paperclip) */
+  --icon-size-sm: 14px;     /* Chevrons, secondary */
+  --icon-size-md: 18px;     /* Default nav/sidebar icons */
+  --icon-size-lg: 24px;     /* Logo collapsed */
+
+  /* Layout primitives */
+  --sidebar-width: 224px;
+  --sidebar-collapsed-width: 56px;
+  --header-height: 52px;
+  --avatar-size: 32px;
+  --collapse-button-size: 24px;
+
+  /* Sidebar item geometry — gap between icon and label, item padding */
+  --sidebar-item-padding-y: 9px;
+  --sidebar-item-padding-x: 10px;
+  --sidebar-item-gap: 10px;
+  --sidebar-logo-padding-x: 14px;
+  --sidebar-logo-gap: 9px;
+
+  /* Gantt geometry */
+  --gantt-day-width: 28px;
+  --gantt-row-height: 52px;  /* 2 Zeilen: label/sublabel + meta-row */
+  --gantt-month-row-height: 24px;
+  --gantt-day-row-height: 22px;
+  --gantt-header-height: 46px;  /* month-row + day-row */
+  --gantt-bar-padding-x: 10px;
+  --gantt-bar-gap: 6px;
+  --gantt-bar-vertical-margin: 4px;
+
+  /* Misc */
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
 
-  --sidebar-width: 260px;
   --panel-width: clamp(300px, 30vw, 420px);
   --settings-nav: 200px;
 }
@@ -42,7 +85,16 @@
   }
 }
 
+/* Canvas-bg: spezieller Hintergrund fuer "Desktop"-Surfaces die neben weissen
+ * A4-Seiten liegen (DocumentComposer Schreibtisch). Im Light/Dark = gleich wie
+ * bg-primary. Im Disco absichtlich entsaettigt damit neben reinweissem Papier
+ * der rosé-Hue nicht durch Kontrast uebersaettigt wirkt. */
+:root {
+  --bg-canvas: #FAF8F5;
+}
+
 [data-theme="light"] {
+  --bg-canvas: #FAF8F5;
   --bg-primary: #FAF8F5;
   --bg-secondary: #F3F0EB;
   --bg-tertiary: #EBE7E0;
@@ -87,6 +139,7 @@
 }
 
 [data-theme="dark"] {
+  --bg-canvas: #1a1e25;
   /* Warm-dark backgrounds (aligned with reference style.css aesthetic) */
   --bg-primary: #111318;
   --bg-secondary: #171b22;
@@ -136,6 +189,24 @@
   --scrollbar-thumb: rgba(255, 255, 255, 0.09);
 }
 
+/* Baseline fuer alle Module — gleicher line-height wie Tailwind's preflight,
+ * damit Module mit/ohne Tailwind identische Button-Hoehen rendern. */
+html {
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Form-Element-Reset: buttons/inputs erben die body-font. Tailwind's preflight
+ * macht das ueber 'font: inherit', aber Module ohne Tailwind (wie invoices) brauchen
+ * das explizit sonst greift der Browser-default (Arial/sans-serif) und die
+ * Sidebar-Einstellungen/Initialen-Groesse variiert je nach Modul. */
+button, input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
 /* ThemeToggle Icon-Swap Animation */
 @keyframes cxl-theme-icon-swap {
   from {
@@ -158,21 +229,56 @@
 
 /* Unicorn-Mode — gedecktes Pastell-Rosé, edel. Content satter als Sidebar (keine weisse Flaeche). */
 [data-theme="disco"] {
-  --bg-primary: #EED8E3;
-  --bg-secondary: #F6E4EE;
-  --bg-tertiary: #DFBFD1;
-  --bg-card: #F6E4EE;
-  --bg-input: #F6E4EE;
-  --text-primary: #4A1F35;
-  --text-secondary: #7A4D63;
-  --text-tertiary: #A877A1;
-  --text-body: #5A3547;
-  --border-light: #E0C2D1;
-  --border-default: #CFA2B6;
-  --border-strong: #B07B99;
-  --accent-primary: #B07B99;
-  --accent-hover: #965F82;
-  --status-abgelehnt: #C46E7A;
+  /* Hierarchie Notion-Style: Page mittel-rosé, Sidebar/Spalten/Toolbar HELLER
+   * (sanftes Aufschimmern), Cards am hellsten (klar elevated). Patrick-Wahl
+   * "Powder-Pink C2-Medium + Boxen heller" 24.04.2026.
+   * Differenzen: Page 93% L, Spalten/Sidebar 95% L, Cards 97% L — beruhigt,
+   * keine harten Kontraste, dezente Hierarchie. */
+  --bg-primary: #F4E8EE;
+  --bg-secondary: #F8EFF4;
+  --bg-tertiary: #E8D4DE;
+  --bg-card: #FCF6F8;
+  --bg-card-hover: #F7EDF2;
+  --bg-input: #FCF6F8;
+  /* Canvas: entsaettigt gegenueber bg-card, damit neben reinweissem Papier im
+   * Document Composer der rosé-Hue nicht optisch uebersaettigt wirkt. */
+  --bg-canvas: #FBFAFA;
+  --text-primary: #3D1F30;
+  --text-secondary: #6F4D60;
+  --text-tertiary: #A0838E;
+  --text-body: #4D2E40;
+  --border-light: #E8D4DE;
+  --border-default: #D2B3C2;
+  --border-strong: #A07585;
+  --accent-primary: #A07585;
+  --accent-primary-hover: #855E6E;
+  --accent-primary-text: #FFFFFF;
+  --accent-hover: #855E6E;
+
+  /* Status — alle in roséharmonischer Palette */
+  --status-angefragt: #C9956E;        /* warmes peach */
+  --status-angefragt-bg: #F5E0D6;
+  --status-bestaetigt: #8FA68A;       /* dustig sage-mauve */
+  --status-bestaetigt-bg: #E6F0E1;
+  --status-abgelehnt: #C46E7A;        /* dunkleres rosé */
+  --status-abgelehnt-bg: #F5DCE0;
+  --status-rueckfrage: #9C7BAD;       /* lavender-violett */
+  --status-rueckfrage-bg: #EAE0F0;
+
+  /* Source badges — distinguishable in der rosé-Welt */
+  --source-gruppe: #9C8FB8;           /* dustig-lavender */
+  --source-gruppe-bg: #ECE4F1;
+  --source-firma: #B58EA0;            /* dustig-pink-mauve */
+  --source-firma-bg: #F2DEE6;
+  --source-agentur: #A87DA0;          /* deep mauve */
+  --source-agentur-bg: #EDDCE8;
+
+  /* Shadows — etwas waermer fuer rosé-Welt */
+  --shadow-sm: 0 1px 2px rgba(120, 60, 90, 0.08);
+  --shadow-md: 0 4px 12px rgba(120, 60, 90, 0.12);
+  --shadow-lg: 0 8px 24px rgba(120, 60, 90, 0.18);
+
+  --scrollbar-thumb: rgba(176, 123, 153, 0.3);
 }
 
 /* Disco ball dreht sich beim Rendern */

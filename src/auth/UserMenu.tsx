@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { LogOut } from 'lucide-react';
 import type { User } from 'oidc-client-ts';
 import { useAuth, userDisplayName } from './useAuth';
+import { Tooltip } from '../feedback/Tooltip';
 
 // Initialen aus Name oder Email ableiten.
 // "Patrick Scharf" -> "PS", "patti@gmx.de" -> "P"
@@ -43,22 +44,23 @@ export function UserMenu() {
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
+      <Tooltip text={displayName}>
       <button
         onClick={() => setOpen((o) => !o)}
-        title={displayName}
         style={{
-          width: 32, height: 32,
+          width: 'var(--avatar-size)',
+          height: 'var(--avatar-size)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          borderRadius: '50%',
+          borderRadius: 'var(--radius-full)',
           border: '1px solid var(--border-light)',
           background: 'transparent',
           color: 'var(--text-tertiary)',
-          fontSize: 13,
-          fontWeight: 500,
+          fontSize: 'var(--font-size-body)',
+          fontWeight: 'var(--font-weight-medium)',
           lineHeight: 1,
           paddingTop: 1,
           cursor: 'pointer',
-          transition: 'background 0.15s ease, border-color 0.15s ease, color 0.15s ease',
+          transition: 'background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast)',
           letterSpacing: '0.02em',
         }}
         onMouseEnter={(e) => {
@@ -76,6 +78,7 @@ export function UserMenu() {
       >
         {initials}
       </button>
+      </Tooltip>
 
       {open && (
         <div
@@ -93,11 +96,11 @@ export function UserMenu() {
           }}
         >
           <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--border-light)' }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.3 }}>
+            <div style={{ fontSize: 'var(--font-size-body)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--text-primary)', lineHeight: 1.3 }}>
               {displayName}
             </div>
             {secondary && (
-              <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 2, lineHeight: 1.3 }}>
+              <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)', marginTop: 2, lineHeight: 1.3 }}>
                 {secondary}
               </div>
             )}
@@ -106,15 +109,15 @@ export function UserMenu() {
             onClick={() => { setOpen(false); void logout(); }}
             style={{
               width: '100%',
-              display: 'flex', alignItems: 'center', gap: 10,
+              display: 'flex', alignItems: 'center', gap: 'var(--sidebar-item-gap)',
               padding: '10px 14px',
               border: 'none',
               background: 'transparent',
               color: 'var(--text-secondary)',
-              fontSize: 13,
+              fontSize: 'var(--font-size-body)',
               cursor: 'pointer',
               textAlign: 'left',
-              transition: 'background 0.12s ease',
+              transition: 'background var(--transition-fast)',
             }}
             onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-tertiary)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; }}

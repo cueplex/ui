@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { Sun, MoonStar } from 'lucide-react';
 import { useTheme } from '../theme/useTheme';
+import { Tooltip } from '../feedback/Tooltip';
 
 // Unicorn-Icon: Custom-SVG aus Illustrator (Patrick 23.04.2026). Filled paths, scalable.
 function Unicorn({ size = 16 }: { size?: number }) {
@@ -51,9 +52,9 @@ export function ThemeToggle() {
         : 'Light Mode';
 
   return (
+    <Tooltip text={label}>
     <button
       onClick={onClick}
-      title={label}
       style={{
         width: 32, height: 32,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -80,5 +81,6 @@ export function ThemeToggle() {
         )}
       </span>
     </button>
+    </Tooltip>
   );
 }
