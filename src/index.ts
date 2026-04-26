@@ -54,6 +54,27 @@ export {
   type SelectOption,
   type StatusBadgeProps,
 } from './forms/FormControls';
+export { Section, type SectionProps } from './forms/Section';
+export { FormGrid, FormFieldSpan, type FormGridProps, type FormFieldSpanProps } from './forms/FormGrid';
+export { SubGroupLabel, type SubGroupLabelProps } from './forms/SubGroupLabel';
+
+// Data
+export {
+  DataTable,
+  StatusDot,
+  Pill,
+  RowAction,
+  RowLink,
+  InfoBanner,
+  type DataTableProps,
+  type StatusDotProps,
+  type StatusDotIntent,
+  type PillProps,
+  type RowActionProps,
+  type RowLinkProps,
+  type InfoBannerProps,
+  type InfoBannerIntent,
+} from './data/DataPrimitives';
 
 // Theme-Store (Hook for consumers)
 export { useTheme } from './theme/useTheme';

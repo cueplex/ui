@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Disco-Palette: Powder-Pink Fine-Tuning</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #2a2a2a;
+    color: #fff;
+    padding: 20px;
+  }
+  h1 { font-size: 18px; font-weight: 500; margin: 0 0 6px; }
+  .desc { font-size: 12px; color: #aaa; margin-bottom: 16px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .variant {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+  .variant-label {
+    padding: 10px 14px;
+    background: #1a1a1a;
+    font-size: 12px;
+    color: #aaa;
+    border-bottom: 1px solid #333;
+  }
+  .variant-label strong { color: #fff; font-size: 14px; }
+  .variant-label .swatches {
+    display: inline-flex;
+    gap: 4px;
+    margin-left: 10px;
+    vertical-align: middle;
+  }
+  .variant-label .sw {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .sample {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    height: 360px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+  }
+  .sample-sidebar {
+    background: var(--bg-secondary);
+    padding: 14px;
+    border-right: 1px solid var(--border-light);
+  }
+  .sample-logo { font-size: 13px; font-weight: 600; margin-bottom: 14px; }
+  .sample-nav-section { font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); margin: 14px 0 4px; font-weight: 600; }
+  .sample-nav-item { font-size: 12px; padding: 6px 8px; border-radius: 4px; color: var(--text-secondary); cursor: pointer; }
+  .sample-nav-item.active { background: var(--bg-tertiary); color: var(--text-primary); font-weight: 600; }
+  .sample-content { padding: 14px; overflow: hidden; }
+  .sample-toolbar {
+    display: flex;
+    gap: 8px;
+    background: var(--bg-secondary);
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    align-items: center;
+    border: 1px solid var(--border-light);
+  }
+  .sample-toolbar-item { font-size: 11px; padding: 3px 8px; background: var(--bg-card); border: 1px solid var(--border-default); border-radius: 4px; color: var(--text-secondary); }
+  .sample-toolbar-btn { font-size: 11px; padding: 3px 10px; background: var(--accent-primary); color: var(--accent-primary-text); border-radius: 4px; margin-left: auto; font-weight: 600; }
+  .sample-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .sample-col {
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 8px;
+    border: 1px solid var(--border-light);
+  }
+  .sample-col-header { font-size: 10px; font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .sample-card {
+    background: var(--bg-card);
+    padding: 6px 8px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    border: 1px solid var(--border-light);
+    font-size: 11px;
+  }
+  .sample-card-name { font-weight: 600; }
+  .sample-card-meta { font-size: 9px; color: var(--text-tertiary); margin-top: 2px; }
+
+  /* V1: AKTUELL v0.11.4 (Baseline) */
+  .v-v1 .sample {
+    --bg-primary: #F0E2E9;
+    --bg-secondary: #F5EAF0;
+    --bg-tertiary: #E5D0DC;
+    --bg-card: #FBF3F7;
+    --text-primary: #3D1F30;
+    --text-secondary: #6F4D60;
+    --text-tertiary: #A0838E;
+    --border-light: #E5D0DC;
+    --border-default: #CFAEC0;
+    --accent-primary: #A07585;
+    --accent-primary-text: #FFFFFF;
+    --status-bestaetigt: #8FA68A;
+    --status-angefragt: #C9956E;
+  }
+
+  /* V2: Sanfter — enger Delta, Page heller */
+  .v-v2 .sample {
+    --bg-primary: #F4E8EE;
+    --bg-secondary: #F8EFF4;
+    --bg-tertiary: #E8D4DE;
+    --bg-card: #FCF6F8;
+    --text-primary: #3D1F30;
+    --text-secondary: #6F4D60;
+    --text-tertiary: #A0838E;
+    --border-light: #E8D4DE;
+    --border-default: #D2B3C2;
+    --accent-primary: #A07585;
+    --accent-primary-text: #FFFFFF;
+    --status-bestaetigt: #8FA68A;
+    --status-angefragt: #C9956E;
+  }
+
+  /* V3: Weniger Pink — Page fast weiss, nur Hauch rosé */
+  .v-v3 .sample {
+    --bg-primary: #F7ECF1;
+    --bg-secondary: #FAF1F5;
+    --bg-tertiary: #E8D4DE;
+    --bg-card: #FDF8FA;
+    --text-primary: #3D1F30;
+    --text-secondary: #6F4D60;
+    --text-tertiary: #A0838E;
+    --border-light: #EADAE2;
+    --border-default: #CFAEC0;
+    --accent-primary: #A07585;
+    --accent-primary-text: #FFFFFF;
+    --status-bestaetigt: #8FA68A;
+    --status-angefragt: #C9956E;
+  }
+
+  /* V4: Mehr Rosé-Page, Boxen heller (mehr Abhebung trotzdem dezent) */
+  .v-v4 .sample {
+    --bg-primary: #ECD9E2;
+    --bg-secondary: #F5E8EE;
+    --bg-tertiary: #DCBED0;
+    --bg-card: #FBF3F6;
+    --text-primary: #3D1F30;
+    --text-secondary: #6F4D60;
+    --text-tertiary: #A0838E;
+    --border-light: #DEC5D0;
+    --border-default: #C29DB3;
+    --accent-primary: #A07585;
+    --accent-primary-text: #FFFFFF;
+    --status-bestaetigt: #8FA68A;
+    --status-angefragt: #C9956E;
+  }
+</style>
+</head>
+<body>
+<h1>Disco-Mode — Powder-Pink Fine-Tuning nach "Boxen heller"</h1>
+<div class="desc">V1 ist aktuell deployed (v0.11.4). V2-V4 sind Alternativen. Swatches im Header zeigen Page / Box / Card Lightness.</div>
+
+<div class="grid">
+
+  <div class="variant v-v1">
+    <div class="variant-label">
+      <strong>V1 — Aktuell deployed (v0.11.4)</strong>
+      <span class="swatches">
+        <span class="sw" style="background:#F0E2E9" title="Page"></span>
+        <span class="sw" style="background:#F5EAF0" title="Box"></span>
+        <span class="sw" style="background:#FBF3F7" title="Card"></span>
+      </span>
+      <br><span style="font-size:11px">· Page 93% · Box 95% · Card 97%</span>
+    </div>
+    <div class="sample">
+      <div class="sample-sidebar">
+        <div class="sample-logo">cueplex · crew</div>
+        <div class="sample-nav-section">Projekt</div>
+        <div class="sample-nav-item active">Crew-Liste</div>
+        <div class="sample-nav-item">Schichtplan</div>
+        <div class="sample-nav-item">Hotels</div>
+      </div>
+      <div class="sample-content">
+        <div class="sample-toolbar">
+          <span class="sample-toolbar-item">Alle Status</span>
+          <span class="sample-toolbar-item">Hotel: Alle</span>
+          <span class="sample-toolbar-btn">+ Neu</span>
+        </div>
+        <div class="sample-cards">
+          <div class="sample-col"><div class="sample-col-header"><span class="dot" style="background:#C46E7A"></span>Abgelehnt</div></div>
+          <div class="sample-col"><div class="sample-col-header"><span class="dot" style="background:var(--status-angefragt)"></span>Angefragt</div>
+            <div class="sample-card"><div class="sample-card-name">Patrick S.</div><div class="sample-card-meta">Head · ALL</div></div>
+          </div>
+          <div class="sample-col"><div class="sample-col-header"><span class="dot" style="background:var(--status-bestaetigt)"></span>Bestätigt</div>
+            <div class="sample-card"><div class="sample-card-name">Florian C.</div><div class="sample-card-meta">Head · Licht</div></div>
+            <div class="sample-card"><div class="sample-card-name">Andre G.</div><div class="sample-card-meta">Head · Licht</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="variant v-v2">
+    <div class="variant-label">
+      <strong>V2 — Sanfter</strong>
+      <span class="swatches">
+        <span class="sw" style="background:#F4E8EE"></span>
+        <span class="sw" style="background:#F8EFF4"></span>
+        <span class="sw" style="background:#FCF6F8"></span>
+      </span>
+      <br><span style="font-size:11px">· enger Delta, Boxen deutlicher heller als V1, Page auch heller</span>
+    </div>
+    <div class="sample">
+      <div class="sample-sidebar">
+        <div class="sample-logo">cueplex · crew</div>
+        <div class="sample-nav-section">Projekt</div>
+        <div class="sample-nav-item active">Crew-Liste</div>
+        <div class="sample-nav-item">Schichtplan</div>
+        <div class="sample-nav-item">Hotels</div>
+      </div>
+      <div class="sample-content">
+        <div class="sample-toolbar">
+          <span class="sample-toolbar-item">Alle Status</span>
+          <span class="sample-toolbar-item">Hotel: Alle</span>
+          <span class="sample-toolbar-btn">+ Neu</span>
+        </div>
+        <div class="sample-cards">
+          <div class="sample-col"><div class="sample-col-header"><span class="dot" style="background:#C46E7A"></span>Abgelehnt</div></div>
+          <div class="sample-col"><div class="sample-col-header"><span class="dot" style="background:var(--status-angefragt)"></span>Angefragt</div>
+            <div class="sample-card"><div class="sample-card-name">Patrick S.</div><div class="sample-card-meta">Head · ALL</div></div>
+          </div>
+          <div class="sample-col"><div class="sample-col-header"><span class="dot" style="background:var(--status-bestaetigt)"></span>Bestätigt</div>
+            <div class="sample-card"><div class="sample-card-name">Florian C.</div><div class="sample-card-meta">Head · Licht</div></div>
+            <div class="sample-card"><div class="sample-card-name">Andre G.</div><div class="sample-card-meta">Head · Licht</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="variant v-v3">
+    <div class="variant-label">
+      <strong>V3 — Weniger Pink</strong>
+      <span class="swatches">
+        <span class="sw" style="background:#F7ECF1"></span>
+        <span class="sw" style="background:#FAF1F5"></span>
+        <span class="sw" style="background:#FDF8FA"></span>
+      </span>
+      <br><span style="font-size:11px">· Page fast weiss, nur Hauch rosé, sehr luftig — "Unicorn Edition Light"</span>
+    </div>
+    <div class="sample">
+      <div class="sample-sidebar">
+        <div class="sample-logo">cueplex · crew</div>
+        <div class="sample-nav-section">Projekt</div>
+        <div class="sample-nav-item active">Crew-Liste</div>
+        <div class="sample-nav-item">Schichtplan</div>
+        <div class="sample-nav-item">Hotels</div>
+      </div>
+      <div class="sample-content">
+        <div class="sample-toolbar">
+          <span class="sample-toolbar-item">Alle Status</span>
+          <span class="sample-toolbar-item">Hotel: Alle</span>
+          <span class="sample-toolbar-btn">+ Neu</span>
+        </div>
+        <div class="sample-cards">
+          <div class="sample-col"><div class="sample-col-header"><span class="dot" style="background:#C46E7A"></span>Abgelehnt</div></div>
+          <div class="sample-col"><div class="sample-col-header"><span class="dot" style="background:var(--status-angefragt)"></span>Angefragt</div>
+            <div class="sample-card"><div class="sample-card-name">Patrick S.</div><div class="sample-card-meta">Head · ALL</div></div>
+          </div>
+          <div class="sample-col"><div class="sample-col-header"><span class="dot" style="background:var(--status-bestaetigt)"></span>Bestätigt</div>
+            <div class="sample-card"><div class="sample-card-name">Florian C.</div><div class="sample-card-meta">Head · Licht</div></div>
+            <div class="sample-card"><div class="sample-card-name">Andre G.</div><div class="sample-card-meta">Head · Licht</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="variant v-v4">
+    <div class="variant-label">
+      <strong>V4 — Mehr Rosé-Page, Boxen heller</strong>
+      <span class="swatches">
+        <span class="sw" style="background:#ECD9E2"></span>
+        <span class="sw" style="background:#F5E8EE"></span>
+        <span class="sw" style="background:#FBF3F6"></span>
+      </span>
+      <br><span style="font-size:11px">· saftigeres Page-rosé, dafür Boxen und Cards klar heller — mehr Disco-Charakter, klarer Pop</span>
+    </div>
+    <div class="sample">
+      <div class="sample-sidebar">
+        <div class="sample-logo">cueplex · crew</div>
+        <div class="sample-nav-section">Projekt</div>
+        <div class="sample-nav-item active">Crew-Liste</div>
+        <div class="sample-nav-item">Schichtplan</div>
+        <div class="sample-nav-item">Hotels</div>
+      </div>
+      <div class="sample-content">
+        <div class="sample-toolbar">
+          <span class="sample-toolbar-item">Alle Status</span>
+          <span class="sample-toolbar-item">Hotel: Alle</span>
+          <span class="sample-toolbar-btn">+ Neu</span>
+        </div>
+        <div class="sample-cards">
+          <div class="sample-col"><div class="sample-col-header"><span class="dot" style="background:#C46E7A"></span>Abgelehnt</div></div>
+          <div class="sample-col"><div class="sample-col-header"><span class="dot" style="background:var(--status-angefragt)"></span>Angefragt</div>
+            <div class="sample-card"><div class="sample-card-name">Patrick S.</div><div class="sample-card-meta">Head · ALL</div></div>
+          </div>
+          <div class="sample-col"><div class="sample-col-header"><span class="dot" style="background:var(--status-bestaetigt)"></span>Bestätigt</div>
+            <div class="sample-card"><div class="sample-card-name">Florian C.</div><div class="sample-card-meta">Head · Licht</div></div>
+            <div class="sample-card"><div class="sample-card-name">Andre G.</div><div class="sample-card-meta">Head · Licht</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<title>cueplex ops · Artikel-Detail · Variant-Vergleich</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* === Tokens 1:1 aus C:\Users\patrick\cueplex\ui\src\theme\index.css === */
+:root {
+  --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 32px;
+  --radius-sm: 8px; --radius-md: 10px; --radius-lg: 14px; --radius-full: 9999px;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-size-xs: 10px; --font-size-sm: 11px; --font-size-body: 13px; --font-size-md: 14px; --font-size-lg: 16px;
+  --font-weight-normal: 400; --font-weight-medium: 500; --font-weight-semibold: 600;
+  --sidebar-width: 224px; --header-height: 52px; --avatar-size: 32px;
+  --sidebar-item-padding-y: 9px; --sidebar-item-padding-x: 10px;
+  --sidebar-item-gap: 10px; --sidebar-logo-padding-x: 14px; --sidebar-logo-gap: 9px;
+  --transition-fast: 150ms ease;
+}
+[data-theme="light"] {
+  --bg-primary: #FAF8F5; --bg-secondary: #F3F0EB; --bg-tertiary: #EBE7E0;
+  --bg-card: #FFFFFF; --bg-card-hover: #FBF9F6; --bg-input: #FFFFFF;
+  --text-primary: #1D1B16; --text-secondary: #6B6558; --text-tertiary: #9B9488;
+  --border-light: #E8E4DD; --border-default: #D9D4CB; --border-strong: #C4BEB4;
+  --accent-primary: #5B7A5E; --accent-primary-hover: #4A6A4D; --accent-primary-text: #FFFFFF;
+  --status-angefragt: #C4A44A; --status-angefragt-bg: #FBF5E6;
+  --status-bestaetigt: #5B8A5E; --status-bestaetigt-bg: #EFF6EF;
+  --status-abgelehnt: #B85C5C; --status-abgelehnt-bg: #FAEFEF;
+  --color-shadow: 120, 110, 90;
+  --shadow-sm: 0 1px 2px rgba(var(--color-shadow), 0.06);
+  --shadow-md: 0 4px 12px rgba(var(--color-shadow), 0.08);
+  --shadow-lg: 0 8px 24px rgba(var(--color-shadow), 0.12);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  font-size: var(--font-size-body);
+  -webkit-font-smoothing: antialiased;
+}
+.variant-banner {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-default);
+  padding: 10px 24px;
+  display: flex; align-items: center; gap: 12px;
+  font-size: var(--font-size-sm); color: var(--text-secondary);
+}
+.variant-banner strong { color: var(--text-primary); font-size: var(--font-size-body); font-weight: 600; }
+.variant-banner .pill {
+  font-family: var(--font-mono); font-size: 10px;
+  background: var(--accent-primary); color: var(--accent-primary-text);
+  padding: 2px 8px; border-radius: var(--radius-full); font-weight: 600;
+}
+
+/* === AppShell 1:1 === */
+.appshell {
+  display: flex; height: 880px; overflow: hidden;
+  background: var(--bg-primary); color: var(--text-primary);
+}
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-light);
+  display: flex; flex-direction: column; flex-shrink: 0;
+}
+.sidebar-logo {
+  height: var(--header-height);
+  padding: 0 var(--sidebar-logo-padding-x);
+  border-bottom: 1px solid var(--border-light);
+  display: flex; align-items: center; gap: var(--sidebar-logo-gap);
+  color: var(--text-primary); cursor: pointer;
+}
+.sidebar-logo svg.cx-text { display: block; flex-shrink: 0; color: var(--text-primary); }
+.sidebar-logo .module {
+  font-size: var(--font-size-sm); line-height: 1;
+  color: var(--text-secondary); white-space: nowrap; font-weight: 400;
+}
+.sidebar-logo .version {
+  font-size: var(--font-size-xs); line-height: 1;
+  color: var(--text-tertiary); white-space: nowrap; font-weight: 400;
+  opacity: 0.6; margin-left: auto;
+}
+.sidebar-nav { flex: 1; padding: 0 6px; overflow-y: auto; }
+.sidebar-nav::-webkit-scrollbar { display: none; }
+.sidebar-section-label {
+  font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-tertiary); padding: 14px 10px 4px; font-weight: 600;
+}
+.sidebar-item {
+  width: 100%; display: flex; align-items: center; gap: var(--sidebar-item-gap);
+  padding: var(--sidebar-item-padding-y) var(--sidebar-item-padding-x);
+  border-radius: var(--radius-sm); border: none; background: transparent;
+  color: var(--text-secondary); font-size: var(--font-size-body);
+  cursor: pointer; text-decoration: none; transition: background var(--transition-fast);
+}
+.sidebar-item:hover { background: var(--bg-tertiary); }
+.sidebar-item.active { background: var(--bg-tertiary); color: var(--text-primary); font-weight: 600; }
+.sidebar-item.disabled { opacity: 0.5; cursor: not-allowed; color: var(--text-tertiary); }
+.sidebar-item svg { flex-shrink: 0; }
+.sidebar-item .bald {
+  margin-left: auto; font-size: var(--font-size-xs); color: var(--text-tertiary);
+}
+.sidebar-footer {
+  padding: 6px; border-top: 1px solid var(--border-light);
+  display: flex; flex-direction: column; gap: 2px;
+}
+
+/* Header */
+.app-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.app-header {
+  height: 52px; background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-light);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; flex-shrink: 0;
+}
+.app-header h1 { font-size: 16px; font-weight: 700; margin: 0; }
+.app-header .actions { display: flex; align-items: center; gap: 10px; }
+.icon-btn {
+  width: 32px; height: 32px; border: none; background: transparent;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); cursor: pointer; color: var(--text-secondary);
+}
+.icon-btn:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+.user-avatar {
+  width: 32px; height: 32px; border-radius: var(--radius-full);
+  background: var(--accent-primary); color: var(--accent-primary-text);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+}
+.app-content { flex: 1; overflow: auto; background: var(--bg-card); }
+
+/* Detail-Page Toolbar */
+.detail-toolbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 20px; border-bottom: 1px solid var(--border-light);
+}
+.crumbs { display: flex; align-items: center; gap: 6px; font-size: var(--font-size-sm); color: var(--text-tertiary); }
+.crumbs a { color: var(--text-secondary); text-decoration: none; cursor: pointer; }
+.crumbs a:hover { color: var(--text-primary); }
+.crumbs .sep { opacity: 0.5; }
+.crumbs .current { color: var(--text-primary); font-weight: 500; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default); background: transparent;
+  color: var(--text-secondary); font-size: 13px; cursor: pointer; font-family: inherit;
+}
+.btn:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+.btn-primary { border: none; background: var(--accent-primary); color: var(--accent-primary-text); font-weight: 600; }
+.btn-primary:hover { background: var(--accent-primary-hover); }
+.btn .lock { color: var(--text-tertiary); }
+
+/* Article-Header — kompakte Single-Row */
+.article-header {
+  padding: 10px 24px; border-bottom: 1px solid var(--border-light);
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.article-header .num { font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); }
+.article-header h2 { margin: 0; font-size: 15px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; }
+.article-header .manuf { color: var(--text-secondary); font-size: 12px; }
+.article-header .divider { width: 1px; height: 18px; background: var(--border-light); }
+.tag-pill { background: var(--bg-tertiary); color: var(--text-secondary); padding: 1px 8px; border-radius: var(--radius-full); font-size: 11px; font-weight: 500; }
+.status-badge { display: inline-block; padding: 1px 8px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 600; background: var(--status-bestaetigt-bg); color: var(--status-bestaetigt); }
+.spacer { flex: 1; }
+
+/* Inline Stat-Pills (kompakt) */
+.stat-pill {
+  display: inline-flex; align-items: baseline; gap: 5px;
+  padding: 1px 8px; border-radius: var(--radius-full);
+  background: var(--bg-secondary); border: 1px solid var(--border-light);
+  font-size: 11px;
+}
+.stat-pill .label { color: var(--text-tertiary); font-size: 9px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
+.stat-pill .value { color: var(--text-primary); font-family: var(--font-mono); font-weight: 600; font-size: 11px; }
+.stat-pill.warn .value { color: var(--status-angefragt); }
+
+/* Variant A: Sub-Sidebar */
+.va-body { display: grid; grid-template-columns: 200px 1fr; min-height: 600px; }
+.subnav { background: var(--bg-card); border-right: 1px solid var(--border-light); padding: 12px 8px; }
+.subnav-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+  border-radius: var(--radius-sm); color: var(--text-secondary); cursor: pointer;
+  font-size: 13px; margin-bottom: 2px;
+}
+.subnav-item:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+.subnav-item.active { background: var(--bg-tertiary); color: var(--text-primary); font-weight: 600; }
+.subnav-item.active svg { color: var(--text-primary); }
+.subnav-item .count { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); }
+.subnav-item.active .count { color: var(--text-primary); }
+.subnav-divider { height: 1px; background: var(--border-light); margin: 8px 4px; }
+.subnav-group-label {
+  font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--text-tertiary); padding: 14px 12px 4px; font-weight: 700;
+}
+.subnav-item { text-decoration: none; }
+.va-content { padding: 24px 28px; overflow-y: auto; background: var(--bg-card-hover); }
+
+/* Section Cards */
+.section { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-md); margin-bottom: 16px; overflow: hidden; }
+.section-header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border-light); cursor: pointer; user-select: none; }
+.section-header:hover { background: var(--bg-card-hover); }
+.section-header h3 { margin: 0; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.section-header .meta { font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono); }
+.section-header .chev { margin-left: auto; color: var(--text-tertiary); transition: transform var(--transition-fast); }
+.section-header.collapsed { border-bottom: none; }
+.section-header.collapsed .chev { transform: rotate(-90deg); }
+.section-body { padding: 16px 18px; }
+.section.collapsed .section-body { display: none; }
+.section.collapsed { margin-bottom: 8px; }
+
+/* Read-Mode-Form — kompakt (EventWorx-Density) */
+.form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px 12px; }
+.form-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.form-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.form-grid.full { grid-template-columns: 1fr; }
+.form-field { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.form-field.span-2 { grid-column: span 2; }
+.form-field.span-3 { grid-column: span 3; }
+.form-field.span-4 { grid-column: span 4; }
+.form-field label {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--text-tertiary); font-weight: 600;
+}
+.form-field .input {
+  background: var(--bg-input); border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm); padding: 4px 8px;
+  font-size: 12px; color: var(--text-primary);
+  font-family: var(--font-mono); min-height: 26px; cursor: text;
+  display: flex; align-items: center; gap: 6px;
+  transition: border-color var(--transition-fast);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.form-field .input:hover { border-color: var(--border-default); }
+.form-field .input.text { font-family: var(--font-sans); }
+.form-field .input.muted { color: var(--text-secondary); }
+.form-field .input.area {
+  white-space: normal; align-items: flex-start;
+  padding: 6px 8px; min-height: 48px; line-height: 1.4;
+}
+.form-field .input.with-icon { padding-right: 4px; }
+.form-field .input .field-icon {
+  margin-left: auto; color: var(--text-tertiary); width: 24px; height: 22px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); cursor: pointer; flex-shrink: 0;
+}
+.form-field .input .field-icon:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+/* Hinweis: native <select> wird in Task #25 durch Custom-Dropdown ersetzt.
+   Bis dahin: Browser-Default-Select mit minimalem Styling. */
+.form-field select.input {
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%239B9488' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat; background-position: right 8px center;
+  padding-right: 22px;
+}
+[data-theme="dark"] .form-field select.input {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23a8a39a' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
+}
+
+/* Sub-Group-Label innerhalb einer Section — leichte visuelle Trennung */
+.form-group-label {
+  grid-column: 1 / -1;
+  font-size: 9px; text-transform: uppercase; letter-spacing: 0.09em;
+  color: var(--text-tertiary); font-weight: 700;
+  padding-top: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.form-group-label::after {
+  content: ''; flex: 1; height: 1px; background: var(--border-light);
+}
+.form-group-label:first-child { padding-top: 0; }
+
+/* Checkbox-Group kompakt */
+.checkbox-row {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  padding: 6px 10px; background: var(--bg-card-hover);
+  border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+  margin-top: 4px;
+}
+.checkbox-row label {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; color: var(--text-primary); cursor: pointer;
+}
+.checkbox-row input[type=checkbox] { accent-color: var(--accent-primary); margin: 0; }
+
+/* Hinweis-Banner (EventWorx-Pattern) */
+.hint {
+  background: var(--status-angefragt-bg);
+  border: 1px solid var(--status-angefragt);
+  border-radius: var(--radius-sm); padding: 8px 12px;
+  font-size: 12px; color: var(--text-secondary);
+  margin-bottom: 14px;
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.hint strong { color: var(--text-primary); font-weight: 600; }
+
+/* Section-Edit-Button rechts oben in section-header */
+.section-edit {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default); background: var(--bg-card);
+  color: var(--text-secondary); font-size: 12px; cursor: pointer; font-family: inherit;
+}
+.section-edit:hover { background: var(--bg-card-hover); color: var(--text-primary); border-color: var(--border-strong); }
+.section-header .meta + .section-edit { margin-left: 12px; }
+
+table.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.data-table th { text-align: left; padding: 8px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); font-weight: 600; border-bottom: 1px solid var(--border-light); background: var(--bg-card-hover); }
+table.data-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-light); font-family: var(--font-mono); font-size: 12px; color: var(--text-primary); }
+table.data-table td.text { font-family: var(--font-sans); }
+table.data-table tr:last-child td { border-bottom: none; }
+table.data-table .num { text-align: right; }
+
+.photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.photo {
+  aspect-ratio: 4/3; background: var(--bg-tertiary); border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light); display: flex; align-items: center;
+  justify-content: center; color: var(--text-tertiary); font-size: 11px; text-align: center; padding: 4px;
+}
+.photo.primary { border-color: var(--accent-primary); box-shadow: 0 0 0 1px var(--accent-primary); }
+
+/* Inline-Select in Tabellen-Zellen */
+table.data-table td .inline-select {
+  width: 100%; min-height: 24px; padding: 2px 22px 2px 8px;
+  font-size: 11px;
+}
+
+/* Multi-Select-Display Button */
+.ms-display {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 8px; min-height: 24px;
+  border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+  background: var(--bg-input); color: var(--text-primary);
+  font-family: inherit; font-size: 11px; cursor: pointer;
+  width: 100%; text-align: left;
+}
+.ms-display:hover { border-color: var(--border-default); background: var(--bg-card-hover); }
+.ms-display .ms-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ms-display svg { color: var(--text-tertiary); flex-shrink: 0; }
+
+/* Multi-Select-Dropdown */
+.ms-dropdown {
+  position: absolute; z-index: 50;
+  min-width: 200px; background: var(--bg-card);
+  border: 1px solid var(--border-default); border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg); padding: 6px;
+  display: none;
+}
+.ms-dropdown.open { display: block; }
+.ms-dropdown label {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 8px; font-size: 12px; cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+.ms-dropdown label:hover { background: var(--bg-card-hover); }
+.ms-dropdown input[type=checkbox] { accent-color: var(--accent-primary); margin: 0; }
+
+/* Row-Action-Button (× / chevron in Tabellen) */
+.row-action {
+  width: 24px; height: 24px; border: none; background: transparent;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); cursor: pointer; color: var(--text-tertiary);
+}
+.row-action:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+.row-link { color: var(--accent-primary); cursor: pointer; text-decoration: none; font-family: var(--font-mono); }
+.row-link:hover { text-decoration: underline; }
+
+/* Status-Dot in Tabellen */
+.status-dot {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  margin-right: 6px; vertical-align: middle;
+}
+.status-dot.ok { background: var(--status-bestaetigt); }
+.status-dot.warn { background: var(--status-angefragt); }
+.status-dot.crit { background: var(--status-abgelehnt); }
+
+/* VW-Sync-Indicator: Cache-Feld aus Vectorworks */
+.input.vw-synced {
+  background: linear-gradient(90deg, var(--bg-input) 0%, var(--bg-card-hover) 100%);
+  border-style: dashed;
+  position: relative;
+}
+
+.warn-text { color: var(--status-angefragt); font-weight: 600; }
+
+/* Prüf-Status-Cards (Display, nicht editierbar) */
+.pruef-status-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+}
+.pruef-card {
+  background: var(--bg-card-hover); border: 1px solid var(--border-light);
+  border-radius: var(--radius-md); padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.pruef-card.warn {
+  background: var(--status-angefragt-bg);
+  border-color: var(--status-angefragt);
+}
+.pruef-card .pruef-label {
+  font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-tertiary); font-weight: 700;
+}
+.pruef-card.warn .pruef-label { color: var(--status-angefragt); }
+.pruef-card .pruef-value {
+  font-family: var(--font-mono); font-size: 18px; font-weight: 600;
+  color: var(--text-primary); letter-spacing: -0.01em;
+}
+.pruef-card.warn .pruef-value { color: var(--status-angefragt); }
+.pruef-card .pruef-meta {
+  font-size: 11px; color: var(--text-secondary);
+}
+
+/* Visibility-Matrix für Cases-Sichtbarkeit pro Doku-Typ */
+.visibility-matrix {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  background: var(--bg-card-hover);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md); overflow: hidden;
+}
+.visibility-matrix th, .visibility-matrix td {
+  text-align: center; padding: 6px 10px;
+  font-size: 11px; font-weight: 500;
+  border-bottom: 1px solid var(--border-light);
+}
+.visibility-matrix thead th {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-tertiary); font-weight: 600;
+  background: var(--bg-card);
+}
+.visibility-matrix tbody tr:last-child th,
+.visibility-matrix tbody tr:last-child td { border-bottom: none; }
+.visibility-matrix .row-label {
+  text-align: left; color: var(--text-primary); font-weight: 500;
+  font-size: 12px;
+}
+.vis-radio {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 100%; min-height: 22px; cursor: pointer;
+}
+.vis-radio input[type=radio] {
+  accent-color: var(--accent-primary);
+  width: 14px; height: 14px; margin: 0;
+}
+
+/* Logbuch-Toolbar */
+.log-toolbar {
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+}
+.log-search {
+  flex: 1; min-width: 200px;
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 10px; background: var(--bg-input);
+  border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+}
+.log-search svg { color: var(--text-tertiary); flex-shrink: 0; }
+.log-search input {
+  flex: 1; border: none; background: transparent; outline: none;
+  font-family: inherit; font-size: 12px; color: var(--text-primary);
+  min-height: 22px;
+}
+
+/* Chart-Stub (legacy) */
+.chart-stub {
+  background: var(--bg-card-hover); border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm); padding: 12px;
+}
+
+/* Auslastungs-Chart */
+.chart-wrap {
+  background: var(--bg-card-hover); border: 1px solid var(--border-light);
+  border-radius: var(--radius-md); padding: 14px;
+}
+.chart-header {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.chart-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-tertiary); font-weight: 600;
+}
+.chart-legend {
+  font-size: 11px; color: var(--text-secondary);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.chart-legend-dot {
+  display: inline-block; width: 8px; height: 8px;
+  background: var(--accent-primary); border-radius: 50%;
+}
+.usage-chart { width: 100%; height: 180px; display: block; font-family: var(--font-mono); }
+.usage-chart .grid line {
+  stroke: var(--border-light); stroke-width: 1; stroke-dasharray: 2 3;
+}
+.usage-chart .axis-y text,
+.usage-chart .axis-x text {
+  font-size: 9px; fill: var(--text-tertiary);
+}
+.usage-chart .chart-dots circle {
+  fill: var(--accent-primary); cursor: pointer;
+  transition: r 0.15s ease, fill 0.15s ease;
+}
+.usage-chart .chart-dots circle:hover,
+.usage-chart .chart-dots circle.active { r: 6; fill: var(--accent-primary-hover); }
+table.data-table tr.row-highlight td {
+  background: var(--status-angefragt-bg);
+}
+
+.ico { width: 16px; height: 16px; flex-shrink: 0; }
+.ico-sm { width: 14px; height: 14px; flex-shrink: 0; }
+.ico-xs { width: 12px; height: 12px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- VARIANT A: Sub-Sidebar -->
+<div class="variant-banner">
+  <span class="pill">A</span>
+  <strong>Sub-Sidebar</strong>
+  <span>— linke Spalte mit allen Sektionen, aktive Sektion mit Akzent-Border-Left</span>
+</div>
+
+<div class="appshell">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg class="cx-text" viewBox="0 0 429.08 90.43" height="22" width="105">
+        <g fill="currentColor"><path d="M65.76,28.38h12.69l-19.61,26.42v.23l20.65,28.03h-12.69l-14.3-19.84h-.23l-14.31,19.84h-12.92l40.72-54.68Z"/><path d="M44.74,53l-.2.04L5.37,0h13.91l31.75,45-.05.19-6.23,7.81Z"/><path d="M34.05,68.16l8.17-10.97c-3.32,1.81-6.93,2.72-10.83,2.72-3.15,0-6.11-.59-8.87-1.77-2.76-1.18-5.17-2.8-7.23-4.87-2.06-2.06-3.7-4.47-4.91-7.23-1.21-2.76-1.82-5.72-1.82-8.87s.59-6.22,1.77-9.01c1.18-2.79,2.8-5.22,4.87-7.28.67-.67,1.38-1.29,2.13-1.86l-4.97-6.74c-1.11.84-2.16,1.75-3.16,2.73-2.85,2.82-5.1,6.13-6.73,9.92-1.64,3.79-2.46,7.87-2.46,12.24s.82,8.34,2.46,12.1c1.64,3.76,3.88,7.05,6.73,9.87,2.85,2.82,6.17,5.05,9.96,6.69,3.79,1.64,7.87,2.46,12.24,2.46.89,0,1.78-.05,2.66-.12Z"/><path d="M31.37,14.24s.01,0,.02,0c4,0,7.72.96,11.15,2.87,3.43,1.91,6.14,4.5,8.14,7.78l7.1-4.64c-1.34-2.18-2.94-4.15-4.82-5.91-1.88-1.76-3.96-3.28-6.23-4.55-2.27-1.27-4.72-2.24-7.32-2.91-2.61-.67-5.28-1-8.01-1-1.92,0-3.78.17-5.58.48l5.57,7.89Z"/><path d="M160.02,56.78c-1.99,3.48-4.63,6.22-7.92,8.2-3.29,1.99-7.09,2.98-11.37,2.98-3.17,0-6.11-.59-8.81-1.77-2.7-1.18-5.07-2.8-7.09-4.85-2.02-2.05-3.59-4.46-4.71-7.23-1.12-2.76-1.68-5.73-1.68-8.9s.56-6.14,1.68-8.9c1.12-2.76,2.69-5.17,4.71-7.23,2.02-2.05,4.38-3.67,7.09-4.85,2.7-1.18,5.64-1.77,8.81-1.77,2.42,0,4.65.33,6.67.98,2.02.65,3.84,1.51,5.45,2.56,1.62,1.06,3.01,2.25,4.2,3.59,1.18,1.34,2.17,2.69,2.98,4.05l-4.85,2.8c-.56-.93-1.27-1.91-2.14-2.94-.87-1.03-1.91-1.96-3.12-2.8-1.21-.84-2.58-1.54-4.1-2.1-1.52-.56-3.22-.84-5.08-.84-2.42,0-4.65.45-6.67,1.35-2.02.9-3.78,2.13-5.27,3.68-1.49,1.55-2.66,3.4-3.5,5.55-.84,2.14-1.26,4.43-1.26,6.85s.42,4.71,1.26,6.85c.84,2.14,2,3.99,3.5,5.55,1.49,1.55,3.25,2.78,5.27,3.68,2.02.9,4.24,1.35,6.67,1.35,3.36,0,6.26-.85,8.72-2.56,2.45-1.71,4.37-3.74,5.73-6.11l4.85,2.8Z"/><path d="M201.41,23.31h5.5v43.82h-5.03l-.19-9.04c-1.68,2.92-3.88,5.3-6.62,7.13-2.74,1.83-5.87,2.75-9.42,2.75-3.17,0-5.86-.5-8.06-1.49-2.21-.99-3.99-2.39-5.36-4.2-1.37-1.8-2.36-3.95-2.98-6.43-.62-2.49-.93-5.22-.93-8.2v-24.33h5.41v23.03c0,2.49.19,4.74.56,6.76.37,2.02,1.01,3.73,1.91,5.13.9,1.4,2.13,2.49,3.68,3.26,1.55.78,3.48,1.17,5.78,1.17s4.32-.48,6.25-1.44c1.93-.96,3.59-2.24,4.99-3.82s2.5-3.43,3.31-5.55c.81-2.11,1.21-4.32,1.21-6.62v-21.91Z"/><path d="M256.6,62.65c-.75.5-1.65,1.06-2.7,1.68-1.06.62-2.27,1.2-3.64,1.72-1.37.53-2.91.98-4.62,1.35-1.71.37-3.62.56-5.73.56-3.48,0-6.6-.61-9.37-1.82-2.77-1.21-5.1-2.84-6.99-4.9-1.9-2.05-3.36-4.46-4.38-7.22-1.03-2.77-1.54-5.7-1.54-8.81s.54-6.04,1.63-8.81c1.09-2.76,2.61-5.17,4.57-7.23s4.3-3.68,7.04-4.89c2.73-1.21,5.75-1.82,9.04-1.82,3.54,0,6.6.59,9.18,1.77,2.58,1.18,4.74,2.78,6.48,4.8,1.74,2.02,3.03,4.4,3.87,7.13.84,2.74,1.26,5.69,1.26,8.86,0,.37-.02.81-.05,1.3-.03.5-.08,1-.14,1.49h-36.83c.31,2.18.92,4.17,1.82,5.97.9,1.8,2.05,3.36,3.45,4.66,1.4,1.31,3.03,2.33,4.89,3.08s3.88,1.12,6.06,1.12c3.67,0,6.6-.51,8.81-1.54,2.21-1.03,3.87-2.04,4.99-3.03l2.89,4.57ZM254.83,42.7c0-4.35-1.24-7.92-3.73-10.72-2.49-2.8-6.22-4.2-11.19-4.2-2.3,0-4.4.37-6.29,1.12-1.9.75-3.54,1.79-4.94,3.12-1.4,1.34-2.53,2.92-3.4,4.75-.87,1.83-1.43,3.81-1.68,5.92h31.23Z"/><path d="M276.28,23.31l.19,7.92c1.8-2.73,4.13-4.88,6.99-6.43,2.86-1.55,6.15-2.33,9.88-2.33,3.17,0,6.11.61,8.81,1.82,2.7,1.21,5.04,2.84,6.99,4.89,1.96,2.05,3.48,4.46,4.57,7.23,1.09,2.77,1.63,5.7,1.63,8.81s-.54,6.04-1.63,8.81c-1.09,2.77-2.61,5.17-4.57,7.22-1.96,2.05-4.29,3.68-6.99,4.9-2.7,1.21-5.64,1.82-8.81,1.82-3.61,0-6.81-.75-9.6-2.24-2.8-1.49-5.1-3.54-6.9-6.15l-.09,30.86h-5.5V23.31h5.04ZM309.75,45.22c0-2.42-.42-4.69-1.26-6.81-.84-2.11-2-3.96-3.5-5.55-1.49-1.58-3.25-2.83-5.27-3.73-2.02-.9-4.24-1.35-6.67-1.35-2.61,0-4.96.45-7.04,1.35-2.08.9-3.84,2.14-5.27,3.73-1.43,1.58-2.53,3.43-3.31,5.55-.78,2.11-1.17,4.38-1.17,6.81s.4,4.69,1.21,6.81c.81,2.11,1.94,3.96,3.4,5.55,1.46,1.58,3.22,2.83,5.27,3.73,2.05.9,4.35,1.35,6.9,1.35s4.65-.45,6.67-1.35c2.02-.9,3.78-2.14,5.27-3.73,1.49-1.58,2.66-3.43,3.5-5.55.84-2.11,1.26-4.38,1.26-6.81Z"/><path d="M330.82,67.13h-5.41V0h5.41v67.13Z"/><path d="M379.95,62.65c-.75.5-1.65,1.06-2.7,1.68-1.06.62-2.27,1.2-3.64,1.72-1.37.53-2.91.98-4.62,1.35-1.71.37-3.62.56-5.73.56-3.48,0-6.6-.61-9.37-1.82-2.77-1.21-5.1-2.84-6.99-4.9-1.9-2.05-3.36-4.46-4.38-7.22-1.03-2.77-1.54-5.7-1.54-8.81s.54-6.04,1.63-8.81c1.09-2.76,2.61-5.17,4.57-7.23s4.3-3.68,7.04-4.89c2.73-1.21,5.75-1.82,9.04-1.82,3.54,0,6.6.59,9.18,1.77,2.58,1.18,4.74,2.78,6.48,4.8,1.74,2.02,3.03,4.4,3.87,7.13.84,2.74,1.26,5.69,1.26,8.86,0,.37-.02.81-.05,1.3-.03.5-.08,1-.14,1.49h-36.83c.31,2.18.92,4.17,1.82,5.97.9,1.8,2.05,3.36,3.45,4.66,1.4,1.31,3.03,2.33,4.89,3.08s3.88,1.12,6.06,1.12c3.67,0,6.6-.51,8.81-1.54,2.21-1.03,3.87-2.04,4.99-3.03l2.89,4.57ZM378.18,42.7c0-4.35-1.24-7.92-3.73-10.72-2.49-2.8-6.22-4.2-11.19-4.2-2.3,0-4.4.37-6.29,1.12-1.9.75-3.54,1.79-4.94,3.12-1.4,1.34-2.53,2.92-3.4,4.75-.87,1.83-1.43,3.81-1.68,5.92h31.23Z"/><path d="M395.99,23.31l12.49,16.6h.19l12.4-16.6h6.99l-16.04,21.07v.19l17.06,22.56h-6.9l-13.52-17.99h-.19l-13.61,17.99h-6.9l17.06-22.56v-.19l-15.94-21.07h6.9Z"/></g>
+      </svg>
+      <span class="module">ops</span>
+      <span class="version">v0.2.0</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Operativ</div>
+      <a class="sidebar-item">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        Dashboard
+      </a>
+      <a class="sidebar-item disabled"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Angebote<span class="bald">Bald</span></a>
+      <a class="sidebar-item disabled"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Reservierungen<span class="bald">Bald</span></a>
+      <a class="sidebar-item disabled"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3V5a2 2 0 0 1 2-2h9v14"/><path d="M14 17h6V9l-3-3h-3"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>Lieferungen<span class="bald">Bald</span></a>
+
+      <div class="sidebar-section-label">Stammdaten</div>
+      <a class="sidebar-item"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/></svg>Hersteller</a>
+      <a class="sidebar-item active"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>Artikel</a>
+      <a class="sidebar-item disabled"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Cases<span class="bald">Bald</span></a>
+      <a class="sidebar-item disabled"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/></svg>Kategorien<span class="bald">Bald</span></a>
+      <a class="sidebar-item disabled"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Lager-Orte<span class="bald">Bald</span></a>
+
+      <div class="sidebar-section-label">Service</div>
+      <a class="sidebar-item disabled"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Wartung<span class="bald">Bald</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="sidebar-item" style="border:none;cursor:pointer;background:transparent;">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Einstellungen
+      </button>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <header class="app-header">
+      <h1>Artikel</h1>
+      <div class="actions">
+        <button class="icon-btn" title="Theme wechseln">
+          <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </button>
+        <div class="user-avatar">PS</div>
+      </div>
+    </header>
+
+    <div class="app-content">
+      <div class="article-header">
+        <span class="num">1271</span>
+        <h2>Pioneer DJM-A9</h2>
+        <span class="manuf">· Pioneer DJ</span>
+        <span class="status-badge">Aktiv</span>
+        <span class="tag-pill">Tontechnik › DJ › Mixer</span>
+        <div class="spacer"></div>
+        <span class="stat-pill"><span class="label">Bestand</span><span class="value">1/1</span></span>
+        <span class="stat-pill warn"><span class="label">Auslastung</span><span class="value">42%</span></span>
+        <span class="stat-pill"><span class="label">Umsatz 30T</span><span class="value">285€</span></span>
+        <span class="stat-pill warn"><span class="label">Wartung</span><span class="value">28T</span></span>
+      </div>
+
+      <div class="va-body">
+        <nav class="subnav">
+          <div class="subnav-group-label">Artikel</div>
+          <a href="#sec-stammdaten" class="subnav-item active" data-target="sec-stammdaten">
+            <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            Stammdaten
+          </a>
+          <a href="#sec-technik" class="subnav-item" data-target="sec-technik">
+            <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Technik
+          </a>
+          <a href="#sec-preise" class="subnav-item" data-target="sec-preise">
+            <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Preise
+          </a>
+          <a href="#sec-zubehoer" class="subnav-item" data-target="sec-zubehoer">
+            <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            Zubehör
+            <span class="count">2</span>
+          </a>
+          <a href="#sec-cases" class="subnav-item" data-target="sec-cases">
+            <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            Cases & Logistik
+            <span class="count">1</span>
+          </a>
+          <a href="#sec-wo-verbaut" class="subnav-item" data-target="sec-wo-verbaut">
+            <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c2.4 0 4.58.94 6.19 2.46"/></svg>
+            Wo verbaut
+            <span class="count">2</span>
+          </a>
+          <a href="#sec-medien" class="subnav-item" data-target="sec-medien">
+            <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Fotos & Dokumente
+            <span class="count">9</span>
+          </a>
+
+          <div class="subnav-group-label">Geräte</div>
+          <a href="#sec-geraete" class="subnav-item" data-target="sec-geraete">
+            <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            Geräte
+            <span class="count">2</span>
+          </a>
+          <a href="#sec-zugaenge" class="subnav-item" data-target="sec-zugaenge">
+            <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            Inventar-Zugänge
+            <span class="count">2</span>
+          </a>
+
+          <div class="subnav-group-label">Verlauf</div>
+          <a href="#sec-wartung" class="subnav-item" data-target="sec-wartung">
+            <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            Wartung & Prüfung
+            <span class="count">12</span>
+          </a>
+          <a href="#sec-vermietung" class="subnav-item" data-target="sec-vermietung">
+            <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Vermietungshistorie
+            <span class="count">8</span>
+          </a>
+          <a href="#sec-logbuch" class="subnav-item" data-target="sec-logbuch">
+            <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Logbuch
+          </a>
+        </nav>
+
+        <div class="va-content">
+
+          <!-- ============ ARTIKEL ============ -->
+
+          <div class="section" id="sec-stammdaten">
+            <div class="section-header">
+              <h3>Stammdaten</h3>
+              <span class="meta">zuletzt geändert 2026-04-12 · pstinkt</span>
+              <button class="section-edit">
+                <svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Bearbeiten
+              </button>
+              <svg class="chev ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="section-body">
+              <div class="form-grid">
+
+                <div class="form-group-label">Identifikation</div>
+                <div class="form-field span-2">
+                  <label>Name</label>
+                  <div class="input text">Pioneer DJM-A9</div>
+                </div>
+                <div class="form-field">
+                  <label>Modell</label>
+                  <div class="input text">DJM-A9</div>
+                </div>
+                <div class="form-field">
+                  <label>Artikel-Nr.</label>
+                  <div class="input">1271</div>
+                </div>
+
+                <div class="form-field span-2">
+                  <label>Hersteller</label>
+                  <div class="input text with-icon">
+                    <span style="flex:1;overflow:hidden;text-overflow:ellipsis;">Pioneer DJ Corp.</span>
+                    <span class="field-icon" title="Hersteller suchen" aria-label="Hersteller suchen">
+                      <svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label>EAN / Barcode</label>
+                  <div class="input">4006843099876</div>
+                </div>
+                <div class="form-field">
+                  <label>Eigentümer</label>
+                  <select class="input text">
+                    <option>unicateevents</option>
+                    <option>ZeusAudio</option>
+                  </select>
+                </div>
+
+                <div class="form-group-label">Klassifikation</div>
+                <div class="form-field span-2">
+                  <label>Hauptkategorie</label>
+                  <div class="input text with-icon">
+                    <span style="flex:1;">Tontechnik › DJ › Mixer</span>
+                    <span class="field-icon" title="Kategorie suchen" aria-label="Kategorie suchen">
+                      <svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </span>
+                  </div>
+                </div>
+                <div class="form-field span-2">
+                  <label>Tags</label>
+                  <div class="input text with-icon">
+                    <span class="tag-pill">DJ-Equipment</span>
+                    <span class="tag-pill">Live-Beschallung</span>
+                    <span class="field-icon" title="Tag hinzufügen" aria-label="Tag hinzufügen">
+                      <svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="form-field span-2">
+                  <label>Mengen-Einheit</label>
+                  <select class="input text">
+                    <option>Stk.</option>
+                    <option>m</option>
+                    <option>m²</option>
+                    <option>kg</option>
+                    <option>Set</option>
+                    <option>Paar</option>
+                  </select>
+                </div>
+                <div class="form-field span-2">
+                  <label>Disposition-Typ</label>
+                  <select class="input text">
+                    <option>Standardartikel</option>
+                    <option>Bundle</option>
+                    <option>Verbrauch</option>
+                  </select>
+                </div>
+
+                <div class="form-group-label">Beschreibung</div>
+                <div class="form-field span-4">
+                  <label>Externe Beschreibung <span style="color:var(--text-tertiary);font-weight:400;">· Angebot · Webshop</span></label>
+                  <div class="input text area">4-Kanal Profi-DJ-Mixer mit Bluetooth, MAGVEL FADER PRO und integriertem Audio-Interface. Hauptmischpult für Club-Setups.</div>
+                </div>
+                <div class="form-field span-4">
+                  <label>Interne Notizen <span style="color:var(--text-tertiary);font-weight:400;">· nur intern sichtbar</span></label>
+                  <div class="input text area muted">XLR-Kabel ggf. mit Adaptern für ältere Pulte. Vor Vermietung Kanal-Funktion prüfen.</div>
+                </div>
+
+                <div class="form-group-label">Status</div>
+                <div class="form-field span-4">
+                  <div class="checkbox-row" style="margin-top:0;">
+                    <label><input type="checkbox" checked> Aktiv</label>
+                    <label><input type="checkbox" checked> Vermietbar</label>
+                    <label><input type="checkbox"> Verkäuflich</label>
+                    <label><input type="checkbox"> Im Webshop sichtbar</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TECHNIK -->
+          <div class="section" id="sec-technik">
+            <div class="section-header">
+              <h3>Technik</h3>
+              <span class="meta">elektrisches Gerät · 12,0 kg · 42,3 × 41,2 × 10,9 cm</span>
+              <button class="section-edit">
+                <svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Bearbeiten
+              </button>
+              <svg class="chev ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="section-body">
+              <div class="form-grid">
+                <div class="form-group-label">Maße &amp; Gewicht</div>
+                <div class="form-field">
+                  <label>Breite (cm)</label>
+                  <div class="input">42,3</div>
+                </div>
+                <div class="form-field">
+                  <label>Höhe (cm)</label>
+                  <div class="input">10,9</div>
+                </div>
+                <div class="form-field">
+                  <label>Tiefe (cm)</label>
+                  <div class="input">41,2</div>
+                </div>
+                <div class="form-field">
+                  <label>Volumen (m³)</label>
+                  <div class="input">0,019</div>
+                </div>
+                <div class="form-field span-2">
+                  <label>Gewicht (kg)</label>
+                  <div class="input">12,000</div>
+                </div>
+
+                <div class="form-group-label" data-electric-only>Elektrik <span style="color:var(--text-tertiary);font-weight:400;">· VW-Sync</span></div>
+                <div class="form-field" data-electric-only>
+                  <label>Wirkleistung (W)</label>
+                  <div class="input vw-synced" title="aus Vectorworks synchronisiert">32</div>
+                </div>
+                <div class="form-field" data-electric-only>
+                  <label>Scheinleistung (VA)</label>
+                  <div class="input vw-synced">40</div>
+                </div>
+                <div class="form-field" data-electric-only>
+                  <label>Spannung</label>
+                  <div class="input vw-synced">100–240 V AC</div>
+                </div>
+                <div class="form-field" data-electric-only>
+                  <label>Anschluss-Typ</label>
+                  <select class="input text">
+                    <option>IEC C13 (Kaltgeräte)</option>
+                    <option>IEC C19</option>
+                    <option>Schuko</option>
+                    <option>CEE 16A</option>
+                  </select>
+                </div>
+
+                <div class="form-group-label">Klassifizierung</div>
+                <div class="form-field span-4">
+                  <div class="checkbox-row" style="margin-top:0;">
+                    <label><input type="checkbox" id="chk-electric" checked> Elektrisches Gerät (DGUV V3 prüfpflichtig)</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PREISE -->
+          <div class="section" id="sec-preise">
+            <div class="section-header">
+              <h3>Preise</h3>
+              <span class="meta">Tagessatz 65,00 € · Steuer 19 %</span>
+              <button class="section-edit">
+                <svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Bearbeiten
+              </button>
+              <svg class="chev ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="section-body">
+              <div class="form-grid">
+                <div class="form-group-label">Vermietung</div>
+                <div class="form-field span-2">
+                  <label>Tagessatz</label>
+                  <div class="input">65,00 €</div>
+                </div>
+                <div class="form-field span-2">
+                  <label>Steuersatz</label>
+                  <select class="input text">
+                    <option>19 %</option>
+                    <option>7 %</option>
+                    <option>0 %</option>
+                  </select>
+                </div>
+
+                <div class="form-group-label">Versicherung</div>
+                <div class="form-field span-2">
+                  <label>Versicherungswert <span style="color:var(--text-tertiary);font-weight:400;">· falls leer: EK-Median 2.208,96 €</span></label>
+                  <div class="input muted">— optional —</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ZUBEHÖR -->
+          <div class="section" id="sec-zubehoer">
+            <div class="section-header">
+              <h3>Zubehör (Bundle-Children)</h3>
+              <span class="meta">2 Artikel</span>
+              <button class="section-edit">
+                <svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Bearbeiten
+              </button>
+              <svg class="chev ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="section-body" style="padding:0;">
+              <table class="data-table bundle-table">
+                <thead>
+                  <tr>
+                    <th style="width:32%;">Artikel</th>
+                    <th style="width:8%;">Menge</th>
+                    <th style="width:32%;">Bundle-Status</th>
+                    <th style="width:24%;">Sichtbarkeit</th>
+                    <th style="width:4%;"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="text">Kaltgerätekabel C13, 1,5m</td>
+                    <td class="num">1</td>
+                    <td>
+                      <select class="input text inline-select">
+                        <option selected>Gebunden, vom Inventar abziehen</option>
+                        <option>Gebunden, vom Inventar ausgeschlossen</option>
+                        <option>Optional</option>
+                      </select>
+                    </td>
+                    <td>
+                      <button class="ms-display" data-options="angebot,auftrag,packliste,lieferschein,rechnung" data-selected="auftrag,packliste,lieferschein">
+                        <span class="ms-label">Auftrag, Packliste, Lieferschein</span>
+                        <svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                      </button>
+                    </td>
+                    <td><button class="row-action" title="Entfernen"><svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>
+                  </tr>
+                  <tr>
+                    <td class="text">Schaumstoff-Inlay DJM-A9</td>
+                    <td class="num">1</td>
+                    <td>
+                      <select class="input text inline-select">
+                        <option>Gebunden, vom Inventar abziehen</option>
+                        <option selected>Gebunden, vom Inventar ausgeschlossen</option>
+                        <option>Optional</option>
+                      </select>
+                    </td>
+                    <td>
+                      <button class="ms-display" data-options="angebot,auftrag,packliste,lieferschein,rechnung" data-selected="packliste">
+                        <span class="ms-label">Packliste</span>
+                        <svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                      </button>
+                    </td>
+                    <td><button class="row-action" title="Entfernen"><svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div style="padding:10px 14px;border-top:1px solid var(--border-light);">
+                <button class="btn"><svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Artikel hinzufügen</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- CASES & LOGISTIK -->
+          <div class="section" id="sec-cases">
+            <div class="section-header">
+              <h3>Cases &amp; Logistik</h3>
+              <span class="meta">Default: DJM-A9 Hardcase · 1 alternatives Case</span>
+              <button class="section-edit">
+                <svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Bearbeiten
+              </button>
+              <svg class="chev ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="section-body">
+              <div class="form-grid cols-2" style="margin-bottom:14px;">
+                <div class="form-field">
+                  <label>Default-Case</label>
+                  <div class="input text with-icon">
+                    <span style="flex:1;">DJM-A9 Hardcase</span>
+                    <span class="field-icon"><svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label>Alternative Cases</label>
+                  <div class="input text with-icon">
+                    <span class="tag-pill">Universal-Mixer-Case L</span>
+                    <span class="field-icon"><svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-grid cols-2" style="margin-top:6px;">
+                <div class="form-field span-2">
+                  <label>Sichtbarkeit in Dokumenten <span style="color:var(--text-tertiary);font-weight:400;">· wo genau wird angewendet, regelt Setup → Doku-Templates</span></label>
+                  <select class="input text">
+                    <option>Primary anzeigen — z.B. „5 Kisten"</option>
+                    <option selected>Als Detail — z.B. „5 Kisten · enthält 24 Lampen"</option>
+                    <option>Ausblenden — Kunde sieht nur Lampen</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="checkbox-row" style="margin-top:14px;">
+                <label><input type="checkbox" checked> Stapelbar</label>
+                <label><input type="checkbox" checked> Drehbar</label>
+                <label><input type="checkbox"> Kippbar</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- WO VERBAUT -->
+          <div class="section" id="sec-wo-verbaut">
+            <div class="section-header">
+              <h3>Wo verbaut</h3>
+              <span class="meta">2 Bundles enthalten diesen Artikel</span>
+              <svg class="chev ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="section-body" style="padding:0;">
+              <table class="data-table">
+                <thead><tr><th>Parent-Artikel</th><th>Status</th><th class="num">Menge</th><th></th></tr></thead>
+                <tbody>
+                  <tr><td class="text">DJ-Setup Pioneer Standard</td><td class="text">Gebunden, vom Inventar abziehen</td><td class="num">1</td><td><button class="row-action" title="Öffnen"><svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></td></tr>
+                  <tr><td class="text">Club-Tour-Setup XL</td><td class="text">Optional</td><td class="num">2</td><td><button class="row-action" title="Öffnen"><svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- FOTOS & DOKUMENTE -->
+          <div class="section" id="sec-medien">
+            <div class="section-header">
+              <h3>Fotos &amp; Dokumente</h3>
+              <span class="meta">6 Fotos · 3 Dokumente</span>
+              <svg class="chev ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="section-body">
+              <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-tertiary);font-weight:600;margin-bottom:8px;">Fotos</div>
+              <div class="photo-grid">
+                <div class="photo primary">★ DJM-A9 frontal</div>
+                <div class="photo">Rückseite</div>
+                <div class="photo">Detail Fader</div>
+                <div class="photo">Im Case</div>
+                <div class="photo">Setup Beispiel</div>
+                <div class="photo">+ hinzufügen</div>
+              </div>
+              <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-tertiary);font-weight:600;margin:18px 0 6px;">Dokumente</div>
+              <table class="data-table">
+                <thead><tr><th>Datei</th><th>Typ</th><th>Hochgeladen</th><th>Größe</th><th></th></tr></thead>
+                <tbody>
+                  <tr><td class="text">DJM-A9_Manual_DE.pdf</td><td class="text">Manual</td><td>2024-09-26</td><td class="num">3,2 MB</td><td><button class="row-action"><svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></td></tr>
+                  <tr><td class="text">DJM-A9_Datenblatt.pdf</td><td class="text">Datenblatt</td><td>2024-09-26</td><td class="num">812 KB</td><td><button class="row-action"><svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></td></tr>
+                  <tr><td class="text">Rechnung_Thomann_2024.pdf</td><td class="text">Rechnung</td><td>2024-09-24</td><td class="num">240 KB</td><td><button class="row-action"><svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ============ GERÄTE ============ -->
+
+          <div class="section" id="sec-geraete">
+            <div class="section-header">
+              <h3>Geräte</h3>
+              <span class="meta">2 Instanzen · 1 verfügbar · 1 vermietet</span>
+              <button class="section-edit">
+                <svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Neues Gerät
+              </button>
+              <svg class="chev ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="section-body" style="padding:0;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Geräte-Nr</th>
+                    <th>Seriennummer</th>
+                    <th>Inv.-Nr</th>
+                    <th>Status</th>
+                    <th>Standort</th>
+                    <th>DGUV-Intervall</th>
+                    <th>Nächste Prüfung</th>
+                    <th>Garantie bis</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1271.001</td>
+                    <td>EJMP008887</td>
+                    <td>001</td>
+                    <td><span class="status-dot ok"></span> Verfügbar</td>
+                    <td class="text">Lager A · Regal 12</td>
+                    <td class="text">12 Monate · ortsveränderlich</td>
+                    <td><span class="warn-text">26.04.2026 · 28 T.</span></td>
+                    <td>26.09.2026</td>
+                    <td><button class="row-action" aria-label="Öffnen"><svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button></td>
+                  </tr>
+                  <tr>
+                    <td>1271.002</td>
+                    <td>EJMP008891</td>
+                    <td>002</td>
+                    <td><span class="status-dot warn"></span> Vermietet</td>
+                    <td class="text">Job AB-3879 (DH DJ-Platz)</td>
+                    <td class="text">12 Monate · ortsveränderlich</td>
+                    <td>14.03.2026</td>
+                    <td>14.03.2027</td>
+                    <td><button class="row-action" aria-label="Öffnen"><svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- INVENTAR-ZUGÄNGE -->
+          <div class="section" id="sec-zugaenge">
+            <div class="section-header">
+              <h3>Inventar-Zugänge</h3>
+              <span class="meta">2 Zugänge · 2 Geräte gesamt</span>
+              <button class="section-edit">
+                <svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Neuer Zugang
+              </button>
+              <svg class="chev ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="section-body">
+              <div class="hint">
+                <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-top:1px;flex-shrink:0;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span><strong>Zugang → Geräte-Wizard.</strong> Beim Erfassen werden Default-Werte (EK, Lieferant, Garantie) gesetzt. Im 2. Schritt Seriennummern als Bulk eingeben (Scanner) — System legt Geräte automatisch an und erbt die Charge-Werte.</span>
+              </div>
+              <div class="hint" style="background:rgba(91,122,94,0.08);border-color:var(--accent-primary);color:var(--text-secondary);margin-top:8px;">
+                <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2" style="margin-top:1px;flex-shrink:0;" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <span><strong>Buchhaltungs-Verknüpfung.</strong> Pro Zugang können Rechnung &amp; Lieferschein angehängt werden (sichtbar mit entsprechenden Rechten). Wenn die Buchhaltung neue Rechnungen importiert, erkennt das System diese und schlägt fehlende Geräte-Anlage vor.</span>
+              </div>
+              <table class="data-table" style="margin-top:12px;">
+                <thead>
+                  <tr>
+                    <th>Datum</th>
+                    <th>Typ</th>
+                    <th class="num">Anzahl</th>
+                    <th class="num">EK / Stk.</th>
+                    <th>Lieferant</th>
+                    <th>Garantie bis</th>
+                    <th>Belege</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>26.09.2024</td>
+                    <td class="text">Gekauft</td>
+                    <td class="num">1</td>
+                    <td class="num">2.268,91 €</td>
+                    <td class="text">Thomann GmbH</td>
+                    <td>26.09.2026</td>
+                    <td class="text"><a class="row-link">Rechnung</a> · <a class="row-link">Lieferschein</a></td>
+                    <td><button class="row-action" aria-label="Öffnen"><svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button></td>
+                  </tr>
+                  <tr>
+                    <td>14.03.2025</td>
+                    <td class="text">Gekauft</td>
+                    <td class="num">1</td>
+                    <td class="num">2.149,00 €</td>
+                    <td class="text">Music Store</td>
+                    <td>14.03.2027</td>
+                    <td class="text"><a class="row-link">Rechnung</a></td>
+                    <td><button class="row-action" aria-label="Öffnen"><svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ============ VERLAUF ============ -->
+
+          <div class="section" id="sec-wartung">
+            <div class="section-header">
+              <h3>Wartung &amp; Prüfung</h3>
+              <span class="meta">DGUV V3 fällig in 28 Tagen · 12 Einträge</span>
+              <button class="section-edit">
+                <svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Service / Reparatur anlegen
+              </button>
+              <svg class="chev ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="section-body">
+
+              <!-- Status-Display: Cards statt Inputs -->
+              <div class="pruef-status-grid">
+                <div class="pruef-card warn">
+                  <span class="pruef-label">Nächste Prüfung</span>
+                  <span class="pruef-value">26.04.2026</span>
+                  <span class="pruef-meta">in 28 Tagen · DGUV V3</span>
+                </div>
+                <div class="pruef-card">
+                  <span class="pruef-label">Letzte Prüfung</span>
+                  <span class="pruef-value">26.04.2025</span>
+                  <span class="pruef-meta">bestanden · Sascha S.</span>
+                </div>
+                <div class="pruef-card">
+                  <span class="pruef-label">Intervall</span>
+                  <span class="pruef-value">12 Monate</span>
+                  <span class="pruef-meta">ortsveränderlich</span>
+                </div>
+              </div>
+
+              <div class="form-grid" style="margin-top:14px;">
+                <div class="form-group-label">Konfiguration</div>
+                <div class="form-field span-2">
+                  <label>DGUV V3 Intervall</label>
+                  <select class="input text">
+                    <option>12 Monate (ortsveränderlich)</option>
+                    <option>24 Monate</option>
+                    <option>nicht prüfpflichtig</option>
+                  </select>
+                </div>
+                <div class="form-field span-2">
+                  <label>Standard-Prüfer</label>
+                  <select class="input text">
+                    <option>Sascha S.</option>
+                    <option>Florian C.</option>
+                    <option>extern · TÜV</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="hint" style="margin-top:14px;">
+                <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-top:1px;flex-shrink:0;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>Prüfprotokolle werden mit der <strong>DGUV-Engine</strong> verknüpft (Modul „Wartung", später) — Dokumente landen automatisch hier.</span>
+              </div>
+
+              <div style="display:flex;align-items:baseline;justify-content:space-between;margin:18px 0 6px;">
+                <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-tertiary);font-weight:600;">Service-Historie</span>
+                <button class="btn"><svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Eintrag anlegen</button>
+              </div>
+              <table class="data-table">
+                <thead><tr><th>Datum</th><th>Gerät</th><th>Typ</th><th>Bearbeiter</th><th>Ergebnis</th><th></th></tr></thead>
+                <tbody>
+                  <tr><td>26.04.2025</td><td>1271.001</td><td class="text">DGUV V3</td><td class="text">Sascha S.</td><td class="text"><span class="status-dot ok"></span> Bestanden</td><td><button class="row-action" aria-label="Öffnen"><svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button></td></tr>
+                  <tr><td>14.02.2025</td><td>1271.002</td><td class="text">Sichtprüfung</td><td class="text">Florian C.</td><td class="text"><span class="status-dot ok"></span> Bestanden</td><td><button class="row-action" aria-label="Öffnen"><svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button></td></tr>
+                  <tr><td>03.12.2024</td><td>1271.001</td><td class="text">Reparatur</td><td class="text">Michelle H.</td><td class="text"><span class="status-dot warn"></span> Fader-Tausch</td><td><button class="row-action" aria-label="Öffnen"><svg class="ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- VERMIETUNGSHISTORIE -->
+          <div class="section" id="sec-vermietung">
+            <div class="section-header">
+              <h3>Vermietungshistorie</h3>
+              <span class="meta">8 Jobs · Auslastung 30T: 42%</span>
+              <svg class="chev ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="section-body">
+              <div class="chart-wrap">
+                <div class="chart-header">
+                  <span class="chart-title">Auslastung 12 Monate</span>
+                  <span class="chart-legend"><span class="chart-legend-dot"></span> Tage gebucht / Monat</span>
+                </div>
+                <svg class="usage-chart" viewBox="0 0 540 180" preserveAspectRatio="none" role="img" aria-label="Auslastungsdiagramm 12 Monate">
+                  <!-- Grid-Lines -->
+                  <g class="grid">
+                    <line x1="40" y1="20" x2="540" y2="20"/>
+                    <line x1="40" y1="60" x2="540" y2="60"/>
+                    <line x1="40" y1="100" x2="540" y2="100"/>
+                    <line x1="40" y1="140" x2="540" y2="140"/>
+                  </g>
+                  <!-- Y-Achse Beschriftung -->
+                  <g class="axis-y">
+                    <text x="34" y="24" text-anchor="end">30 T</text>
+                    <text x="34" y="64" text-anchor="end">20 T</text>
+                    <text x="34" y="104" text-anchor="end">10 T</text>
+                    <text x="34" y="144" text-anchor="end">0</text>
+                  </g>
+                  <!-- X-Achse + Datenpunkte -->
+                  <g class="axis-x">
+                    <text x="60" y="160">Mai</text>
+                    <text x="100" y="160">Jun</text>
+                    <text x="140" y="160">Jul</text>
+                    <text x="180" y="160">Aug</text>
+                    <text x="220" y="160">Sep</text>
+                    <text x="260" y="160">Okt</text>
+                    <text x="300" y="160">Nov</text>
+                    <text x="340" y="160">Dez</text>
+                    <text x="380" y="160">Jan</text>
+                    <text x="420" y="160">Feb</text>
+                    <text x="460" y="160">Mär</text>
+                    <text x="500" y="160">Apr</text>
+                  </g>
+                  <!-- Area + Line -->
+                  <polyline class="chart-area" fill="var(--accent-primary)" fill-opacity="0.15" stroke="none"
+                    points="60,120 100,108 140,68 180,52 220,92 260,116 300,80 340,44 380,100 420,112 460,56 500,40 500,140 60,140"/>
+                  <polyline class="chart-line" fill="none" stroke="var(--accent-primary)" stroke-width="2"
+                    points="60,120 100,108 140,68 180,52 220,92 260,116 300,80 340,44 380,100 420,112 460,56 500,40"/>
+                  <!-- Datenpunkte (klickbar, mit data-job für Highlight) -->
+                  <g class="chart-dots">
+                    <circle cx="500" cy="40" r="4" data-job="AB-3879"/>
+                    <circle cx="460" cy="56" r="4" data-job="AB-3812"/>
+                    <circle cx="420" cy="112" r="4" data-job="AB-3744"/>
+                    <circle cx="340" cy="44" r="3"/>
+                    <circle cx="180" cy="52" r="3"/>
+                  </g>
+                </svg>
+              </div>
+              <table class="data-table" style="margin-top:14px;">
+                <thead><tr><th>Auftrag</th><th>Kunde</th><th>Zeitraum</th><th>Gerät</th><th class="num">Mietdauer</th><th class="num">Umsatz</th></tr></thead>
+                <tbody>
+                  <tr data-job="AB-3879"><td>AB-3879</td><td class="text">DH DJ-Platz</td><td>30.04.–04.05.2026</td><td>1271.002</td><td class="num">5 T</td><td class="num">59,50 €</td></tr>
+                  <tr data-job="AB-3812"><td>AB-3812</td><td class="text">Club Volume</td><td>14.–15.03.2026</td><td>1271.001</td><td class="num">2 T</td><td class="num">130,00 €</td></tr>
+                  <tr data-job="AB-3744"><td>AB-3744</td><td class="text">unicate Festival</td><td>22.–24.02.2026</td><td>1271.001</td><td class="num">3 T</td><td class="num">195,00 €</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- LOGBUCH -->
+          <div class="section" id="sec-logbuch">
+            <div class="section-header">
+              <h3>Logbuch</h3>
+              <span class="meta">Audit-Trail · 124 Einträge</span>
+              <svg class="chev ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="section-body">
+              <div class="log-toolbar">
+                <div class="log-search">
+                  <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="search" id="log-search-input" placeholder="Suche in Aktion, User, Feld …" />
+                </div>
+                <select class="input text" id="log-filter-user" style="max-width:180px;">
+                  <option value="">Alle User</option>
+                  <option>pstinkt</option>
+                  <option>michelle.h</option>
+                  <option>florian.c</option>
+                  <option>sascha.s</option>
+                </select>
+                <select class="input text" id="log-filter-type" style="max-width:200px;">
+                  <option value="">Alle Aktionen</option>
+                  <option>Bestand</option>
+                  <option>Sonstige Änderungen</option>
+                  <option>Tags</option>
+                  <option>Standardartikel</option>
+                  <option>Artikel angelegt</option>
+                </select>
+              </div>
+              <table class="data-table" id="log-table" style="margin-top:10px;">
+                <thead><tr><th>Zeitpunkt</th><th>User</th><th>Aktion</th><th>Feld / Detail</th></tr></thead>
+                <tbody>
+                  <tr><td>12.04.2026 09:16</td><td class="text">pstinkt</td><td class="text">Bestand Eingang</td><td class="text">Einzelgerät wie Menge</td></tr>
+                  <tr><td>12.04.2026 09:14</td><td class="text">pstinkt</td><td class="text">Sonstige Änderungen</td><td class="text">Beschreibung</td></tr>
+                  <tr><td>08.04.2026 14:45</td><td class="text">michelle.h</td><td class="text">Standardartikel geändert</td><td class="text">Vermietung → Verbund (Vermietung)</td></tr>
+                  <tr><td>03.02.2026 10:42</td><td class="text">florian.c</td><td class="text">Tags geändert</td><td class="text">+ Live-Beschallung</td></tr>
+                  <tr><td>26.09.2025 16:55</td><td class="text">sascha.s</td><td class="text">Artikel angelegt</td><td class="text">Initial</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+(function() {
+  const optionLabels = {
+    angebot: 'Angebot',
+    auftrag: 'Auftrag',
+    packliste: 'Packliste',
+    lieferschein: 'Lieferschein',
+    rechnung: 'Rechnung'
+  };
+
+  // Sub-Nav: Click → scroll to section + active state
+  document.querySelectorAll('.subnav-item[data-target]').forEach(item => {
+    item.addEventListener('click', e => {
+      e.preventDefault();
+      const targetId = item.getAttribute('data-target');
+      const target = document.getElementById(targetId);
+      if (!target) return;
+      document.querySelectorAll('.subnav-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      const va = target.closest('.va-content');
+      if (va) {
+        const offset = target.offsetTop - 12;
+        va.scrollTo({ top: offset, behavior: 'smooth' });
+      } else {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Auto-update active sub-nav on scroll
+  const vaContent = document.querySelector('.va-content');
+  if (vaContent) {
+    vaContent.addEventListener('scroll', () => {
+      const sections = vaContent.querySelectorAll('.section[id]');
+      let current = null;
+      const scrollTop = vaContent.scrollTop + 50;
+      sections.forEach(sec => {
+        if (sec.offsetTop <= scrollTop) current = sec.id;
+      });
+      if (!current) return;
+      document.querySelectorAll('.subnav-item').forEach(i => {
+        i.classList.toggle('active', i.getAttribute('data-target') === current);
+      });
+    });
+  }
+
+  // Logbuch-Filter (Suche + User + Typ)
+  const logSearch = document.getElementById('log-search-input');
+  const logFilterUser = document.getElementById('log-filter-user');
+  const logFilterType = document.getElementById('log-filter-type');
+  const logTable = document.getElementById('log-table');
+  function applyLogFilter() {
+    if (!logTable) return;
+    const q = (logSearch?.value || '').toLowerCase().trim();
+    const u = logFilterUser?.value || '';
+    const t = logFilterType?.value || '';
+    logTable.querySelectorAll('tbody tr').forEach(row => {
+      const text = row.textContent.toLowerCase();
+      const matchesQ = !q || text.includes(q);
+      const matchesU = !u || text.includes(u.toLowerCase());
+      const matchesT = !t || text.includes(t.toLowerCase());
+      row.style.display = (matchesQ && matchesU && matchesT) ? '' : 'none';
+    });
+  }
+  if (logSearch) logSearch.addEventListener('input', applyLogFilter);
+  if (logFilterUser) logFilterUser.addEventListener('change', applyLogFilter);
+  if (logFilterType) logFilterType.addEventListener('change', applyLogFilter);
+
+  // Chart-Datenpunkt Hover → Tabellen-Zeile highlighten
+  document.querySelectorAll('.usage-chart .chart-dots circle[data-job]').forEach(dot => {
+    const job = dot.getAttribute('data-job');
+    const row = document.querySelector('tr[data-job="' + job + '"]');
+    dot.addEventListener('mouseenter', () => {
+      dot.classList.add('active');
+      if (row) row.classList.add('row-highlight');
+    });
+    dot.addEventListener('mouseleave', () => {
+      dot.classList.remove('active');
+      if (row) row.classList.remove('row-highlight');
+    });
+    dot.addEventListener('click', () => {
+      if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  });
+
+  // DGUV-Checkbox → Strom-Felder ein-/ausblenden
+  const electricChk = document.getElementById('chk-electric');
+  function syncElectricVisibility() {
+    if (!electricChk) return;
+    const visible = electricChk.checked;
+    document.querySelectorAll('[data-electric-only]').forEach(el => {
+      el.style.display = visible ? '' : 'none';
+    });
+  }
+  if (electricChk) {
+    electricChk.addEventListener('change', syncElectricVisibility);
+    syncElectricVisibility();
+  }
+
+  // Section-Header click → toggle collapsed
+  document.querySelectorAll('.section-header').forEach(header => {
+    header.addEventListener('click', e => {
+      // ignore clicks on edit button
+      if (e.target.closest('.section-edit')) return;
+      const section = header.closest('.section');
+      const wasCollapsed = section.classList.toggle('collapsed');
+      header.classList.toggle('collapsed', wasCollapsed);
+    });
+  });
+
+  // Multi-Select-Display: open dropdown
+  let activeDropdown = null;
+  function closeDropdown() {
+    if (activeDropdown) { activeDropdown.remove(); activeDropdown = null; }
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.ms-dropdown') && !e.target.closest('.ms-display')) closeDropdown();
+  });
+  document.querySelectorAll('.ms-display').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (activeDropdown && activeDropdown.dataset.owner === btn.dataset.options) {
+        closeDropdown(); return;
+      }
+      closeDropdown();
+      const options = (btn.dataset.options || '').split(',').filter(Boolean);
+      const selected = new Set((btn.dataset.selected || '').split(',').filter(Boolean));
+      const dd = document.createElement('div');
+      dd.className = 'ms-dropdown open';
+      dd.dataset.owner = btn.dataset.options;
+      options.forEach(opt => {
+        const lbl = document.createElement('label');
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = selected.has(opt);
+        cb.addEventListener('change', () => {
+          if (cb.checked) selected.add(opt); else selected.delete(opt);
+          btn.dataset.selected = Array.from(selected).join(',');
+          const labels = Array.from(selected).map(o => optionLabels[o] || o);
+          btn.querySelector('.ms-label').textContent = labels.length ? labels.join(', ') : '— keine —';
+        });
+        lbl.appendChild(cb);
+        lbl.appendChild(document.createTextNode(' ' + (optionLabels[opt] || opt)));
+        dd.appendChild(lbl);
+      });
+      const rect = btn.getBoundingClientRect();
+      dd.style.position = 'fixed';
+      dd.style.top = (rect.bottom + 4) + 'px';
+      dd.style.left = rect.left + 'px';
+      dd.style.minWidth = rect.width + 'px';
+      document.body.appendChild(dd);
+      activeDropdown = dd;
+    });
+  });
+})();
+</script>
+</body>
+</html>
