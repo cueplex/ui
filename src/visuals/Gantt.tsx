@@ -25,6 +25,9 @@ export interface GanttItem {
   dimmed?: boolean;
   /** Multi-line Tooltip (native title). Wenn nicht gesetzt: label + sublabel + Datum. */
   tooltip?: string[];
+  /** Markiert das Item als Langzeit/Dauermiete — separater Lane unten + halbe Hoehe.
+   * Domaenen-Bit (z.B. "Dauermiete"-Flag im Projekt). Nicht ueber Dauer berechnen. */
+  longTerm?: boolean;
 }
 
 export interface GanttProps {
@@ -37,10 +40,7 @@ export interface GanttProps {
   /** Falls items gefiltert sind (z.B. Status), bleibt die Range stabil basierend auf
    * dieser Referenz. Monate/Tage/Heute-Marker springen damit nicht beim Filtern. */
   rangeReference?: { startDate: string | Date; endDate: string | Date }[];
-  /** Items die laenger als dieser Schwellwert (in Tagen) laufen werden als
-   * "Langzeit" behandelt: separate Lane unten + halbe Hoehe. Default 10. 0 = aus. */
-  longTermThresholdDays?: number;
-  /** Wenn true: Langzeit-Items werden komplett ausgeblendet (bleiben aber in rangeReference). */
+  /** Wenn true: Items mit longTerm=true werden komplett ausgeblendet (bleiben aber in rangeReference). */
   hideLongTerm?: boolean;
 }
 
@@ -78,7 +78,6 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
     onItemClick,
     emptyMessage,
     rangeReference,
-    longTermThresholdDays = 10,
     hideLongTerm = false,
   },
   ref,
@@ -148,13 +147,10 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
 
   // Trennung in Short-Term (echte Projekte) und Long-Term (Dauermieten) — die Long-Term-Lane
   // landet unten und nimmt halbe Bar-Hoehe ein, damit sie den Hauptbereich nicht blockiert.
-  // Smart row-stacking pro Bucket: greedy interval-packing.
-  const longTermMs = longTermThresholdDays > 0 ? longTermThresholdDays * DAY_MS : Infinity;
-
+  // longTerm ist ein Item-Flag (Domaene), kein berechnetes Threshold — Konsument setzt es
+  // basierend auf Projekt-Eigenschaft (z.B. Dauermiete-Boolean / Job-Kategorie).
   const { placedItems, shortRowCount, longRowCount, hasLongTerm } = useMemo(() => {
-    const visible = hideLongTerm
-      ? items.filter((it) => parseDate(it.endDate).getTime() - parseDate(it.startDate).getTime() < longTermMs)
-      : items;
+    const visible = hideLongTerm ? items.filter((it) => !it.longTerm) : items;
 
     const sorted = [...visible].sort(
       (a, b) => parseDate(a.startDate).getTime() - parseDate(b.startDate).getTime(),
@@ -167,7 +163,7 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
     for (const it of sorted) {
       const start = parseDate(it.startDate).getTime();
       const end = parseDate(it.endDate).getTime();
-      const isLong = end - start >= longTermMs;
+      const isLong = !!it.longTerm;
       const rowEnds = isLong ? longRowEnds : shortRowEnds;
       let rowIndex = rowEnds.findIndex((e) => e < start);
       if (rowIndex === -1) {
@@ -185,7 +181,7 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
       longRowCount: longRowEnds.length,
       hasLongTerm: longRowEnds.length > 0,
     };
-  }, [items, longTermMs, hideLongTerm]);
+  }, [items, hideLongTerm]);
 
   const longRowHeight = Math.round(rowHeight / 2);
   const shortLanesHeight = Math.max(shortRowCount, 1) * rowHeight;
@@ -360,10 +356,20 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
     );
   }
 
+  // Sticky-Bar-Labels: setzt CSS-Variable --gantt-scroll-left auf den content-Wrapper.
+  // GanttBar nutzt das im transform um label im sichtbaren Bereich zu halten — ohne
+  // React-Re-Renders pro scroll-frame.
+  const contentRef = useRef<HTMLDivElement>(null);
+  const handleScroll = useCallback(() => {
+    const sl = scrollerRef.current?.scrollLeft ?? 0;
+    contentRef.current?.style.setProperty('--gantt-scroll-left', sl + 'px');
+  }, []);
+
   return (
     <div
       ref={scrollerRef}
       className="cxl-hide-scrollbar"
+      onScroll={handleScroll}
       style={{
         // overflow auto (nicht hidden!) damit Browser smooth-scrollTo funktioniert.
         // Scrollbar wird via theme.css .cxl-hide-scrollbar visuell versteckt
@@ -375,7 +381,7 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
         userSelect: 'none',
       }}
     >
-      <div style={{ position: 'relative', minWidth: totalWidth, minHeight: contentHeight }}>
+      <div ref={contentRef} style={{ position: 'relative', minWidth: totalWidth, minHeight: contentHeight, ['--gantt-scroll-left' as never]: '0px' }}>
         {/* Month + day headers (sticky top) */}
         <div style={{
           position: 'sticky',
@@ -478,11 +484,12 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
             ? longLanesTop + rowIndex * longRowHeight
             : headerHeight + rowIndex * rowHeight + barVerticalMargin;
           const height = isLong ? longRowHeight - 2 : rowHeight - barVerticalMargin * 2;
+          const barLeft = startCol * dayWidth;
           return (
             <GanttBar
               key={it.id}
               item={it}
-              left={startCol * dayWidth}
+              left={barLeft}
               top={top}
               width={span * dayWidth - 4}
               height={height}
@@ -520,19 +527,16 @@ interface GanttBarProps {
   onClick?: () => void;
 }
 
-// Deterministischer Farbgenerator aus item.id: cueplex-grün-Hue (~125°), gedämpfte
-// Saturation, Lightness deterministisch variiert — verhindert Einheitsbrei ohne
-// neue Bedeutung einzufuehren (cueplex-grün ist sonst nirgends im UI als Status-/
-// Akzentfarbe in Verwendung). Patrick-Entscheidung 27.04.2026.
+// Deterministischer Farbgenerator aus item.id: voll variabler Hue, sehr niedrige
+// Saturation (8-15%) damit nichts grell wirkt, Lightness 38-55%. Konsument-Override
+// via item.color hat Vorrang. Patrick-Entscheidung 27.04.2026 (zuvor cueplex-grün
+// + 22-32% Saturation war zu knallig).
 function autoColor(id: string): string {
   let h = 0;
   for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
-  // Hue 110-140 (Grün-Spektrum mit leichter Variation um cueplex-grün herum).
-  const hue = 110 + (Math.abs(h) % 31);
-  // Saturation 22-32 (gedämpft, nicht knallig).
-  const saturation = 22 + (Math.abs(h >> 4) % 11);
-  // Lightness 38-58 (lesbar auf dark + light).
-  const lightness = 38 + (Math.abs(h >> 8) % 21);
+  const hue = Math.abs(h) % 360;
+  const saturation = 8 + (Math.abs(h >> 4) % 8); // 8..15
+  const lightness = 38 + (Math.abs(h >> 8) % 18); // 38..55
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
@@ -563,9 +567,9 @@ function GanttBar({ item, left, top, width, height, compact, isSelected, onClick
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          gap: 'var(--gantt-bar-line-gap, 0px)',
+          gap: 0,
           padding: `0 var(--gantt-bar-padding-x)`,
-          lineHeight: 1.1,
+          lineHeight: 1,
           overflow: 'hidden',
           outline: isSelected ? '2px solid var(--text-primary)' : 'none',
           outlineOffset: 1,
@@ -580,7 +584,12 @@ function GanttBar({ item, left, top, width, height, compact, isSelected, onClick
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           minWidth: 0,
+          // Sticky-Label: bei langen Bars die ueber den linken Viewport-Rand gescrolled
+          // sind, schiebt sich der Inhalt nach rechts so dass er sichtbar bleibt.
+          // calc clamped: 0 wenn bar noch nicht über Rand, sonst delta zur Bar-Linkskante.
+          transform: `translateX(max(0px, calc(var(--gantt-scroll-left, 0px) - ${left}px)))`,
         }}>
+
           <span style={{
             fontFamily: 'var(--font-mono)',
             fontSize: 'var(--font-size-sm)',
