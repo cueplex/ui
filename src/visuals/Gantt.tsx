@@ -127,17 +127,21 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
     const start = new Date(rawStart.getFullYear(), rawStart.getMonth(), rawStart.getDate());
     const rawEnd = new Date(maxDate + padding);
     const end = new Date(rawEnd.getFullYear(), rawEnd.getMonth(), rawEnd.getDate());
-    const days = Math.ceil((end.getTime() - start.getTime()) / DAY_MS);
+    // Total-Days via Local-Day-Diff (DST-safe). Math.round wegen DST-Wechseln im Range.
+    const days = Math.round((dayOnlyMs(end) - dayOnlyMs(start)) / DAY_MS) + 1;
 
     const headers: { label: string; startCol: number; span: number }[] = [];
     let current = new Date(start);
+    const startMs = dayOnlyMs(start);
     while (current < end) {
       const monthStart = new Date(current.getFullYear(), current.getMonth(), 1);
       const monthEnd = new Date(current.getFullYear(), current.getMonth() + 1, 0);
       const visibleStart = monthStart < start ? start : monthStart;
       const visibleEnd = monthEnd > end ? end : monthEnd;
-      const startCol = Math.floor((visibleStart.getTime() - start.getTime()) / DAY_MS);
-      const span = Math.ceil((visibleEnd.getTime() - visibleStart.getTime()) / DAY_MS) + 1;
+      // Local-Day-Diff (DST-safe via Math.round + dayOnlyMs).
+      const startCol = Math.round((dayOnlyMs(visibleStart) - startMs) / DAY_MS);
+      const endCol = Math.round((dayOnlyMs(visibleEnd) - startMs) / DAY_MS);
+      const span = endCol - startCol + 1;
       headers.push({
         label: `${MONTH_NAMES[current.getMonth()]} ${current.getFullYear()}`,
         startCol,
@@ -422,7 +426,8 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
           </div>
           <div style={{ display: 'flex', height: dayRowHeight }}>
             {Array.from({ length: totalDays }, (_, i) => {
-              const d = new Date(rangeStart.getTime() + i * DAY_MS);
+              // Local-Day-Arithmetik (kein +i*DAY_MS — DST-Wechsel verschiebt sonst Tage).
+              const d = new Date(rangeStart.getFullYear(), rangeStart.getMonth(), rangeStart.getDate() + i);
               const isWeekend = d.getDay() === 0 || d.getDay() === 6;
               const isMonday = d.getDay() === 1;
               return (
