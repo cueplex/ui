@@ -283,6 +283,19 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
 
   useImperativeHandle(ref, () => ({ scrollToToday }), [scrollToToday]);
 
+  // Initial scroll-to-today: einmal nach Layout fertig + items geladen, ohne Smooth-Anim (sofort).
+  const didInitialScroll = useRef(false);
+  useEffect(() => {
+    if (didInitialScroll.current) return;
+    if (items.length === 0) return;
+    const el = scrollerRef.current;
+    if (!el || el.clientWidth === 0) return;
+    const todayPx = todayCol * dayWidth + dayWidth / 2;
+    const target = Math.max(0, todayPx - el.clientWidth / 4);
+    el.scrollLeft = target; // ohne smooth — beim Open soll's einfach da sein
+    didInitialScroll.current = true;
+  }, [items.length, todayCol, dayWidth]);
+
   if (items.length === 0 && emptyMessage) {
     return (
       <div style={{
