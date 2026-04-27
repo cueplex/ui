@@ -37,6 +37,11 @@ export interface GanttProps {
   /** Falls items gefiltert sind (z.B. Status), bleibt die Range stabil basierend auf
    * dieser Referenz. Monate/Tage/Heute-Marker springen damit nicht beim Filtern. */
   rangeReference?: { startDate: string | Date; endDate: string | Date }[];
+  /** Items die laenger als dieser Schwellwert (in Tagen) laufen werden als
+   * "Langzeit" behandelt: separate Lane unten + halbe Hoehe. Default 10. 0 = aus. */
+  longTermThresholdDays?: number;
+  /** Wenn true: Langzeit-Items werden komplett ausgeblendet (bleiben aber in rangeReference). */
+  hideLongTerm?: boolean;
 }
 
 /** Imperatives API ueber ref. Konsumenten triggern z.B. einen "Heute"-Button-Scroll. */
@@ -67,7 +72,15 @@ function getCssNumber(varName: string, fallback: number): number {
 }
 
 export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
-  { items, selectedId, onItemClick, emptyMessage, rangeReference },
+  {
+    items,
+    selectedId,
+    onItemClick,
+    emptyMessage,
+    rangeReference,
+    longTermThresholdDays = 10,
+    hideLongTerm = false,
+  },
   ref,
 ) {
   // Tokens aus CSS lesen — damit Layout zentral konfigurierbar bleibt.
@@ -76,7 +89,7 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
   const monthRowHeight = getCssNumber('--gantt-month-row-height', 24);
   const dayRowHeight = getCssNumber('--gantt-day-row-height', 22);
   const headerHeight = monthRowHeight + dayRowHeight;
-  const barVerticalMargin = getCssNumber('--gantt-bar-vertical-margin', 4);
+  const barVerticalMargin = getCssNumber('--gantt-bar-vertical-margin', 2);
 
   // Range-Quelle: rangeReference (falls gegeben) sonst items. So bleiben Monate/Tage/Heute
   // stabil wenn der Konsument items via Status filtert.
@@ -133,18 +146,29 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
     return Math.floor((now.getTime() - rangeStart.getTime()) / DAY_MS);
   }, [rangeStart]);
 
-  // Smart row-stacking: greedy interval-packing. Items die zeitlich nicht ueberlappen
-  // teilen sich eine Zeile. Compact wie Linear/Asana Timeline statt klassischem Gantt
-  // (eine Zeile pro Item). Spart vertikalen Platz.
-  const { placedItems, rowCount } = useMemo(() => {
-    const sorted = [...items].sort(
+  // Trennung in Short-Term (echte Projekte) und Long-Term (Dauermieten) — die Long-Term-Lane
+  // landet unten und nimmt halbe Bar-Hoehe ein, damit sie den Hauptbereich nicht blockiert.
+  // Smart row-stacking pro Bucket: greedy interval-packing.
+  const longTermMs = longTermThresholdDays > 0 ? longTermThresholdDays * DAY_MS : Infinity;
+
+  const { placedItems, shortRowCount, longRowCount, hasLongTerm } = useMemo(() => {
+    const visible = hideLongTerm
+      ? items.filter((it) => parseDate(it.endDate).getTime() - parseDate(it.startDate).getTime() < longTermMs)
+      : items;
+
+    const sorted = [...visible].sort(
       (a, b) => parseDate(a.startDate).getTime() - parseDate(b.startDate).getTime(),
     );
-    const rowEnds: number[] = []; // letzte endTime pro Zeile
-    const placements: Array<{ item: GanttItem; rowIndex: number }> = [];
+
+    const shortRowEnds: number[] = [];
+    const longRowEnds: number[] = [];
+    const placements: Array<{ item: GanttItem; rowIndex: number; lane: 'short' | 'long' }> = [];
+
     for (const it of sorted) {
       const start = parseDate(it.startDate).getTime();
       const end = parseDate(it.endDate).getTime();
+      const isLong = end - start >= longTermMs;
+      const rowEnds = isLong ? longRowEnds : shortRowEnds;
       let rowIndex = rowEnds.findIndex((e) => e < start);
       if (rowIndex === -1) {
         rowIndex = rowEnds.length;
@@ -152,13 +176,23 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
       } else {
         rowEnds[rowIndex] = end;
       }
-      placements.push({ item: it, rowIndex });
+      placements.push({ item: it, rowIndex, lane: isLong ? 'long' : 'short' });
     }
-    return { placedItems: placements, rowCount: rowEnds.length };
-  }, [items]);
 
+    return {
+      placedItems: placements,
+      shortRowCount: shortRowEnds.length,
+      longRowCount: longRowEnds.length,
+      hasLongTerm: longRowEnds.length > 0,
+    };
+  }, [items, longTermMs, hideLongTerm]);
+
+  const longRowHeight = Math.round(rowHeight / 2);
+  const shortLanesHeight = Math.max(shortRowCount, 1) * rowHeight;
+  const longLanesTop = headerHeight + shortLanesHeight + (hasLongTerm ? 8 : 0); // 8px Trenner
+  const longLanesHeight = longRowCount * longRowHeight;
   const totalWidth = totalDays * dayWidth;
-  const contentHeight = headerHeight + Math.max(rowCount, 1) * rowHeight + 20;
+  const contentHeight = longLanesTop + longLanesHeight + 20;
 
   // Drag-to-pan mit Momentum (iOS-style): track recent positions im Drag, beim
   // mouseup berechne avg velocity ueber letzte ~80ms, dann decay-loop mit Reibung.
@@ -283,18 +317,33 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
 
   useImperativeHandle(ref, () => ({ scrollToToday }), [scrollToToday]);
 
-  // Initial scroll-to-today: einmal nach Layout fertig + items geladen, ohne Smooth-Anim (sofort).
-  const didInitialScroll = useRef(false);
+  // Initial scroll-to-today: robust gegen Mount-vor-Layout. Wir versuchen es bis clientWidth>0,
+  // dann genau einmal pro rangeStart (range stabil → Scroll bleibt). ResizeObserver triggert
+  // beim ersten echten Layout — Component-Remount via Sidebar-Nav startet ResizeObserver neu.
+  const didInitialScrollFor = useRef<number | null>(null);
   useEffect(() => {
-    if (didInitialScroll.current) return;
-    if (items.length === 0) return;
     const el = scrollerRef.current;
-    if (!el || el.clientWidth === 0) return;
-    const todayPx = todayCol * dayWidth + dayWidth / 2;
-    const target = Math.max(0, todayPx - el.clientWidth / 4);
-    el.scrollLeft = target; // ohne smooth — beim Open soll's einfach da sein
-    didInitialScroll.current = true;
-  }, [items.length, todayCol, dayWidth]);
+    if (!el) return;
+    const rangeKey = rangeStart.getTime();
+
+    const tryScroll = () => {
+      if (didInitialScrollFor.current === rangeKey) return true;
+      if (items.length === 0) return false;
+      if (el.clientWidth === 0) return false;
+      const todayPx = todayCol * dayWidth + dayWidth / 2;
+      const target = Math.max(0, todayPx - el.clientWidth / 4);
+      el.scrollLeft = target;
+      didInitialScrollFor.current = rangeKey;
+      return true;
+    };
+
+    if (tryScroll()) return;
+
+    // Fallback: ResizeObserver bis clientWidth verfuegbar
+    const ro = new ResizeObserver(() => { tryScroll(); });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [items.length, todayCol, dayWidth, rangeStart]);
 
   if (items.length === 0 && emptyMessage) {
     return (
@@ -394,7 +443,7 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
                 left: i * dayWidth,
                 top: headerHeight,
                 width: 1,
-                height: rowCount * rowHeight,
+                height: shortRowCount * rowHeight,
                 background: 'var(--border-light)',
                 opacity: 0.5,
               }}
@@ -410,7 +459,7 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
               left: todayCol * dayWidth + dayWidth / 2,
               top: headerHeight - 4,
               width: 2,
-              height: rowCount * rowHeight + 8,
+              height: shortRowCount * rowHeight + 8,
               background: 'var(--status-abgelehnt)',
               opacity: 0.7,
               zIndex: 5,
@@ -419,24 +468,42 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
         )}
 
         {/* Item bars (compact stacking — items teilen rows wenn nicht ueberlappend) */}
-        {placedItems.map(({ item: it, rowIndex }) => {
+        {placedItems.map(({ item: it, rowIndex, lane }) => {
           const startCol = Math.floor((parseDate(it.startDate).getTime() - rangeStart.getTime()) / DAY_MS);
           const endCol = Math.ceil((parseDate(it.endDate).getTime() - rangeStart.getTime()) / DAY_MS);
           const span = Math.max(endCol - startCol + 1, 1);
           const isSelected = selectedId != null && it.id === selectedId;
+          const isLong = lane === 'long';
+          const top = isLong
+            ? longLanesTop + rowIndex * longRowHeight
+            : headerHeight + rowIndex * rowHeight + barVerticalMargin;
+          const height = isLong ? longRowHeight - 2 : rowHeight - barVerticalMargin * 2;
           return (
             <GanttBar
               key={it.id}
               item={it}
               left={startCol * dayWidth}
-              top={headerHeight + rowIndex * rowHeight + barVerticalMargin}
+              top={top}
               width={span * dayWidth - 4}
-              height={rowHeight - barVerticalMargin * 2}
+              height={height}
+              compact={isLong}
               isSelected={isSelected}
               onClick={onItemClick ? () => onItemClick(it) : undefined}
             />
           );
         })}
+        {/* Trenner zwischen Short- und Long-Term-Lane */}
+        {hasLongTerm && (
+          <div style={{
+            position: 'absolute',
+            left: 0,
+            top: longLanesTop - 4,
+            width: totalWidth,
+            height: 1,
+            background: 'var(--border-default)',
+            opacity: 0.5,
+          }} />
+        )}
       </div>
     </div>
   );
@@ -448,18 +515,35 @@ interface GanttBarProps {
   top: number;
   width: number;
   height: number;
+  compact?: boolean;
   isSelected: boolean;
   onClick?: () => void;
 }
 
-function GanttBar({ item, left, top, width, height, isSelected, onClick }: GanttBarProps) {
+// Deterministischer Farbgenerator aus item.id: cueplex-grün-Hue (~125°), gedämpfte
+// Saturation, Lightness deterministisch variiert — verhindert Einheitsbrei ohne
+// neue Bedeutung einzufuehren (cueplex-grün ist sonst nirgends im UI als Status-/
+// Akzentfarbe in Verwendung). Patrick-Entscheidung 27.04.2026.
+function autoColor(id: string): string {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
+  // Hue 110-140 (Grün-Spektrum mit leichter Variation um cueplex-grün herum).
+  const hue = 110 + (Math.abs(h) % 31);
+  // Saturation 22-32 (gedämpft, nicht knallig).
+  const saturation = 22 + (Math.abs(h >> 4) % 11);
+  // Lightness 38-58 (lesbar auf dark + light).
+  const lightness = 38 + (Math.abs(h >> 8) % 21);
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+
+function GanttBar({ item, left, top, width, height, compact, isSelected, onClick }: GanttBarProps) {
   // Default-Tooltip-Lines wenn item.tooltip nicht gesetzt
   const tooltipLines = item.tooltip ?? [
     item.sublabel ? `${item.label} — ${item.sublabel}` : item.label,
     `${formatDate(parseDate(item.startDate))} – ${formatDate(parseDate(item.endDate))}`,
   ];
   const { triggerProps, portal } = useTooltip<HTMLDivElement>({ text: tooltipLines });
-  const color = item.color || 'var(--accent-primary)';
+  const color = item.color || autoColor(item.id);
 
   return (
     <>
@@ -479,8 +563,9 @@ function GanttBar({ item, left, top, width, height, isSelected, onClick }: Gantt
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          gap: 1,
+          gap: 'var(--gantt-bar-line-gap, 0px)',
           padding: `0 var(--gantt-bar-padding-x)`,
+          lineHeight: 1.1,
           overflow: 'hidden',
           outline: isSelected ? '2px solid var(--text-primary)' : 'none',
           outlineOffset: 1,
@@ -520,7 +605,7 @@ function GanttBar({ item, left, top, width, height, isSelected, onClick }: Gantt
             </span>
           )}
         </div>
-        {(item.metaLeft || item.metaRight) && (
+        {!compact && (item.metaLeft || item.metaRight) && (
           <div style={{
             display: 'flex',
             alignItems: 'baseline',
