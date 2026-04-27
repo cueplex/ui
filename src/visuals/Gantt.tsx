@@ -60,6 +60,12 @@ function parseDate(s: string | Date): Date {
   return isNaN(d.getTime()) ? new Date() : d;
 }
 
+/** Strippt die Uhrzeit aus einem Date — gibt Local-Mitternacht ms zurueck.
+ * Verhindert UTC↔Local-Drift bei Tag-genauer Gantt-Berechnung. */
+function dayOnlyMs(d: Date): number {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+}
+
 function formatDate(d: Date): string {
   return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
 }
@@ -146,7 +152,7 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
   const todayCol = useMemo(() => {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
-    return Math.floor((now.getTime() - rangeStart.getTime()) / DAY_MS);
+    return Math.round((now.getTime() - dayOnlyMs(rangeStart)) / DAY_MS);
   }, [rangeStart]);
 
   // Trennung in Short-Term (echte Projekte) und Long-Term (Dauermieten) — die Long-Term-Lane
@@ -479,11 +485,11 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
 
         {/* Item bars (compact stacking — items teilen rows wenn nicht ueberlappend) */}
         {placedItems.map(({ item: it, rowIndex, lane }) => {
-          // Tage-genaue Spalten-Berechnung. Wir floor() BEIDE Endpunkte: bei
-          // timestamptz mit Uhrzeit (z.B. 09:00 - 18:00 am gleichen Tag) wuerde ceil(end)
-          // sonst auf den naechsten Tag springen → Bar 2 Tage breit. +1 fuer inclusive.
-          const startCol = Math.floor((parseDate(it.startDate).getTime() - rangeStart.getTime()) / DAY_MS);
-          const endCol = Math.floor((parseDate(it.endDate).getTime() - rangeStart.getTime()) / DAY_MS);
+          // Tag-genau berechnen: Uhrzeit aus item AND rangeStart strippen, dann clean
+          // integer-Tage diffen. Round wegen DST-Tagen (23h/25h). Ohne dayOnlyMs
+          // gibts UTC↔Local-Drift bei timestamptz-Quelldaten (Bug v0.16.2).
+          const startCol = Math.round((dayOnlyMs(parseDate(it.startDate)) - dayOnlyMs(rangeStart)) / DAY_MS);
+          const endCol = Math.round((dayOnlyMs(parseDate(it.endDate)) - dayOnlyMs(rangeStart)) / DAY_MS);
           const span = Math.max(endCol - startCol + 1, 1);
           const isSelected = selectedId != null && it.id === selectedId;
           const isLong = lane === 'long';
