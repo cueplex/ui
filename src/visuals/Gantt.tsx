@@ -115,8 +115,12 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
     }
 
     const padding = 14 * DAY_MS;
-    const start = new Date(minDate - padding);
-    const end = new Date(maxDate + padding);
+    // rangeStart auf Mitternacht-Lokalzeit normalisieren — sonst floor((it - rangeStart)/DAY_MS)
+    // springt bei timestamptz mit Uhrzeiten ab UTC-Mitternacht in den nächsten Tag.
+    const rawStart = new Date(minDate - padding);
+    const start = new Date(rawStart.getFullYear(), rawStart.getMonth(), rawStart.getDate());
+    const rawEnd = new Date(maxDate + padding);
+    const end = new Date(rawEnd.getFullYear(), rawEnd.getMonth(), rawEnd.getDate());
     const days = Math.ceil((end.getTime() - start.getTime()) / DAY_MS);
 
     const headers: { label: string; startCol: number; span: number }[] = [];
@@ -475,8 +479,11 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
 
         {/* Item bars (compact stacking — items teilen rows wenn nicht ueberlappend) */}
         {placedItems.map(({ item: it, rowIndex, lane }) => {
+          // Tage-genaue Spalten-Berechnung. Wir floor() BEIDE Endpunkte: bei
+          // timestamptz mit Uhrzeit (z.B. 09:00 - 18:00 am gleichen Tag) wuerde ceil(end)
+          // sonst auf den naechsten Tag springen → Bar 2 Tage breit. +1 fuer inclusive.
           const startCol = Math.floor((parseDate(it.startDate).getTime() - rangeStart.getTime()) / DAY_MS);
-          const endCol = Math.ceil((parseDate(it.endDate).getTime() - rangeStart.getTime()) / DAY_MS);
+          const endCol = Math.floor((parseDate(it.endDate).getTime() - rangeStart.getTime()) / DAY_MS);
           const span = Math.max(endCol - startCol + 1, 1);
           const isSelected = selectedId != null && it.id === selectedId;
           const isLong = lane === 'long';
