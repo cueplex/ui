@@ -89,6 +89,7 @@ export { Section, type SectionProps } from './forms/Section';
 export { FormGrid, FormFieldSpan, type FormGridProps, type FormFieldSpanProps } from './forms/FormGrid';
 export { SubGroupLabel, type SubGroupLabelProps } from './forms/SubGroupLabel';
 export { MultiSelect, type MultiSelectProps, type MultiSelectOption } from './forms/MultiSelect';
+export { Select as DropdownSelect, type SelectProps as DropdownSelectProps, type SelectOption as DropdownSelectOption } from './forms/Select';
 
 // Data
 export {
