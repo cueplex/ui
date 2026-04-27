@@ -35,6 +35,29 @@ export { Gantt, type GanttItem, type GanttProps, type GanttHandle } from './visu
 
 // Feedback
 export { Tooltip, useTooltip, type TooltipProps, type UseTooltipOptions } from './feedback/Tooltip';
+export {
+  Inspector,
+  InspectorSection,
+  InspectorRow,
+  type InspectorProps,
+  type InspectorTab,
+  type InspectorSectionProps,
+  type InspectorRowProps,
+} from './feedback/Inspector';
+
+// Status (Single Source of Truth fuer cueplex Status-Vokabular)
+export {
+  STATUS_KEYS,
+  STATUS_LABELS,
+  STATUS_COLORS,
+  STATUS_BG,
+  DIMMED_STATUSES,
+  isDimmedStatus,
+  StatusPill,
+  statusToPillIntent,
+  type StatusKey,
+  type StatusPillProps,
+} from './status/Status';
 
 // Forms
 export { SearchBar, type SearchBarProps, type SearchResult } from './forms/SearchBar';
@@ -57,6 +80,7 @@ export {
 export { Section, type SectionProps } from './forms/Section';
 export { FormGrid, FormFieldSpan, type FormGridProps, type FormFieldSpanProps } from './forms/FormGrid';
 export { SubGroupLabel, type SubGroupLabelProps } from './forms/SubGroupLabel';
+export { MultiSelect, type MultiSelectProps, type MultiSelectOption } from './forms/MultiSelect';
 
 // Data
 export {
