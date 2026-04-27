@@ -44,6 +44,14 @@ export {
   type InspectorSectionProps,
   type InspectorRowProps,
 } from './feedback/Inspector';
+export {
+  Popover,
+  FilterSection,
+  FilterRow,
+  type PopoverProps,
+  type FilterSectionProps,
+  type FilterRowProps,
+} from './feedback/Popover';
 
 // Status (Single Source of Truth fuer cueplex Status-Vokabular)
 export {
