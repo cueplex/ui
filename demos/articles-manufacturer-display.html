@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<title>cueplex ops · Artikel-Liste · Manufacturer-Display-Vergleich</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px;
+  --radius-sm: 8px; --radius-md: 10px; --radius-full: 9999px;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-size-xs: 10px; --font-size-sm: 11px; --font-size-body: 13px; --font-size-md: 14px; --font-size-lg: 16px;
+}
+[data-theme="light"] {
+  --bg-primary: #FAF8F5; --bg-secondary: #F3F0EB; --bg-tertiary: #EBE7E0;
+  --bg-card: #FFFFFF; --bg-card-hover: #FBF9F6;
+  --text-primary: #1D1B16; --text-secondary: #6B6558; --text-tertiary: #9B9488;
+  --border-light: #E8E4DD; --border-default: #D9D4CB;
+  --accent-primary: #5B7A5E;
+  --status-aktiv: #5B8A5E; --status-aktiv-bg: #EFF6EF;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-tertiary); color: var(--text-primary);
+  font-size: var(--font-size-body); -webkit-font-smoothing: antialiased;
+}
+
+.intro {
+  padding: 16px 24px; background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-default);
+}
+.intro h1 { margin: 0 0 4px; font-size: var(--font-size-lg); font-weight: 700; }
+.intro p { margin: 0; font-size: var(--font-size-sm); color: var(--text-secondary); }
+
+.appshell {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  padding: 16px;
+}
+@media (min-width: 1700px) { .appshell { grid-template-columns: 1fr 1fr 1fr 1fr; } }
+
+.variant-card {
+  background: var(--bg-primary); border: 1px solid var(--border-light);
+  border-radius: var(--radius-md); overflow: hidden;
+  display: flex; flex-direction: column; min-height: 700px;
+}
+.variant-head {
+  padding: 14px 18px; border-bottom: 1px solid var(--border-light);
+  background: var(--bg-secondary);
+}
+.variant-head .label {
+  font-family: var(--font-mono); font-size: 10px;
+  background: var(--accent-primary); color: #fff;
+  padding: 2px 8px; border-radius: var(--radius-full);
+  font-weight: 600; display: inline-block; margin-bottom: 6px;
+}
+.variant-head h2 { font-size: var(--font-size-md); font-weight: 600; margin: 0 0 4px; }
+.variant-head .desc { font-size: var(--font-size-xs); color: var(--text-secondary); }
+
+/* ===== Tabellen-Skelett ===== */
+.article-table { width: 100%; border-collapse: collapse; }
+.article-table th {
+  text-align: left; padding: 10px 14px; font-size: var(--font-size-xs);
+  text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
+  color: var(--text-secondary); border-bottom: 1px solid var(--border-light);
+  background: var(--bg-card);
+}
+.article-table td {
+  padding: 12px 14px; border-bottom: 1px solid var(--border-light);
+  font-size: var(--font-size-sm); vertical-align: middle;
+}
+.article-table tr:hover td { background: var(--bg-card-hover); }
+.num { font-family: var(--font-mono); font-size: 10px; color: var(--text-tertiary); }
+.cat { font-size: var(--font-size-xs); color: var(--text-tertiary); }
+.qty { font-family: var(--font-mono); font-size: var(--font-size-xs); color: var(--text-secondary); text-align: right; }
+.status-pill {
+  font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full);
+  background: var(--status-aktiv-bg); color: var(--status-aktiv);
+}
+
+/* ========== VARIANTE B: Bold Manufacturer Inline ========== */
+.vb .mfr-name { font-size: 13px; line-height: 1.4; }
+.vb .mfr-name .mfr { font-weight: 600; color: var(--text-primary); }
+.vb .mfr-name .name { font-weight: 400; color: var(--text-secondary); }
+
+/* ========== VARIANTE C: Pill/Tag Manufacturer ========== */
+.vc .row { display: flex; align-items: center; gap: 10px; }
+.vc .mfr-pill {
+  font-size: 11px; font-weight: 500;
+  background: var(--bg-tertiary); color: var(--text-secondary);
+  padding: 3px 8px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  flex-shrink: 0;
+}
+.vc .name { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+
+/* ========== VARIANTE E: Light inline (kein italic) ========== */
+.ve .mfr-name { font-size: 13px; line-height: 1.4; }
+.ve .mfr-name .mfr {
+  font-weight: 300;          /* Inter Light */
+  color: var(--text-tertiary);
+  margin-right: 4px;
+}
+.ve .mfr-name .name { font-weight: 500; color: var(--text-primary); }
+
+/* ========== VARIANTE F: Untereinander / Stacked Card-Liste ========== */
+.vf .stacked-list { padding: 8px; }
+.vf .item {
+  background: var(--bg-card); border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 6px;
+}
+.vf .item:hover { background: var(--bg-card-hover); }
+.vf .item .head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+  margin-bottom: 6px;
+}
+.vf .item .mfr {
+  font-size: 11px; font-weight: 300; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.vf .item .num {
+  font-family: var(--font-mono); font-size: 10px; color: var(--text-tertiary);
+}
+.vf .item .name {
+  font-size: 14px; font-weight: 500; color: var(--text-primary);
+  line-height: 1.3; margin-bottom: 6px;
+}
+.vf .item .meta {
+  display: flex; gap: 12px; align-items: center;
+  font-size: var(--font-size-xs); color: var(--text-secondary);
+}
+.vf .item .meta .qty { font-family: var(--font-mono); }
+.vf .item .meta .dot { color: var(--text-tertiary); }
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>cueplex ops · Artikel-Liste · Manufacturer-Display-Vergleich (B + C + E + F)</h1>
+  <p>4 Varianten zur Anzeige des Herstellers. Daten-Beispiele aus der Live-DB nach Prefix-Migration vom 27.04.2026 — Hersteller ist eigenes Feld, articles.name nur noch Modell.</p>
+</div>
+
+<div class="appshell">
+
+  <!-- ======================== VARIANTE E (NEU): Light inline ======================== -->
+  <div class="variant-card ve">
+    <div class="variant-head">
+      <span class="label">E · Light inline</span>
+      <h2>Hersteller dünn vor Modell</h2>
+      <div class="desc">Inter Weight 300, kein italic, Tertiary-Farbe. Inline-Lesefluss, Brand „flüstert".</div>
+    </div>
+    <table class="article-table">
+      <thead>
+        <tr><th style="width:60px;">Nr</th><th>Artikel</th><th>Kategorie</th><th style="text-align:right;">Bestand</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="num">1003221.00</td><td class="mfr-name"><span class="mfr">Adam Hall</span><span class="name">Defender 3 Kabelbrücke 3 Kanäle</span></td><td class="cat">Logistik</td><td class="qty">10 / 10</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1001140.00</td><td class="mfr-name"><span class="name">Adapter 3,5mm Klinke auf 2 x XLR male</span></td><td class="cat">Audio</td><td class="qty">5 / 5</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1003576.00</td><td class="mfr-name"><span class="mfr">Acme</span><span class="name">CS vMix Remote</span></td><td class="cat">Video</td><td class="qty">1 / 1</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1270.00</td><td class="mfr-name"><span class="mfr">AlphaTheta</span><span class="name">CDJ-3000X</span></td><td class="cat">DJ</td><td class="qty">2 / 2</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1100240.00</td><td class="mfr-name"><span class="mfr">Sennheiser</span><span class="name">EW IEM G4 Twin</span></td><td class="cat">Audio</td><td class="qty">8 / 8</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1023480.00</td><td class="mfr-name"><span class="mfr">Cameo</span><span class="name">PIXBAR 600 IP</span></td><td class="cat">Licht</td><td class="qty">12 / 12</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1180990.00</td><td class="mfr-name"><span class="mfr">Blackmagic Design</span><span class="name">ATEM 2 M/E Constellation HD</span></td><td class="cat">Video</td><td class="qty">1 / 1</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1102211.00</td><td class="mfr-name"><span class="mfr">AKG</span><span class="name">D112 MKII</span></td><td class="cat">Audio</td><td class="qty">4 / 4</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1004500.00</td><td class="mfr-name"><span class="mfr">Gravity</span><span class="name">SP 5211ACB Lautsprecherstativ</span></td><td class="cat">Stative</td><td class="qty">6 / 6</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1006700.00</td><td class="mfr-name"><span class="mfr">Apple</span><span class="name">iPad 11 Zoll Wi-Fi</span></td><td class="cat">IT</td><td class="qty">3 / 3</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1112233.00</td><td class="mfr-name"><span class="mfr">Electro-Voice</span><span class="name">RE20 Mikrofon</span></td><td class="cat">Audio</td><td class="qty">5 / 5</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1009912.00</td><td class="mfr-name"><span class="mfr">Xirium</span><span class="name">Pro Sender (TX)</span></td><td class="cat">Audio</td><td class="qty">4 / 4</td><td><span class="status-pill">Aktiv</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ======================== VARIANTE F (NEU): Untereinander / Stacked Cards ======================== -->
+  <div class="variant-card vf">
+    <div class="variant-head">
+      <span class="label">F · Stacked / Cards</span>
+      <h2>Felder untereinander statt Tabellen-Spalten</h2>
+      <div class="desc">Pro Artikel eigene Karte mit Manufacturer (klein, oben) + Name (groß) + Meta-Zeile darunter. Mobile-friendly.</div>
+    </div>
+    <div class="stacked-list">
+      <div class="item">
+        <div class="head"><span class="mfr">Adam Hall</span><span class="num">1003221.00</span></div>
+        <div class="name">Defender 3 Kabelbrücke 3 Kanäle</div>
+        <div class="meta"><span>Logistik</span><span class="dot">·</span><span class="qty">10 / 10</span><span class="dot">·</span><span class="status-pill">Aktiv</span></div>
+      </div>
+      <div class="item">
+        <div class="head"><span class="mfr">— ohne Hersteller —</span><span class="num">1001140.00</span></div>
+        <div class="name">Adapter 3,5mm Klinke auf 2 x XLR male</div>
+        <div class="meta"><span>Audio</span><span class="dot">·</span><span class="qty">5 / 5</span><span class="dot">·</span><span class="status-pill">Aktiv</span></div>
+      </div>
+      <div class="item">
+        <div class="head"><span class="mfr">Acme</span><span class="num">1003576.00</span></div>
+        <div class="name">CS vMix Remote</div>
+        <div class="meta"><span>Video</span><span class="dot">·</span><span class="qty">1 / 1</span><span class="dot">·</span><span class="status-pill">Aktiv</span></div>
+      </div>
+      <div class="item">
+        <div class="head"><span class="mfr">AlphaTheta</span><span class="num">1270.00</span></div>
+        <div class="name">CDJ-3000X</div>
+        <div class="meta"><span>DJ</span><span class="dot">·</span><span class="qty">2 / 2</span><span class="dot">·</span><span class="status-pill">Aktiv</span></div>
+      </div>
+      <div class="item">
+        <div class="head"><span class="mfr">Sennheiser</span><span class="num">1100240.00</span></div>
+        <div class="name">EW IEM G4 Twin</div>
+        <div class="meta"><span>Audio</span><span class="dot">·</span><span class="qty">8 / 8</span><span class="dot">·</span><span class="status-pill">Aktiv</span></div>
+      </div>
+      <div class="item">
+        <div class="head"><span class="mfr">Cameo</span><span class="num">1023480.00</span></div>
+        <div class="name">PIXBAR 600 IP</div>
+        <div class="meta"><span>Licht</span><span class="dot">·</span><span class="qty">12 / 12</span><span class="dot">·</span><span class="status-pill">Aktiv</span></div>
+      </div>
+      <div class="item">
+        <div class="head"><span class="mfr">Blackmagic Design</span><span class="num">1180990.00</span></div>
+        <div class="name">ATEM 2 M/E Constellation HD</div>
+        <div class="meta"><span>Video</span><span class="dot">·</span><span class="qty">1 / 1</span><span class="dot">·</span><span class="status-pill">Aktiv</span></div>
+      </div>
+      <div class="item">
+        <div class="head"><span class="mfr">AKG</span><span class="num">1102211.00</span></div>
+        <div class="name">D112 MKII</div>
+        <div class="meta"><span>Audio</span><span class="dot">·</span><span class="qty">4 / 4</span><span class="dot">·</span><span class="status-pill">Aktiv</span></div>
+      </div>
+      <div class="item">
+        <div class="head"><span class="mfr">Electro-Voice</span><span class="num">1112233.00</span></div>
+        <div class="name">RE20 Mikrofon</div>
+        <div class="meta"><span>Audio</span><span class="dot">·</span><span class="qty">5 / 5</span><span class="dot">·</span><span class="status-pill">Aktiv</span></div>
+      </div>
+      <div class="item">
+        <div class="head"><span class="mfr">Xirium</span><span class="num">1009912.00</span></div>
+        <div class="name">Pro Sender (TX)</div>
+        <div class="meta"><span>Audio</span><span class="dot">·</span><span class="qty">4 / 4</span><span class="dot">·</span><span class="status-pill">Aktiv</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== VARIANTE B: Bold inline ======================== -->
+  <div class="variant-card vb">
+    <div class="variant-head">
+      <span class="label">B · Bold inline</span>
+      <h2>Hersteller fett vor Modell</h2>
+      <div class="desc">Brand sticht raus. Liest sich wie „Verein Spieler".</div>
+    </div>
+    <table class="article-table">
+      <thead>
+        <tr><th style="width:60px;">Nr</th><th>Artikel</th><th>Kategorie</th><th style="text-align:right;">Bestand</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="num">1003221.00</td><td class="mfr-name"><span class="mfr">Adam Hall</span> <span class="name">Defender 3 Kabelbrücke 3 Kanäle</span></td><td class="cat">Logistik</td><td class="qty">10 / 10</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1001140.00</td><td class="mfr-name"><span class="name">Adapter 3,5mm Klinke auf 2 x XLR male</span></td><td class="cat">Audio</td><td class="qty">5 / 5</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1003576.00</td><td class="mfr-name"><span class="mfr">Acme</span> <span class="name">CS vMix Remote</span></td><td class="cat">Video</td><td class="qty">1 / 1</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1270.00</td><td class="mfr-name"><span class="mfr">AlphaTheta</span> <span class="name">CDJ-3000X</span></td><td class="cat">DJ</td><td class="qty">2 / 2</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1100240.00</td><td class="mfr-name"><span class="mfr">Sennheiser</span> <span class="name">EW IEM G4 Twin</span></td><td class="cat">Audio</td><td class="qty">8 / 8</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1023480.00</td><td class="mfr-name"><span class="mfr">Cameo</span> <span class="name">PIXBAR 600 IP</span></td><td class="cat">Licht</td><td class="qty">12 / 12</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1180990.00</td><td class="mfr-name"><span class="mfr">Blackmagic Design</span> <span class="name">ATEM 2 M/E Constellation HD</span></td><td class="cat">Video</td><td class="qty">1 / 1</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1102211.00</td><td class="mfr-name"><span class="mfr">AKG</span> <span class="name">D112 MKII</span></td><td class="cat">Audio</td><td class="qty">4 / 4</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1004500.00</td><td class="mfr-name"><span class="mfr">Gravity</span> <span class="name">SP 5211ACB Lautsprecherstativ</span></td><td class="cat">Stative</td><td class="qty">6 / 6</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1006700.00</td><td class="mfr-name"><span class="mfr">Apple</span> <span class="name">iPad 11 Zoll Wi-Fi</span></td><td class="cat">IT</td><td class="qty">3 / 3</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1112233.00</td><td class="mfr-name"><span class="mfr">Electro-Voice</span> <span class="name">RE20 Mikrofon</span></td><td class="cat">Audio</td><td class="qty">5 / 5</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1009912.00</td><td class="mfr-name"><span class="mfr">Xirium</span> <span class="name">Pro Sender (TX)</span></td><td class="cat">Audio</td><td class="qty">4 / 4</td><td><span class="status-pill">Aktiv</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ======================== VARIANTE C: Pill ======================== -->
+  <div class="variant-card vc">
+    <div class="variant-head">
+      <span class="label">C · Pill/Tag</span>
+      <h2>Hersteller als Pill links</h2>
+      <div class="desc">Klar getrennte Felder. Pill könnte klickbar werden = Filter nach Brand.</div>
+    </div>
+    <table class="article-table">
+      <thead>
+        <tr><th style="width:60px;">Nr</th><th>Artikel</th><th>Kategorie</th><th style="text-align:right;">Bestand</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="num">1003221.00</td><td><div class="row"><span class="mfr-pill">Adam Hall</span><span class="name">Defender 3 Kabelbrücke 3 Kanäle</span></div></td><td class="cat">Logistik</td><td class="qty">10 / 10</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1001140.00</td><td><div class="row"><span class="name">Adapter 3,5mm Klinke auf 2 x XLR male</span></div></td><td class="cat">Audio</td><td class="qty">5 / 5</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1003576.00</td><td><div class="row"><span class="mfr-pill">Acme</span><span class="name">CS vMix Remote</span></div></td><td class="cat">Video</td><td class="qty">1 / 1</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1270.00</td><td><div class="row"><span class="mfr-pill">AlphaTheta</span><span class="name">CDJ-3000X</span></div></td><td class="cat">DJ</td><td class="qty">2 / 2</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1100240.00</td><td><div class="row"><span class="mfr-pill">Sennheiser</span><span class="name">EW IEM G4 Twin</span></div></td><td class="cat">Audio</td><td class="qty">8 / 8</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1023480.00</td><td><div class="row"><span class="mfr-pill">Cameo</span><span class="name">PIXBAR 600 IP</span></div></td><td class="cat">Licht</td><td class="qty">12 / 12</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1180990.00</td><td><div class="row"><span class="mfr-pill">Blackmagic Design</span><span class="name">ATEM 2 M/E Constellation HD</span></div></td><td class="cat">Video</td><td class="qty">1 / 1</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1102211.00</td><td><div class="row"><span class="mfr-pill">AKG</span><span class="name">D112 MKII</span></div></td><td class="cat">Audio</td><td class="qty">4 / 4</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1004500.00</td><td><div class="row"><span class="mfr-pill">Gravity</span><span class="name">SP 5211ACB Lautsprecherstativ</span></div></td><td class="cat">Stative</td><td class="qty">6 / 6</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1006700.00</td><td><div class="row"><span class="mfr-pill">Apple</span><span class="name">iPad 11 Zoll Wi-Fi</span></div></td><td class="cat">IT</td><td class="qty">3 / 3</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1112233.00</td><td><div class="row"><span class="mfr-pill">Electro-Voice</span><span class="name">RE20 Mikrofon</span></div></td><td class="cat">Audio</td><td class="qty">5 / 5</td><td><span class="status-pill">Aktiv</span></td></tr>
+        <tr><td class="num">1009912.00</td><td><div class="row"><span class="mfr-pill">Xirium</span><span class="name">Pro Sender (TX)</span></div></td><td class="cat">Audio</td><td class="qty">4 / 4</td><td><span class="status-pill">Aktiv</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<title>cueplex ops · Projekt anlegen · V4 (Power-User mit Bürokraft-Sicherheitsnetz)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 32px; --space-2xl: 48px;
+  --radius-sm: 8px; --radius-md: 10px; --radius-lg: 14px; --radius-full: 9999px;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-size-xs: 10px; --font-size-sm: 11px; --font-size-body: 13px; --font-size-md: 14px; --font-size-lg: 16px; --font-size-xl: 22px; --font-size-2xl: 28px;
+  --font-weight-normal: 400; --font-weight-medium: 500; --font-weight-semibold: 600; --font-weight-bold: 700;
+  --sidebar-width: 224px; --header-height: 56px;
+  --transition-fast: 150ms ease;
+  --accent-rgb: 204, 136, 68;
+}
+[data-theme="light"] {
+  --bg-primary: #FAF8F5; --bg-secondary: #F3F0EB; --bg-tertiary: #EBE7E0;
+  --bg-card: #FFFFFF; --bg-card-hover: #FBF9F6; --bg-input: #FFFFFF;
+  --bg-muted: #F7F4EE;
+  --text-primary: #1D1B16; --text-secondary: #6B6558; --text-tertiary: #9B9488;
+  --border-light: #E8E4DD; --border-default: #D9D4CB; --border-strong: #C4BEB4;
+  --accent-primary: #CC8844; --accent-primary-hover: #B87A3A; --accent-primary-text: #FFFFFF;
+  --accent-soft: #FBF4EC;
+  --status-entwurf: #9B9488; --status-entwurf-bg: #F3F0EB;
+  --success: #5B8A5E; --success-bg: #EFF6EF; --success-soft: #F4F8F4;
+  --warn: #B85C5C; --warn-bg: #FAEFEF;
+  --color-shadow: 120, 110, 90;
+  --shadow-xs: 0 1px 2px rgba(var(--color-shadow), 0.04);
+  --shadow-sm: 0 1px 3px rgba(var(--color-shadow), 0.06);
+  --shadow-md: 0 4px 16px rgba(var(--color-shadow), 0.08), 0 2px 4px rgba(var(--color-shadow), 0.04);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-tertiary); color: var(--text-primary);
+  font-size: var(--font-size-body); line-height: 1.55; -webkit-font-smoothing: antialiased;
+}
+
+.demo-banner {
+  background: var(--bg-secondary); padding: 18px 32px;
+  border-bottom: 1px solid var(--border-default);
+}
+.demo-banner h1 { margin: 0 0 6px; font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); }
+.demo-banner p { margin: 0; font-size: var(--font-size-sm); color: var(--text-secondary); max-width: 820px; line-height: 1.6; }
+.demo-banner .pills { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+.demo-banner .pill {
+  font-size: var(--font-size-xs); padding: 3px 10px; border-radius: var(--radius-full);
+  background: var(--accent-primary); color: var(--accent-primary-text); font-weight: var(--font-weight-bold);
+}
+.demo-banner .pill.alt { background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-light); }
+
+.icon { display: inline-block; width: 16px; height: 16px; stroke-width: 1.75; vertical-align: middle; }
+
+/* === AppShell — responsive === */
+.appshell {
+  display: flex; min-height: 800px; max-height: calc(100vh - 220px); overflow: hidden;
+  background: var(--bg-primary); margin: 24px 32px;
+  border-radius: var(--radius-lg); border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-md);
+}
+@media (max-width: 980px) {
+  .appshell { flex-direction: column; max-height: none; }
+  .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-light); }
+  .layout { grid-template-columns: 1fr !important; }
+}
+.sidebar {
+  width: var(--sidebar-width); background: var(--bg-secondary);
+  border-right: 1px solid var(--border-light);
+  display: flex; flex-direction: column; flex-shrink: 0;
+}
+.sidebar-logo {
+  height: var(--header-height); padding: 0 16px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex; align-items: center; gap: 10px;
+}
+.sidebar-logo .cx-mark {
+  width: 28px; height: 28px; border-radius: var(--radius-sm);
+  background: var(--text-primary); color: var(--bg-primary);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-weight: var(--font-weight-bold); font-size: 14px;
+}
+.sidebar-logo .module {
+  font-size: var(--font-size-md); color: var(--text-primary); font-weight: var(--font-weight-semibold);
+}
+.sidebar-nav { padding: 14px 8px; flex: 1; overflow-y: auto; }
+.sidebar-section { margin-bottom: 18px; }
+.sidebar-section-label {
+  font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  padding: 4px 12px; margin-bottom: 4px;
+}
+.sidebar-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: var(--radius-sm);
+  color: var(--text-secondary); font-size: var(--font-size-body);
+  cursor: pointer; transition: background var(--transition-fast); margin-bottom: 1px;
+}
+.sidebar-item:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+.sidebar-item.active { background: var(--bg-tertiary); color: var(--text-primary); font-weight: var(--font-weight-semibold); }
+.sidebar-item .icon { stroke: currentColor; opacity: 0.7; }
+.sidebar-item.active .icon { opacity: 1; }
+.sidebar-item .count {
+  margin-left: auto; font-family: var(--font-mono); font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+.sidebar-item.active .count { color: var(--text-primary); font-weight: var(--font-weight-semibold); }
+
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* === Topbar === */
+.topbar {
+  height: var(--header-height); border-bottom: 1px solid var(--border-light);
+  display: flex; align-items: center; padding: 0 28px; gap: 16px;
+  background: var(--bg-primary); flex-shrink: 0;
+}
+.crumbs { font-size: var(--font-size-sm); color: var(--text-tertiary); display: flex; align-items: center; gap: 8px; }
+.crumbs a { color: var(--text-secondary); text-decoration: none; }
+.crumbs a:hover { color: var(--text-primary); }
+.crumbs .here { color: var(--text-primary); font-weight: var(--font-weight-semibold); }
+
+/* Power-User Cmd-K Pill (mit Erklärung) + User-Tag */
+.topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.cmdk-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 12px; background: var(--bg-tertiary);
+  border-radius: var(--radius-sm); font-size: var(--font-size-sm);
+  color: var(--text-secondary); cursor: pointer; transition: all var(--transition-fast);
+}
+.cmdk-pill:hover { background: var(--accent-soft); color: var(--text-primary); }
+.cmdk-pill kbd {
+  font-family: var(--font-mono); font-size: var(--font-size-xs);
+  background: var(--bg-card); padding: 2px 6px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default); color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+.user-tag {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 12px; background: var(--bg-tertiary); border-radius: var(--radius-full);
+  font-size: var(--font-size-sm); color: var(--text-secondary);
+}
+.user-tag .avatar {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--accent-primary); color: var(--accent-primary-text);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: var(--font-weight-bold); font-family: var(--font-mono);
+}
+.user-tag .name { color: var(--text-primary); font-weight: var(--font-weight-semibold); }
+
+/* === Validation-Banner (oben — Bürokraft-Sicherheit, dezent) === */
+.validation-banner {
+  margin: 20px 36px 0; padding: 12px 16px;
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; gap: 12px;
+  font-size: var(--font-size-md);
+}
+.validation-banner.warn {
+  background: var(--warn-bg); color: var(--warn);
+  border: 1px solid var(--warn);
+}
+.validation-banner.ok {
+  background: var(--success-bg); color: var(--success);
+  border: 1px solid var(--success);
+}
+.validation-banner .icon { width: 18px; height: 18px; flex-shrink: 0; }
+.validation-banner .text { flex: 1; }
+.validation-banner .jump-link {
+  background: var(--bg-card); padding: 4px 10px; border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold);
+  color: var(--warn); text-decoration: none; cursor: pointer;
+  border: 1px solid var(--warn);
+}
+.validation-banner .jump-link:hover { background: var(--warn-bg); }
+
+/* === Hero === */
+.hero { padding: 18px 36px 22px; flex-shrink: 0; }
+.hero-num {
+  font-family: var(--font-mono); font-size: var(--font-size-md);
+  color: var(--text-tertiary); font-weight: var(--font-weight-bold);
+  letter-spacing: 0.02em; margin-bottom: 4px;
+}
+.hero h1 {
+  margin: 0; font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold);
+  letter-spacing: -0.01em; line-height: 1.2;
+}
+.hero h1 input {
+  font: inherit; color: inherit; border: none; background: transparent;
+  width: 100%; padding: 6px 0; outline: none;
+  border-bottom: 2px dashed var(--border-light);
+}
+.hero h1 input:focus { border-bottom-color: var(--accent-primary); }
+.hero h1 input::placeholder { color: var(--text-tertiary); font-weight: var(--font-weight-normal); }
+.hero-sub {
+  font-size: var(--font-size-sm); color: var(--text-tertiary); margin-top: 8px;
+}
+
+/* Live-Stats — Power-User Quick-Glance, klar als „Berechnet:" markiert */
+.hero-stats {
+  display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;
+  font-size: var(--font-size-sm);
+}
+.hero-stats .label-group {
+  font-size: var(--font-size-xs); color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.05em; font-weight: var(--font-weight-semibold);
+  padding-top: 6px; margin-right: 4px;
+}
+.stat {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: transparent; padding: 5px 10px; border-radius: var(--radius-full);
+  border: 1px dashed var(--border-default);
+  color: var(--text-secondary); font-style: italic;
+}
+.stat .value { color: var(--text-primary); font-weight: var(--font-weight-semibold); font-family: var(--font-mono); font-style: normal; }
+.stat .icon { stroke: var(--text-tertiary); width: 12px; height: 12px; }
+.stat.empty { color: var(--text-tertiary); }
+
+/* === Workspace === */
+.workspace { flex: 1; overflow-y: auto; padding: 0 36px 140px; }
+.layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+
+/* === Card === */
+.card {
+  background: var(--bg-card); border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg); padding: 22px; margin-bottom: 14px;
+}
+.card-head {
+  display: flex; align-items: flex-start; gap: 12px; margin-bottom: 18px;
+}
+.card-head .icon-wrap {
+  width: 36px; height: 36px; border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.card-head .icon-wrap .icon { stroke: var(--accent-primary); }
+.card-head h3 {
+  margin: 0; font-size: var(--font-size-md); font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+.card-head .desc {
+  font-size: var(--font-size-sm); color: var(--text-secondary); margin-top: 2px;
+}
+.card-head .free-tag {
+  margin-left: auto; font-size: var(--font-size-xs); color: var(--text-tertiary);
+  font-style: italic; padding-top: 6px;
+}
+
+/* === Field === */
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.field:last-child { margin-bottom: 0; }
+.field > label {
+  font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); color: var(--text-primary);
+  display: flex; align-items: center; gap: 6px;
+}
+.field > label .req { color: var(--warn); margin-left: 2px; }
+.field > label .free { color: var(--text-tertiary); font-weight: var(--font-weight-normal); font-size: var(--font-size-sm); margin-left: 6px; font-style: italic; }
+.field input[type="text"], .field input[type="number"], .field input[type="date"],
+.field input[type="datetime-local"], .field input[type="email"], .field select, .field textarea {
+  font-family: var(--font-sans); font-size: var(--font-size-md);
+  padding: 10px 12px; border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+  background: var(--bg-input); color: var(--text-primary);
+  transition: all var(--transition-fast);
+}
+.field input:hover, .field select:hover, .field textarea:hover { border-color: var(--border-default); }
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none; border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15);
+}
+.field.required-empty input, .field.required-empty select {
+  border-color: var(--warn); background: var(--warn-bg);
+}
+.field.required-empty > label .req { animation: pulse-req 2s infinite; }
+@keyframes pulse-req { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.field textarea { min-height: 70px; resize: vertical; line-height: 1.55; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field-help {
+  font-size: var(--font-size-sm); color: var(--text-tertiary);
+}
+.field-help a { color: var(--accent-primary); text-decoration: none; font-weight: var(--font-weight-semibold); }
+.field-help a:hover { text-decoration: underline; }
+.computed-line {
+  font-size: var(--font-size-sm); color: var(--text-secondary); font-style: italic;
+  padding: 6px 10px; background: var(--bg-muted); border-radius: var(--radius-sm);
+  display: flex; align-items: center; gap: 6px;
+}
+.computed-line strong { color: var(--text-primary); font-style: normal; font-weight: var(--font-weight-semibold); font-family: var(--font-mono); }
+.computed-line .icon { stroke: var(--text-tertiary); width: 12px; height: 12px; }
+
+/* Range-Block (Power-User-Pattern) */
+.range-block {
+  border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+  background: var(--bg-input); padding: 14px;
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: center;
+}
+.range-block.required-empty { border-color: var(--warn); background: var(--warn-bg); }
+.range-block .side .sub-label {
+  font-size: var(--font-size-xs); color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; font-weight: var(--font-weight-semibold);
+}
+.range-block .side input {
+  border: none; background: transparent; padding: 0;
+  font-size: var(--font-size-md); width: 100%; font-family: var(--font-sans); color: var(--text-primary);
+}
+.range-block .side input:focus { outline: none; }
+.range-block .middle {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 8px;
+}
+.range-block .middle .duration {
+  font-family: var(--font-mono); font-size: var(--font-size-xs);
+  color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em;
+  font-weight: var(--font-weight-semibold);
+}
+.range-block .middle .arrow-icon { stroke: var(--accent-primary); width: 18px; height: 18px; }
+
+/* === Toggle === */
+.toggle-row {
+  display: flex; align-items: center; gap: 12px; padding: 14px;
+  background: var(--bg-muted); border-radius: var(--radius-sm); border: 1px solid var(--border-light);
+  cursor: pointer;
+}
+.toggle-row input[type="checkbox"] { display: none; }
+.toggle-row .switch {
+  width: 32px; height: 19px; background: var(--border-default);
+  border-radius: var(--radius-full); position: relative; transition: background var(--transition-fast);
+  flex-shrink: 0;
+}
+.toggle-row .switch::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 15px; height: 15px; background: var(--bg-card); border-radius: 50%;
+  transition: transform var(--transition-fast); box-shadow: var(--shadow-xs);
+}
+.toggle-row input:checked + .switch { background: var(--accent-primary); }
+.toggle-row input:checked + .switch::after { transform: translateX(13px); }
+.toggle-row .label { font-size: var(--font-size-md); color: var(--text-primary); font-weight: var(--font-weight-medium); }
+.toggle-row .sub { font-size: var(--font-size-sm); color: var(--text-secondary); margin-top: 2px; }
+
+/* Address-Block — Power-User: showt sich auto wenn Toggle aktiv UND Kunde gewählt */
+.address-block {
+  margin-top: 12px; background: var(--bg-card); border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm); padding: 14px;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.address-block.empty { background: var(--bg-muted); }
+.address-block .icon { stroke: var(--accent-primary); flex-shrink: 0; margin-top: 2px; }
+.address-block .name { font-weight: var(--font-weight-semibold); color: var(--text-primary); margin-bottom: 4px; }
+.address-block .lines { color: var(--text-secondary); line-height: 1.6; font-size: var(--font-size-sm); }
+.address-block .empty-hint { color: var(--text-tertiary); font-style: italic; font-size: var(--font-size-sm); }
+.address-block .alt-link {
+  display: inline-flex; align-items: center; gap: 4px; margin-top: 8px;
+  font-size: var(--font-size-sm); color: var(--accent-primary); text-decoration: none;
+  font-weight: var(--font-weight-semibold);
+}
+.address-block .alt-link:hover { text-decoration: underline; }
+
+.inline-help {
+  display: inline-block; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--bg-tertiary); color: var(--text-tertiary);
+  font-size: 10px; text-align: center; line-height: 14px; font-weight: var(--font-weight-bold);
+  cursor: help;
+}
+
+/* === Action-Bar === */
+.action-bar {
+  position: sticky; bottom: 0; z-index: 10;
+  background: var(--bg-card); border-top: 1px solid var(--border-light);
+  padding: 14px 36px;
+  display: flex; gap: 8px; align-items: center;
+  margin: 0 -36px;
+  box-shadow: 0 -8px 24px rgba(var(--color-shadow), 0.06);
+}
+.action-bar .lead {
+  flex: 1; font-size: var(--font-size-md); color: var(--text-secondary);
+  display: flex; align-items: center; gap: 8px;
+}
+.action-bar .lead.ok { color: var(--success); font-weight: var(--font-weight-semibold); }
+.action-bar .lead.warn { color: var(--warn); font-weight: var(--font-weight-semibold); }
+.btn {
+  font-family: var(--font-sans); font-size: var(--font-size-md);
+  padding: 9px 18px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default); background: var(--bg-card); cursor: pointer;
+  font-weight: var(--font-weight-semibold); transition: all var(--transition-fast);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn:hover { background: var(--bg-card-hover); border-color: var(--border-strong); }
+.btn-primary {
+  background: var(--accent-primary); color: var(--accent-primary-text);
+  border-color: var(--accent-primary);
+}
+.btn-primary:hover { background: var(--accent-primary-hover); border-color: var(--accent-primary-hover); }
+.btn-primary:disabled {
+  background: var(--border-default); border-color: var(--border-default);
+  color: var(--bg-card); cursor: not-allowed;
+}
+.btn-ghost { border-color: transparent; background: transparent; }
+.btn-ghost:hover { background: var(--bg-tertiary); }
+.btn .kbd-hint {
+  font-family: var(--font-mono); font-size: var(--font-size-xs);
+  background: rgba(255,255,255,0.18); padding: 1px 5px; border-radius: var(--radius-sm); margin-left: 4px;
+}
+
+/* Demo-State = "alles ausgefüllt" */
+.demo-state-section {
+  margin: 60px -36px 0; padding: 28px 36px;
+  background: var(--bg-secondary); border-top: 1px solid var(--border-default);
+}
+.demo-state-section h4 {
+  margin: 0 0 8px; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold);
+  color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;
+}
+.demo-state-section p { margin: 0 0 14px; font-size: var(--font-size-sm); color: var(--text-secondary); }
+</style>
+</head>
+<body>
+
+<div class="demo-banner">
+  <h1>cueplex ops · Projekt anlegen — V4 (Power-User mit Bürokraft-Sicherheitsnetz)</h1>
+  <p>Patrick: <em>„Power-User-Optimierung im liebsten Fall, aber Bürokräfte müssen es auch können."</em> V4 behält V3-Power-Features (⌘K, Range-Block, Live-Computed-Stats), kombiniert mit Bürokraft-Schutz aus Marlene-Walkthrough: Identity oben, Klartext-Labels, Validation oben + unten, Pflichtfelder rot, Tooltip auf Speichern, Lieferung permanent sichtbar, Demo-State unten.</p>
+  <div class="pills">
+    <span class="pill">V4 · Beide Welten</span>
+    <span class="pill alt">⌘K bleibt (mit Erklärung)</span>
+    <span class="pill alt">Identity = eingeloggter User</span>
+    <span class="pill alt">Validation oben + unten</span>
+    <span class="pill alt">Klartext &amp; Tooltips</span>
+    <span class="pill alt">Pflichtfelder rot pulsieren</span>
+    <span class="pill alt">Demo-State zeigt grünen Speichern-Button</span>
+  </div>
+</div>
+
+<div class="appshell">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="cx-mark">⌖</div>
+      <span class="module">ops</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Tagesgeschäft</div>
+        <div class="sidebar-item">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+          Übersicht
+        </div>
+        <div class="sidebar-item active">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h18M3 17h18"/><path d="M7 3v18M17 3v18"/></svg>
+          Projekte<span class="count">847</span>
+        </div>
+        <div class="sidebar-item">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Angebote &amp; Aufträge<span class="count">3258</span>
+        </div>
+        <div class="sidebar-item">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          Lager
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Stammdaten</div>
+        <div class="sidebar-item">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+          Artikel<span class="count">2549</span>
+        </div>
+        <div class="sidebar-item">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Kunden
+        </div>
+      </div>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <!-- Topbar mit Cmd-K (Power-Feature, mit Klartext-Erklärung) + User-Identity -->
+    <div class="topbar">
+      <div class="crumbs">
+        <a href="#">Projekte</a>
+        <span>›</span>
+        <span class="here">Neues Projekt</span>
+      </div>
+      <div class="topbar-actions">
+        <span class="cmdk-pill" title="Tastenkürzel-Menü öffnen — Schnellzugriff für erfahrene Nutzer">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          Schnellzugriff
+          <kbd>Strg + K</kbd>
+        </span>
+        <span class="user-tag">
+          <span class="avatar">MM</span>
+          <span class="name">Marlene Müller</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Validation-Banner OBEN (Bürokraft-Sicherheit) -->
+    <div class="validation-banner warn">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div class="text">
+        <strong>2 Pflichtfelder noch offen:</strong> <em>Kunde</em> · <em>Mietzeitraum</em>
+      </div>
+      <a class="jump-link" href="#kunde-card">→ Zum nächsten</a>
+    </div>
+
+    <!-- Hero — leerer Titel mit Placeholder -->
+    <div class="hero">
+      <div class="hero-num">26-1438 · neu</div>
+      <h1>
+        <input type="text" placeholder="Wie soll das Projekt heißen? z.B. Müller GmbH — Sommerfest" />
+      </h1>
+      <div class="hero-sub">Erscheint später auf Angeboten und Rechnungen. Kannst du jederzeit ändern.</div>
+
+      <!-- Live-Computed Stats — klar als „Berechnet:" markiert -->
+      <div class="hero-stats">
+        <span class="label-group">Berechnet:</span>
+        <span class="stat empty">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Dauer: <span class="value" style="color:var(--text-tertiary);font-style:italic;">— sobald Zeitraum gesetzt</span>
+        </span>
+        <span class="stat empty">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Crew-Tage gesamt: <span class="value" style="color:var(--text-tertiary);font-style:italic;">—</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Workspace -->
+    <div class="workspace">
+      <div class="layout">
+
+        <!-- LEFT COLUMN -->
+        <div>
+          <!-- KUNDE -->
+          <div class="card" id="kunde-card">
+            <div class="card-head">
+              <div class="icon-wrap">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              </div>
+              <div>
+                <h3>Kunde</h3>
+                <div class="desc">Wer beauftragt das Projekt?</div>
+              </div>
+            </div>
+            <div class="field required-empty">
+              <label>Kunde auswählen <span class="req">*</span></label>
+              <input type="text" placeholder="Tippe Firma oder Name…">
+              <div class="field-help">Tippe los — Vorschläge erscheinen live · <a href="#">Kunde noch nicht in der Liste? Neuen anlegen →</a></div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label>Ansprechpartner <span class="free">freiwillig</span></label>
+                <input type="text" placeholder="Name beim Kunden">
+              </div>
+              <div class="field">
+                <label>Bestellnummer Kunde <span class="free">freiwillig</span></label>
+                <input type="text" placeholder="z.B. PO-2026-0042">
+              </div>
+            </div>
+          </div>
+
+          <!-- ZEITRAUM -->
+          <div class="card">
+            <div class="card-head">
+              <div class="icon-wrap">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div>
+                <h3>Wann findet das Event statt?</h3>
+                <div class="desc">Mietzeitraum — der Zeitraum, für den der Kunde zahlt.</div>
+              </div>
+            </div>
+            <div class="field" style="margin-bottom: 16px;">
+              <label>Mietzeitraum <span class="req">*</span></label>
+              <!-- Power-User: Range-Block mit visueller Mitte. Bürokraft: klare „Beginn"/„Ende"-Sub-Labels -->
+              <div class="range-block required-empty">
+                <div class="side">
+                  <div class="sub-label">Beginn</div>
+                  <input type="datetime-local">
+                </div>
+                <div class="middle">
+                  <span class="duration">— Tage</span>
+                  <svg class="icon arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </div>
+                <div class="side">
+                  <div class="sub-label">Ende</div>
+                  <input type="datetime-local">
+                </div>
+              </div>
+              <div class="field-help">Tipp: <kbd style="font-family:var(--font-mono);font-size:var(--font-size-xs);background:var(--bg-tertiary);padding:1px 5px;border-radius:var(--radius-sm);border:1px solid var(--border-default);">Strg+K</kbd> für Schnell-Datum (z.B. „nächsten Montag"), oder einfach klassisch mit Datums-Picker.</div>
+            </div>
+            <div style="padding-top: 16px; border-top: 1px dashed var(--border-light);">
+              <div class="field" style="margin-bottom: 0;">
+                <label>Tage für Auf- und Abbau <span class="free">freiwillig — falls Crew früher/länger braucht</span></label>
+                <div class="field-row">
+                  <div class="field" style="margin-bottom:0;">
+                    <input type="number" min="0" max="14" value="0">
+                    <div class="field-help">Tage VOR dem Event (Aufbau)</div>
+                  </div>
+                  <div class="field" style="margin-bottom:0;">
+                    <input type="number" min="0" max="14" value="0">
+                    <div class="field-help">Tage NACH dem Event (Abbau)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LOCATION -->
+          <div class="card">
+            <div class="card-head">
+              <div class="icon-wrap">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <div>
+                <h3>Veranstaltungsort</h3>
+                <div class="desc">Wo wird das Event stattfinden?</div>
+              </div>
+            </div>
+            <label class="toggle-row">
+              <input type="checkbox" checked>
+              <span class="switch"></span>
+              <div>
+                <div class="label">Findet beim Kunden statt</div>
+                <div class="sub">Adresse aus Kunden-Stammdaten verwenden.</div>
+              </div>
+            </label>
+            <div class="address-block empty">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <div>
+                <div class="empty-hint">Adresse erscheint hier sobald du oben einen Kunden ausgewählt hast.</div>
+                <a href="#" class="alt-link">Anderer Veranstaltungsort? →</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- LIEFERUNG (offen!) -->
+          <div class="card">
+            <div class="card-head">
+              <div class="icon-wrap">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              </div>
+              <div>
+                <h3>Lieferung</h3>
+                <div class="desc">Wie kommt das Material hin und zurück?</div>
+              </div>
+              <div class="free-tag">freiwillig</div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label>Hinfahrt</label>
+                <select>
+                  <option>Kunde holt selbst ab</option>
+                  <option>Wir bringen mit eigenem LKW</option>
+                  <option>Spedition fährt</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Rückfahrt</label>
+                <select>
+                  <option>Kunde bringt selbst zurück</option>
+                  <option>Wir holen mit eigenem LKW ab</option>
+                  <option>Spedition fährt</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label>Hinweise zur Lieferung <span class="free">freiwillig</span></label>
+              <textarea placeholder="z.B. Kran erforderlich, Tor 3 nutzen, Empfang fragen…"></textarea>
+            </div>
+          </div>
+
+          <!-- INTERNE NOTIZEN (offen!) -->
+          <div class="card">
+            <div class="card-head">
+              <div class="icon-wrap">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+              </div>
+              <div>
+                <h3>Interne Notizen</h3>
+                <div class="desc">Nur Team-intern. Geht NICHT an den Kunden.</div>
+              </div>
+              <div class="free-tag">freiwillig</div>
+            </div>
+            <div class="field" style="margin-bottom: 0;">
+              <textarea placeholder="z.B. „Kunde mag keine Verzögerung", „Kran beim letzten Mal kaputt"…" style="min-height: 80px;"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div>
+          <!-- STATUS + WER -->
+          <div class="card">
+            <div class="card-head">
+              <div class="icon-wrap">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div>
+                <h3>Status &amp; Wer betreut</h3>
+                <div class="desc">Phase und Zuständigkeit</div>
+              </div>
+            </div>
+            <div class="field">
+              <label>Phase</label>
+              <select>
+                <option>Entwurf — wird gerade angelegt</option>
+                <option>Anfrage — Kunde hat angefragt</option>
+                <option>In Planung — Angebot wird erstellt</option>
+                <option>Bestätigt — Auftrag steht</option>
+                <option>Abgeschlossen — alles erledigt</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Art des Projekts</label>
+              <select>
+                <option>— bitte wählen —</option>
+                <option>Einzelne Veranstaltung</option>
+                <option>Dauermiete</option>
+                <option>Tournee mit mehreren Stops</option>
+                <option>Festival</option>
+              </select>
+            </div>
+            <div class="field" style="margin-bottom: 0;">
+              <label>Wer betreut das?</label>
+              <select>
+                <option selected>Marlene Müller (du)</option>
+                <option>Patrick Scharf</option>
+                <option>Florian Christof</option>
+              </select>
+              <div class="field-help">Standard: du selbst. Ändern wenn jemand anders übernimmt.</div>
+            </div>
+          </div>
+
+          <!-- ABRECHNUNG -->
+          <div class="card">
+            <div class="card-head">
+              <div class="icon-wrap">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <div>
+                <h3>Abrechnung</h3>
+                <div class="desc">Mehrwertsteuer und Zahlungsfrist</div>
+              </div>
+            </div>
+            <div class="field">
+              <label>Mehrwertsteuer</label>
+              <select>
+                <option>Standard: 19% MwSt (deutsche Kunden)</option>
+                <option>EU-Geschäftskunde ohne MwSt (Reverse-Charge)</option>
+                <option>Drittland — keine MwSt</option>
+              </select>
+              <div class="field-help">Wird aus den Kunden-Stammdaten übernommen — nur ändern wenn nötig.</div>
+            </div>
+            <div class="field">
+              <label>Zahlungsfrist</label>
+              <select>
+                <option>Sofort (7 Tage)</option>
+                <option>14 Tage netto</option>
+                <option>30 Tage netto</option>
+                <option>50% Anzahlung, Rest nach Show</option>
+              </select>
+            </div>
+            <div class="field" style="margin-bottom: 0;">
+              <label>
+                Buchungskonto
+                <span class="inline-help" title="Buchhaltungs-Sammelkonto für DATEV-Export. Wenn unsicher: 8400 — Standard für Deutschland-Erlöse 19%.">?</span>
+              </label>
+              <select>
+                <option>8400 — Erlöse 19% (Standard)</option>
+                <option>8336 — Erlöse EU</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ERINNERUNG -->
+          <div class="card">
+            <div class="card-head">
+              <div class="icon-wrap">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <div>
+                <h3>Erinnerung</h3>
+                <div class="desc">Wann soll ich dich an das Projekt erinnern?</div>
+              </div>
+              <div class="free-tag">freiwillig</div>
+            </div>
+            <div class="field" style="margin-bottom: 0;">
+              <input type="date">
+              <div class="field-help">An diesem Tag taucht das Projekt im Dashboard wieder auf.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sticky Action-Bar (unten) -->
+      <div class="action-bar">
+        <span class="lead warn">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Noch fehlt: Kunde &amp; Mietzeitraum
+        </span>
+        <button class="btn btn-ghost">Abbrechen</button>
+        <button class="btn btn-primary" disabled title="Bitte Kunde und Mietzeitraum eintragen, dann wird der Button aktiv.">
+          Projekt anlegen
+        </button>
+      </div>
+
+      <!-- Demo-State: alles ausgefüllt -->
+      <div class="demo-state-section">
+        <h4>Demo — so sieht's aus wenn alles ausgefüllt ist</h4>
+        <p>Validation-Banner wird grün, Speichern-Button wird klickbar, Live-Stats erscheinen.</p>
+
+        <div class="validation-banner ok" style="margin: 0 0 12px;">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <div class="text">
+            <strong>Alle Pflichtfelder ausgefüllt.</strong> Bereit zum Speichern.
+          </div>
+        </div>
+
+        <div class="action-bar" style="position: static; margin: 0; box-shadow: none; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
+          <span class="lead ok">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Bereit zum Speichern
+          </span>
+          <button class="btn btn-ghost">Abbrechen</button>
+          <button class="btn btn-primary" title="Speichert das Projekt — verschickt nichts an den Kunden.">
+            Projekt anlegen<span class="kbd-hint">Strg+S</span>
+          </button>
+        </div>
+        <div style="margin-top: 8px; font-size: var(--font-size-sm); color: var(--text-tertiary); padding-left: 4px;">
+          Hover-Tooltip: <em>„Speichert das Projekt — verschickt nichts an den Kunden."</em> · Power-User: <kbd style="font-family:var(--font-mono);font-size:var(--font-size-xs);background:var(--bg-card);padding:1px 5px;border-radius:var(--radius-sm);border:1px solid var(--border-default);">Strg+S</kbd> speichert direkt.
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div style="padding: 28px 32px; background: var(--bg-secondary); border-top: 1px solid var(--border-default);">
+  <h3 style="margin: 0 0 12px; font-size: var(--font-size-md);">V4: was ist Power-User-Feature, was ist Bürokraft-Sicherheitsnetz?</h3>
+  <table style="border-collapse:collapse;width:100%;font-size:var(--font-size-sm);">
+    <thead><tr style="border-bottom:1px solid var(--border-default);">
+      <th style="text-align:left;padding:8px;font-weight:var(--font-weight-semibold);">Feature</th>
+      <th style="text-align:left;padding:8px;font-weight:var(--font-weight-semibold);">Power-User-Wert</th>
+      <th style="text-align:left;padding:8px;font-weight:var(--font-weight-semibold);">Bürokraft-Verständlichkeit</th>
+    </tr></thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:8px;font-weight:var(--font-weight-semibold);">⌘K / Strg+K Schnellzugriff</td><td style="padding:8px;color:var(--text-secondary);">Linear-Style Quick-Action — schnellstes Navigieren</td><td style="padding:8px;color:var(--text-secondary);">Beschriftet als „Schnellzugriff" mit Strg-Hint (Windows-friendly), nicht zwingend</td></tr>
+      <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:8px;font-weight:var(--font-weight-semibold);">Range-Block für Mietzeitraum</td><td style="padding:8px;color:var(--text-secondary);">Visual Connection Beginn → Dauer → Ende, eine Geste</td><td style="padding:8px;color:var(--text-secondary);">Sub-Labels „Beginn" und „Ende" sind klar; Mitte zeigt automatische Dauer</td></tr>
+      <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:8px;font-weight:var(--font-weight-semibold);">Live-Computed Stats im Hero</td><td style="padding:8px;color:var(--text-secondary);">Sofortige Validation der Eingabe ohne Scrollen</td><td style="padding:8px;color:var(--text-secondary);">Mit „Berechnet:"-Präfix + dashed-Border klar als Anzeige (nicht Input)</td></tr>
+      <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:8px;font-weight:var(--font-weight-semibold);">Identity oben („Du arbeitest als")</td><td style="padding:8px;color:var(--text-secondary);">Multi-Tenant-Awareness</td><td style="padding:8px;color:var(--text-secondary);">Kein Verwechseln „Patrick · du" — eigener Name sichtbar</td></tr>
+      <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:8px;font-weight:var(--font-weight-semibold);">Validation-Banner OBEN + UNTEN</td><td style="padding:8px;color:var(--text-secondary);">Power-User scrollen, sehen unten — passt</td><td style="padding:8px;color:var(--text-secondary);">Bürokräfte scrollen nicht runter — Top-Banner mit Jump-Link</td></tr>
+      <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:8px;font-weight:var(--font-weight-semibold);">Pflichtfelder pulsieren rot</td><td style="padding:8px;color:var(--text-secondary);">Sofort sichtbar wo's klemmt</td><td style="padding:8px;color:var(--text-secondary);">Roter Rahmen + Background = unmissverständlich</td></tr>
+      <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:8px;font-weight:var(--font-weight-semibold);">Klartext-Labels</td><td style="padding:8px;color:var(--text-secondary);">Power-User mögen klare Sprache auch — kein „Disposition"</td><td style="padding:8px;color:var(--text-secondary);">„Wann findet das Event statt?" statt „Mietzeitraum"</td></tr>
+      <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:8px;font-weight:var(--font-weight-semibold);">2-Button-Footer (Abbrechen + Speichern)</td><td style="padding:8px;color:var(--text-secondary);">Klare CTA, Strg+S für Speichern (Power)</td><td style="padding:8px;color:var(--text-secondary);">Keine Verwirrung „Zwischenspeichern vs Anlegen"</td></tr>
+      <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:8px;font-weight:var(--font-weight-semibold);">Tooltip auf Speichern</td><td style="padding:8px;color:var(--text-secondary);">Power weiß sowieso — Tooltip stört nicht</td><td style="padding:8px;color:var(--text-secondary);">„verschickt nichts an den Kunden" beruhigt</td></tr>
+      <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:8px;font-weight:var(--font-weight-semibold);">Demo-State unten</td><td style="padding:8px;color:var(--text-secondary);">Vergleich vorher/nachher in einem Screen</td><td style="padding:8px;color:var(--text-secondary);">Patrick-Lob: „der Button war coole Sache!" — V4 zeigt grünen State explizit</td></tr>
+      <tr><td style="padding:8px;font-weight:var(--font-weight-semibold);">Lieferung + Notizen offen sichtbar</td><td style="padding:8px;color:var(--text-secondary);">Power-User füllen schnell mit ⌘K</td><td style="padding:8px;color:var(--text-secondary);">Bürokräfte trauen sich nicht zu klicken — alles sehen schafft Vertrauen</td></tr>
+    </tbody>
+  </table>
+  <p style="margin: 18px 0 0; font-size: var(--font-size-sm); color: var(--text-secondary);">
+    <strong style="color:var(--text-primary);">Resultat:</strong> Power-User können in 30 Sekunden mit ⌘K + Strg+S durchrasen. Bürokraft sieht jeden Schritt erklärt, kein Feld kollabiert, fehlende Felder pulsieren rot. Beide werden bedient.
+  </p>
+</div>
+
+</body>
+</html>

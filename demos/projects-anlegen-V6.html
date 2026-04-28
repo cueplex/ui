@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<title>cueplex ops · Projekt anlegen · V6 (Vollbild · dichte Form-Fläche)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --space-xs: 4px; --space-2xs: 6px; --space-sm: 8px; --space-2sm: 10px; --space-3sm: 12px; --space-md: 16px; --space-lg: 24px; --space-xl: 32px;
+  --radius-sm: 8px; --radius-md: 10px; --radius-lg: 14px; --radius-full: 9999px;
+  --input-height: 36px;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-size-xs: 10px;
+  --font-size-sm: 11px;
+  --font-size-body: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-weight-normal: 400; --font-weight-medium: 500; --font-weight-semibold: 600; --font-weight-bold: 700;
+  --sidebar-width: 224px; --header-height: 48px;
+  --transition-fast: 150ms ease;
+  --accent-rgb: 91, 122, 94;
+}
+[data-theme="light"] {
+  --bg-primary: #FAF8F5; --bg-secondary: #F3F0EB; --bg-tertiary: #EBE7E0;
+  --bg-card: #FFFFFF; --bg-card-hover: #FBF9F6; --bg-input: #FFFFFF;
+  --bg-muted: #F7F4EE;
+  --text-primary: #1D1B16; --text-secondary: #6B6558; --text-tertiary: #9B9488;
+  --border-light: #E8E4DD; --border-default: #D9D4CB; --border-strong: #C4BEB4;
+  --accent-primary: #5B7A5E; --accent-primary-hover: #4A6A4D; --accent-primary-text: #FFFFFF;
+  --accent-soft: #EFF4EE;
+  --success: #5B8A5E; --success-bg: #EFF6EF;
+  --warn: #B85C5C; --warn-bg: #FAEFEF;
+  --kbd-on-primary: rgba(255,255,255,0.18);
+  --color-shadow: 120, 110, 90;
+  --shadow-xs: 0 1px 2px rgba(var(--color-shadow), 0.04);
+  --shadow-sm: 0 1px 3px rgba(var(--color-shadow), 0.06);
+  --shadow-md: 0 4px 16px rgba(var(--color-shadow), 0.08), 0 2px 4px rgba(var(--color-shadow), 0.04);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-primary); color: var(--text-primary);
+  font-size: var(--font-size-body); line-height: 1.55; -webkit-font-smoothing: antialiased;
+  height: 100vh; overflow: hidden;
+}
+
+.icon { display: inline-block; width: 16px; height: 16px; stroke-width: 1.75; vertical-align: middle; }
+
+/* === AppShell — Full-Bleed === */
+.appshell {
+  display: flex; height: 100vh;
+  background: var(--bg-primary);
+}
+.sidebar {
+  width: var(--sidebar-width); background: var(--bg-secondary);
+  border-right: 1px solid var(--border-light);
+  display: flex; flex-direction: column; flex-shrink: 0;
+}
+.sidebar-logo {
+  height: var(--header-height); padding: 0 var(--space-md);
+  border-bottom: 1px solid var(--border-light);
+  display: flex; align-items: center; gap: var(--space-sm);
+}
+.sidebar-logo .cx-mark {
+  width: 26px; height: 26px; border-radius: var(--radius-sm);
+  background: var(--text-primary); color: var(--bg-primary);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-weight: var(--font-weight-bold); font-size: var(--font-size-md);
+}
+.sidebar-logo .module {
+  font-size: var(--font-size-md); color: var(--text-primary); font-weight: var(--font-weight-semibold);
+}
+.sidebar-nav { padding: var(--space-3sm) var(--space-sm); flex: 1; overflow-y: auto; }
+.sidebar-section { margin-bottom: var(--space-md); }
+.sidebar-section-label {
+  font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  padding: var(--space-xs) 12px; margin-bottom: var(--space-xs);
+}
+.sidebar-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: var(--radius-sm);
+  color: var(--text-secondary); font-size: var(--font-size-body);
+  cursor: pointer; transition: background var(--transition-fast); margin-bottom: 1px;
+}
+.sidebar-item:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+.sidebar-item.active { background: var(--bg-tertiary); color: var(--text-primary); font-weight: var(--font-weight-semibold); }
+.sidebar-item .icon { stroke: currentColor; opacity: 0.7; }
+.sidebar-item.active .icon { opacity: 1; }
+.sidebar-item .count {
+  margin-left: auto; font-family: var(--font-mono); font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+.sidebar-item.active .count { color: var(--text-primary); font-weight: var(--font-weight-semibold); }
+
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+/* === Topbar — kompakt 48px === */
+.topbar {
+  height: var(--header-height); border-bottom: 1px solid var(--border-light);
+  display: flex; align-items: center; padding: 0 var(--space-lg); gap: var(--space-md);
+  background: var(--bg-primary); flex-shrink: 0;
+}
+.crumbs { font-size: var(--font-size-sm); color: var(--text-tertiary); display: flex; align-items: center; gap: var(--space-sm); }
+.crumbs a { color: var(--text-secondary); text-decoration: none; }
+.crumbs a:hover { color: var(--text-primary); }
+.crumbs .here { color: var(--text-primary); font-weight: var(--font-weight-semibold); }
+.crumbs .num { font-family: var(--font-mono); font-size: var(--font-size-xs); color: var(--text-tertiary); margin-left: var(--space-xs); }
+
+.topbar-actions { margin-left: auto; display: flex; align-items: center; gap: var(--space-sm); }
+.cmdk-pill {
+  display: inline-flex; align-items: center; gap: var(--space-sm);
+  padding: 4px 10px; background: var(--bg-tertiary);
+  border-radius: var(--radius-sm); font-size: var(--font-size-sm);
+  color: var(--text-secondary); cursor: pointer; transition: all var(--transition-fast);
+}
+.cmdk-pill:hover { background: var(--accent-soft); color: var(--text-primary); }
+.cmdk-pill kbd {
+  font-family: var(--font-mono); font-size: var(--font-size-xs);
+  background: var(--bg-card); padding: 1px 5px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default); color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+.user-tag {
+  display: flex; align-items: center; gap: var(--space-sm);
+  padding: 3px 10px 3px 4px; background: var(--bg-tertiary); border-radius: var(--radius-full);
+  font-size: var(--font-size-sm); color: var(--text-primary); font-weight: var(--font-weight-semibold);
+}
+.user-tag .avatar {
+  width: 22px; height: 22px; border-radius: var(--radius-full);
+  background: var(--accent-primary); color: var(--accent-primary-text);
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); font-family: var(--font-mono);
+}
+
+/* === Title-Bar — einzeiliger Hero (~50px) === */
+.title-bar {
+  display: flex; align-items: center; gap: var(--space-md);
+  padding: 10px var(--space-lg); border-bottom: 1px solid var(--border-light);
+  background: var(--bg-primary); flex-shrink: 0;
+}
+.title-bar .num {
+  font-family: var(--font-mono); font-size: var(--font-size-sm);
+  color: var(--text-tertiary); font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.05em; flex-shrink: 0;
+}
+.title-bar .title-input {
+  flex: 1; min-width: 0;
+  font-family: var(--font-sans); font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold); color: var(--text-primary);
+  background: transparent; outline: none; padding: var(--space-xs) var(--space-sm);
+  border: 1px solid transparent; border-radius: var(--radius-sm);
+  letter-spacing: -0.01em; margin-left: calc(var(--space-sm) * -1);
+  transition: all var(--transition-fast);
+}
+.title-bar .title-input:hover { background: var(--bg-muted); }
+.title-bar .title-input:focus { background: var(--bg-input); border-color: var(--accent-primary); box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15); }
+.title-bar .title-input::placeholder { color: var(--text-tertiary); font-weight: var(--font-weight-normal); }
+.title-bar .stats-inline {
+  display: flex; gap: var(--space-md); flex-shrink: 0;
+  font-size: var(--font-size-sm); color: var(--text-tertiary);
+}
+.title-bar .stats-inline .stat-label { font-weight: var(--font-weight-semibold); margin-right: var(--space-xs); }
+.title-bar .stats-inline .stat-value { color: var(--text-primary); font-family: var(--font-mono); font-weight: var(--font-weight-semibold); }
+.title-bar .stats-inline .stat-value.empty { color: var(--text-tertiary); font-style: italic; font-family: var(--font-sans); font-weight: var(--font-weight-normal); }
+.title-bar .stats-inline .stat-sep { color: var(--border-default); }
+
+/* === Workspace === */
+.workspace { flex: 1; overflow-y: auto; padding: var(--space-md) var(--space-lg) 80px; }
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: var(--space-md); align-items: start;
+  max-width: 1400px; margin: 0 auto;
+}
+
+/* === Card === */
+.card {
+  background: var(--bg-card); border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg); padding: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+.card-head {
+  display: flex; align-items: baseline; gap: var(--space-sm); margin-bottom: var(--space-3sm);
+}
+.card-head .head-icon {
+  width: 16px; height: 16px; stroke-width: 1.75;
+  stroke: var(--accent-primary); flex-shrink: 0;
+  transform: translateY(2px);
+}
+.card-head .head-icon.muted { stroke: var(--text-tertiary); }
+.card-head h3 {
+  margin: 0; font-size: var(--font-size-md); font-weight: var(--font-weight-bold);
+  color: var(--text-primary); letter-spacing: -0.005em;
+}
+.card-head .desc {
+  font-size: var(--font-size-sm); color: var(--text-tertiary);
+  font-weight: var(--font-weight-normal);
+}
+.card-head .free-tag {
+  margin-left: auto; font-size: var(--font-size-xs); color: var(--text-tertiary);
+  font-style: italic;
+}
+
+/* === Field === */
+.field { display: flex; flex-direction: column; gap: var(--space-xs); margin-bottom: var(--space-3sm); }
+.field:last-child { margin-bottom: 0; }
+.field > label {
+  font-size: var(--font-size-xs); font-weight: var(--font-weight-bold);
+  color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em;
+  display: flex; align-items: center; gap: 6px;
+}
+.field > label .req { color: var(--warn); margin-left: 2px; }
+.field > label .free {
+  color: var(--text-tertiary); font-weight: var(--font-weight-normal);
+  text-transform: none; letter-spacing: 0; font-size: var(--font-size-sm);
+  margin-left: 6px; font-style: italic;
+}
+.field input[type="text"], .field input[type="number"], .field input[type="date"],
+.field input[type="datetime-local"], .field input[type="email"], .field select, .field textarea {
+  font-family: var(--font-sans); font-size: var(--font-size-md);
+  padding: 8px 10px; border: 1px solid var(--border-default); border-radius: var(--radius-sm);
+  background: var(--bg-input); color: var(--text-primary);
+  transition: all var(--transition-fast);
+}
+.field input:hover, .field select:hover, .field textarea:hover { border-color: var(--border-strong); }
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none; border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15);
+}
+.field.required-empty input, .field.required-empty select {
+  border-color: var(--warn);
+}
+.field textarea { min-height: 60px; resize: vertical; line-height: 1.55; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm); }
+.field-row.three { grid-template-columns: 1fr 1fr 1fr; }
+.field-help {
+  font-size: var(--font-size-sm); color: var(--text-tertiary);
+}
+.field-help a { color: var(--accent-primary); text-decoration: none; font-weight: var(--font-weight-semibold); }
+.field-help a:hover { text-decoration: underline; }
+
+/* === Mietzeitraum (Crew-Pattern + Live-Dauer-Pill) === */
+.zeitraum-row {
+  display: grid; grid-template-columns: 1fr 1fr auto; gap: var(--space-sm); align-items: end;
+}
+.zeitraum-row .duration-pill {
+  align-self: end; padding: var(--space-sm) var(--space-3sm);
+  background: var(--bg-muted); border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+  font-family: var(--font-mono); font-size: var(--font-size-sm); color: var(--text-secondary);
+  font-weight: var(--font-weight-semibold); white-space: nowrap;
+  display: inline-flex; align-items: center; gap: var(--space-2xs);
+  height: var(--input-height);
+}
+.zeitraum-row .duration-pill.empty { color: var(--text-tertiary); font-style: italic; font-weight: var(--font-weight-normal); }
+.zeitraum-row .duration-pill .icon { width: 12px; height: 12px; stroke: var(--text-tertiary); }
+
+/* === Toggle === */
+.toggle-row {
+  display: flex; align-items: center; gap: var(--space-2sm); padding: var(--space-2sm) var(--space-3sm);
+  background: var(--bg-muted); border-radius: var(--radius-sm); border: 1px solid var(--border-light);
+  cursor: pointer;
+}
+.toggle-row input[type="checkbox"] { display: none; }
+.toggle-row .switch {
+  width: 30px; height: 18px; background: var(--border-default);
+  border-radius: var(--radius-full); position: relative; transition: background var(--transition-fast);
+  flex-shrink: 0;
+}
+.toggle-row .switch::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 14px; height: 14px; background: var(--bg-card); border-radius: var(--radius-full);
+  transition: transform var(--transition-fast); box-shadow: var(--shadow-xs);
+}
+.toggle-row input:checked + .switch { background: var(--accent-primary); }
+.toggle-row input:checked + .switch::after { transform: translateX(12px); }
+.toggle-row .label { font-size: var(--font-size-md); color: var(--text-primary); font-weight: var(--font-weight-medium); }
+.toggle-row .sub { font-size: var(--font-size-sm); color: var(--text-secondary); margin-top: 1px; }
+
+.address-block {
+  margin-top: var(--space-sm); background: var(--bg-card); border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm); padding: var(--space-2sm) var(--space-3sm);
+  display: flex; gap: var(--space-2sm); align-items: flex-start;
+}
+.address-block.empty { background: var(--bg-muted); }
+.address-block .icon { stroke: var(--accent-primary); flex-shrink: 0; margin-top: 2px; }
+.address-block .name { font-weight: var(--font-weight-semibold); color: var(--text-primary); margin-bottom: 2px; }
+.address-block .lines { color: var(--text-secondary); line-height: 1.55; font-size: var(--font-size-sm); }
+.address-block .empty-hint { color: var(--text-tertiary); font-style: italic; font-size: var(--font-size-sm); }
+.address-block .alt-link {
+  display: inline-flex; align-items: center; gap: 4px; margin-top: 6px;
+  font-size: var(--font-size-sm); color: var(--accent-primary); text-decoration: none;
+  font-weight: var(--font-weight-semibold);
+}
+.address-block .alt-link:hover { text-decoration: underline; }
+
+.inline-help {
+  display: inline-block; width: 14px; height: 14px; border-radius: var(--radius-full);
+  background: var(--bg-tertiary); color: var(--text-tertiary);
+  font-size: var(--font-size-xs); text-align: center; line-height: 14px; font-weight: var(--font-weight-bold);
+  cursor: help;
+}
+
+/* === Action-Bar (Sticky-Footer, validation lebt hier) === */
+.action-bar {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 10;
+  background: var(--bg-card); border-top: 1px solid var(--border-default);
+  padding: 10px var(--space-lg);
+  display: flex; gap: var(--space-sm); align-items: center;
+  box-shadow: 0 -4px 16px rgba(var(--color-shadow), 0.06);
+}
+.action-bar .lead {
+  flex: 1; font-size: var(--font-size-md); color: var(--text-secondary);
+  display: flex; align-items: center; gap: var(--space-sm);
+}
+.action-bar .lead.ok { color: var(--success); font-weight: var(--font-weight-semibold); }
+.action-bar .lead.warn { color: var(--warn); font-weight: var(--font-weight-semibold); }
+.action-bar .lead .jump-link {
+  font-size: var(--font-size-sm); color: var(--warn); text-decoration: underline;
+  cursor: pointer; margin-left: var(--space-sm); font-weight: var(--font-weight-semibold);
+}
+.btn {
+  font-family: var(--font-sans); font-size: var(--font-size-md);
+  padding: 7px 14px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default); background: var(--bg-card); cursor: pointer;
+  font-weight: var(--font-weight-semibold); transition: all var(--transition-fast);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn:hover { background: var(--bg-card-hover); border-color: var(--border-strong); }
+.btn-primary {
+  background: var(--accent-primary); color: var(--accent-primary-text);
+  border-color: var(--accent-primary);
+}
+.btn-primary:hover { background: var(--accent-primary-hover); border-color: var(--accent-primary-hover); }
+.btn-primary:disabled {
+  background: var(--border-default); border-color: var(--border-default);
+  color: var(--bg-card); cursor: not-allowed;
+}
+.btn-ghost { border-color: transparent; background: transparent; }
+.btn-ghost:hover { background: var(--bg-tertiary); }
+.btn .kbd-hint {
+  font-family: var(--font-mono); font-size: var(--font-size-xs);
+  background: var(--kbd-on-primary); padding: 1px 5px; border-radius: var(--radius-sm); margin-left: 4px;
+}
+
+.main { position: relative; }
+</style>
+</head>
+<body>
+
+<div class="appshell">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="cx-mark">⌖</div>
+      <span class="module">ops</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Tagesgeschäft</div>
+        <div class="sidebar-item">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+          Übersicht
+        </div>
+        <div class="sidebar-item active">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h18M3 17h18"/><path d="M7 3v18M17 3v18"/></svg>
+          Projekte<span class="count">847</span>
+        </div>
+        <div class="sidebar-item">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Angebote &amp; Aufträge<span class="count">3258</span>
+        </div>
+        <div class="sidebar-item">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          Lager
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Stammdaten</div>
+        <div class="sidebar-item">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+          Artikel<span class="count">2549</span>
+        </div>
+        <div class="sidebar-item">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Kunden
+        </div>
+      </div>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <!-- Topbar 48px: Crumbs links, Cmd-K + User rechts -->
+    <div class="topbar">
+      <div class="crumbs">
+        <a href="#">Projekte</a>
+        <span>›</span>
+        <span class="here">Neues Projekt</span>
+        <span class="num">26-1438</span>
+      </div>
+      <div class="topbar-actions">
+        <span class="cmdk-pill" title="Tastenkürzel-Menü öffnen — Schnellzugriff für erfahrene Nutzer">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          Schnellzugriff
+          <kbd>Strg+K</kbd>
+        </span>
+        <span class="user-tag">
+          <span class="avatar">MM</span>
+          Marlene Müller
+        </span>
+      </div>
+    </div>
+
+    <!-- Title-Bar — einzeilig, 50px hoch -->
+    <div class="title-bar">
+      <span class="num">26-1438</span>
+      <input type="text" class="title-input" placeholder="Projekt-Titel — z.B. Müller GmbH · Sommerfest 2026" />
+      <div class="stats-inline">
+        <span><span class="stat-label">Dauer</span><span class="stat-value empty">—</span></span>
+        <span class="stat-sep">·</span>
+        <span><span class="stat-label">Crew-Tage</span><span class="stat-value empty">—</span></span>
+      </div>
+    </div>
+
+    <!-- Workspace — die nutzbare Fläche -->
+    <div class="workspace">
+      <div class="layout">
+
+        <!-- LEFT COLUMN -->
+        <div>
+          <!-- KUNDE -->
+          <div class="card" id="kunde-card">
+            <div class="card-head">
+              <svg class="head-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <h3>Kunde</h3>
+              <div class="desc">Wer beauftragt das Projekt?</div>
+            </div>
+            <div class="field required-empty">
+              <label>Kunde<span class="req">*</span></label>
+              <input type="text" placeholder="Tippe Firma oder Name…">
+              <div class="field-help">Vorschläge erscheinen live · <a href="#">Neuen Kunden anlegen →</a></div>
+            </div>
+            <div class="field-row three">
+              <div class="field">
+                <label>Ansprechpartner <span class="free">freiwillig</span></label>
+                <input type="text" placeholder="Name beim Kunden">
+              </div>
+              <div class="field">
+                <label>Telefon <span class="free">freiwillig</span></label>
+                <input type="text" placeholder="z.B. 0151-123 4567">
+              </div>
+              <div class="field">
+                <label>Bestellnr. vom Kunden <span class="free">freiwillig</span></label>
+                <input type="text" placeholder="z.B. 4500-1234">
+              </div>
+            </div>
+          </div>
+
+          <!-- ZEITRAUM — Crew-Pattern: 2 inputs + Live-Dauer-Pill -->
+          <div class="card">
+            <div class="card-head">
+              <svg class="head-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <h3>Zeitraum</h3>
+              <div class="desc">Wann findet das Event statt?</div>
+            </div>
+            <div class="field required-empty" style="margin-bottom: var(--space-3sm);">
+              <div class="zeitraum-row">
+                <div class="field" style="margin-bottom:0;">
+                  <label>Erster Tag<span class="req">*</span></label>
+                  <input type="date">
+                </div>
+                <div class="field" style="margin-bottom:0;">
+                  <label>Letzter Tag<span class="req">*</span></label>
+                  <input type="date">
+                </div>
+                <div class="duration-pill empty" title="Dauer in Tagen — wird berechnet sobald beide Datumsfelder gefüllt sind">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  — Tage
+                </div>
+              </div>
+              <div class="field-help" style="margin-top: var(--space-2xs);">Uhrzeit kannst du <a href="#">später ergänzen</a> wenn sie feststeht.</div>
+            </div>
+            <div class="field" style="margin-bottom: var(--space-3sm);">
+              <label>Berechnete Miettage <span class="free">freiwillig — überschreiben wenn anders abgerechnet</span></label>
+              <div style="display:flex; align-items:center; gap: var(--space-sm);">
+                <input type="number" min="1" placeholder="—" style="width: 100px;">
+                <span style="font-size: var(--font-size-sm); color: var(--text-tertiary);">Standard: gleich wie Mietzeitraum. Z.B. bei Wochenenden oft weniger.</span>
+              </div>
+            </div>
+            <div class="field" style="margin-bottom: 0;">
+              <label>Auf-/Abbau-Tage <span class="free">freiwillig</span></label>
+              <div class="field-row">
+                <div class="field" style="margin-bottom:0;">
+                  <input type="number" min="0" max="14" value="0" placeholder="0">
+                  <div class="field-help">Tage VOR Event</div>
+                </div>
+                <div class="field" style="margin-bottom:0;">
+                  <input type="number" min="0" max="14" value="0" placeholder="0">
+                  <div class="field-help">Tage NACH Event</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LOCATION -->
+          <div class="card">
+            <div class="card-head">
+              <svg class="head-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <h3>Veranstaltungsort</h3>
+              <div class="desc">Wo wird das Event stattfinden?</div>
+            </div>
+            <label class="toggle-row">
+              <input type="checkbox" checked>
+              <span class="switch"></span>
+              <div>
+                <div class="label">Findet beim Kunden statt</div>
+                <div class="sub">Adresse aus Kunden-Stammdaten verwenden.</div>
+              </div>
+            </label>
+            <div class="address-block empty">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <div>
+                <div class="empty-hint">Adresse erscheint hier sobald du oben einen Kunden ausgewählt hast.</div>
+                <a href="#" class="alt-link">Anderer Veranstaltungsort? →</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- LIEFERUNG -->
+          <div class="card">
+            <div class="card-head">
+              <svg class="head-icon muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              <h3>Lieferung</h3>
+              <div class="desc">Wie kommt das Material hin und zurück?</div>
+              <div class="free-tag">freiwillig</div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label>Hinfahrt</label>
+                <select>
+                  <option>Kunde holt selbst ab</option>
+                  <option>Wir bringen mit eigenem LKW</option>
+                  <option>Spedition fährt</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Rückfahrt</label>
+                <select>
+                  <option>Kunde bringt selbst zurück</option>
+                  <option>Wir holen mit eigenem LKW ab</option>
+                  <option>Spedition fährt</option>
+                </select>
+              </div>
+            </div>
+            <div class="field" style="margin-bottom: 0;">
+              <label>Hinweise <span class="free">freiwillig</span></label>
+              <textarea placeholder="z.B. Kran erforderlich, Tor 3 nutzen, Empfang fragen…"></textarea>
+            </div>
+          </div>
+
+          <!-- INTERNE NOTIZEN -->
+          <div class="card">
+            <div class="card-head">
+              <svg class="head-icon muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+              <h3>Interne Notizen</h3>
+              <div class="desc">Nur Team-intern. Geht NICHT an den Kunden.</div>
+              <div class="free-tag">freiwillig</div>
+            </div>
+            <div class="field" style="margin-bottom: 0;">
+              <textarea placeholder="z.B. „Kunde mag keine Verzögerung", „Kran beim letzten Mal kaputt"…" style="min-height: 70px;"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div>
+          <!-- STATUS -->
+          <div class="card">
+            <div class="card-head">
+              <svg class="head-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <h3>Status &amp; Betreuung</h3>
+            </div>
+            <div class="field">
+              <label>Phase</label>
+              <select>
+                <option>Entwurf — wird gerade angelegt</option>
+                <option>Anfrage — Kunde hat angefragt</option>
+                <option>In Planung — Angebot wird erstellt</option>
+                <option>Bestätigt — Auftrag steht</option>
+                <option>Abgeschlossen — alles erledigt</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Art</label>
+              <select>
+                <option>— bitte wählen —</option>
+                <option>Einzelne Veranstaltung</option>
+                <option>Dauermiete</option>
+                <option>Tournee mit mehreren Stops</option>
+                <option>Festival</option>
+              </select>
+            </div>
+            <div class="field" style="margin-bottom: 0;">
+              <label>Wer betreut</label>
+              <select>
+                <option selected>Marlene Müller (du)</option>
+                <option>Patrick Scharf</option>
+                <option>Florian Christof</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ABRECHNUNG -->
+          <div class="card">
+            <div class="card-head">
+              <svg class="head-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <h3>Abrechnung</h3>
+            </div>
+            <div class="field">
+              <label>Mehrwertsteuer</label>
+              <select>
+                <option>19% MwSt (Standard, deutsche Kunden)</option>
+                <option>EU-Geschäftskunde ohne MwSt (Reverse-Charge)</option>
+                <option>Drittland — keine MwSt</option>
+              </select>
+              <div class="field-help">Aus Kunden-Stammdaten — nur ändern wenn nötig.</div>
+            </div>
+            <div class="field">
+              <label>Zahlungsfrist</label>
+              <select>
+                <option>Sofort (7 Tage)</option>
+                <option>14 Tage netto</option>
+                <option>30 Tage netto</option>
+                <option>50% Anzahlung, Rest nach Show</option>
+              </select>
+            </div>
+            <div class="field" style="margin-bottom: 0;">
+              <label>
+                Buchungskonto
+                <span class="inline-help" title="Buchhaltungs-Sammelkonto für DATEV-Export. Im Zweifel: 8400 (Erlöse 19% Deutschland).">?</span>
+              </label>
+              <select>
+                <option>8400 — Erlöse 19% (Standard)</option>
+                <option>8336 — Erlöse EU</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ERINNERUNG -->
+          <div class="card">
+            <div class="card-head">
+              <svg class="head-icon muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <h3>Erinnerung</h3>
+              <div class="free-tag">freiwillig</div>
+            </div>
+            <div class="field" style="margin-bottom: 0;">
+              <input type="date">
+              <div class="field-help">Taucht an dem Tag im Dashboard wieder auf.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Sticky Action-Bar — Validation + CTAs in einer Zeile -->
+    <div class="action-bar">
+      <span class="lead warn">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Noch fehlt: Kunde · Zeitraum
+        <a class="jump-link" href="#kunde-card">→ Springen</a>
+      </span>
+      <button class="btn btn-ghost">Abbrechen</button>
+      <button class="btn btn-primary" disabled title="Bitte Kunde und Zeitraum eintragen, dann wird der Button aktiv.">
+        Projekt anlegen
+        <span class="kbd-hint" style="background:rgba(255,255,255,0.12);">Strg+S</span>
+      </button>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

@@ -23,6 +23,14 @@ export interface MultiSelectProps<V extends string = string> {
   /** Optionaler Header im Dropdown */
   header?: ReactNode;
   disabled?: boolean;
+  /**
+   * Exclude-Mode (Filter „was NICHT zeigen"):
+   * - Häkchen-Logik invertiert: alle defaultmäßig mit Häkchen, User entfernt
+   *   Häkchen für was er ausblenden will. Toggle behält die selbe Semantik
+   *   in `values` (= ausgeblendete Werte), nur die UI-Anzeige ist invertiert.
+   * - triggerLabel: „Alle sichtbar" bei leer, sonst „N ausgeblendet".
+   */
+  excludeMode?: boolean;
 }
 
 export function MultiSelect<V extends string = string>({
@@ -33,6 +41,7 @@ export function MultiSelect<V extends string = string>({
   trigger,
   header,
   disabled,
+  excludeMode,
 }: MultiSelectProps<V>) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -59,6 +68,11 @@ export function MultiSelect<V extends string = string>({
   };
 
   const triggerLabel: string = (() => {
+    if (excludeMode) {
+      if (values.length === 0) return placeholder; // Caller sollte „Alle sichtbar" o.ä. übergeben
+      if (values.length === options.length) return 'Alle ausgeblendet';
+      return `${values.length} ausgeblendet`;
+    }
     if (values.length === 0) return placeholder;
     if (values.length === options.length) return 'Alle';
     if (values.length === 1) {
@@ -133,7 +147,10 @@ export function MultiSelect<V extends string = string>({
             </div>
           )}
           {options.map((opt) => {
-            const checked = values.includes(opt.value);
+            // exclude-Mode: visuelles checked = nicht-in-values (=sichtbar).
+            // Toggle-Logik bleibt: values enthält die ausgeblendeten Items.
+            const inExclusions = values.includes(opt.value);
+            const checked = excludeMode ? !inExclusions : inExclusions;
             return (
               <div
                 key={opt.value}

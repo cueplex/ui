@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<title>cueplex ops · Projekt anlegen · 3-Varianten-Vergleich</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* === Tokens 1:1 aus cueplex/ui/src/theme/index.css === */
+:root {
+  --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 32px; --space-2xl: 48px;
+  --radius-sm: 8px; --radius-md: 10px; --radius-lg: 14px; --radius-full: 9999px;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-size-xs: 10px; --font-size-sm: 11px; --font-size-body: 13px; --font-size-md: 14px; --font-size-lg: 16px; --font-size-xl: 22px;
+  --font-weight-normal: 400; --font-weight-medium: 500; --font-weight-semibold: 600; --font-weight-bold: 700;
+  --sidebar-width: 224px; --header-height: 52px;
+  --transition-fast: 150ms ease;
+}
+[data-theme="light"] {
+  --bg-primary: #FAF8F5; --bg-secondary: #F3F0EB; --bg-tertiary: #EBE7E0;
+  --bg-card: #FFFFFF; --bg-card-hover: #FBF9F6; --bg-input: #FFFFFF;
+  --text-primary: #1D1B16; --text-secondary: #6B6558; --text-tertiary: #9B9488;
+  --border-light: #E8E4DD; --border-default: #D9D4CB; --border-strong: #C4BEB4;
+  --accent-primary: #5B7A5E; --accent-primary-hover: #4A6A4D; --accent-primary-text: #FFFFFF;
+  --status-entwurf: #9B9488; --status-entwurf-bg: #F3F0EB;
+  --status-gesendet: #C4A44A; --status-gesendet-bg: #FBF5E6;
+  --status-beauftragt: #5B8A5E; --status-beauftragt-bg: #EFF6EF;
+  --status-abgelehnt: #B85C5C; --status-abgelehnt-bg: #FAEFEF;
+  --color-shadow: 120, 110, 90;
+  --shadow-sm: 0 1px 2px rgba(var(--color-shadow), 0.06);
+  --shadow-md: 0 4px 12px rgba(var(--color-shadow), 0.08);
+  --shadow-lg: 0 8px 24px rgba(var(--color-shadow), 0.12);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-tertiary); color: var(--text-primary);
+  font-size: var(--font-size-body); line-height: 1.5; -webkit-font-smoothing: antialiased;
+}
+
+/* === Page-Intro === */
+.intro {
+  padding: 18px 28px; background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-default);
+}
+.intro h1 { margin: 0 0 4px; font-size: var(--font-size-xl); font-weight: 700; }
+.intro p { margin: 0; font-size: var(--font-size-sm); color: var(--text-secondary); max-width: 800px; }
+.toc {
+  display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;
+}
+.toc a {
+  font-size: var(--font-size-sm); padding: 4px 10px; border-radius: var(--radius-sm);
+  background: var(--bg-card); color: var(--text-primary); text-decoration: none;
+  border: 1px solid var(--border-light); font-weight: var(--font-weight-medium);
+  transition: background var(--transition-fast);
+}
+.toc a:hover { background: var(--bg-card-hover); }
+
+/* === Variant-Banner === */
+.variant-banner {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-default);
+  border-bottom: 1px solid var(--border-default);
+  padding: 16px 28px;
+  display: flex; align-items: center; gap: 16px;
+  font-size: var(--font-size-sm); color: var(--text-secondary);
+  position: sticky; top: 0; z-index: 10; backdrop-filter: blur(6px);
+}
+.variant-banner .pill {
+  font-family: var(--font-mono); font-size: 10px;
+  background: var(--accent-primary); color: var(--accent-primary-text);
+  padding: 3px 10px; border-radius: var(--radius-full); font-weight: 700;
+}
+.variant-banner h2 { margin: 0; font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary); }
+.variant-banner .desc { color: var(--text-secondary); }
+
+/* === AppShell-Snippet === */
+.appshell {
+  display: flex; height: 880px; overflow: hidden;
+  background: var(--bg-primary); margin: 16px 28px; border-radius: var(--radius-md);
+  border: 1px solid var(--border-light); box-shadow: var(--shadow-md);
+}
+.sidebar {
+  width: var(--sidebar-width); background: var(--bg-secondary);
+  border-right: 1px solid var(--border-light);
+  display: flex; flex-direction: column; flex-shrink: 0;
+}
+.sidebar-logo {
+  height: var(--header-height); padding: 0 14px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex; align-items: center; gap: 9px;
+}
+.sidebar-logo .cx { font-family: var(--font-mono); font-weight: 700; font-size: 16px; color: var(--text-primary); }
+.sidebar-logo .module { font-size: var(--font-size-sm); color: var(--text-secondary); font-weight: 500; }
+.sidebar-nav { padding: 12px 6px; flex: 1; overflow-y: auto; }
+.sidebar-section { margin-bottom: 16px; }
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  padding: 4px 10px; margin-bottom: 4px;
+}
+.sidebar-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: var(--radius-sm);
+  color: var(--text-secondary); font-size: var(--font-size-body);
+  cursor: pointer; transition: background var(--transition-fast);
+}
+.sidebar-item:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+.sidebar-item.active { background: var(--bg-tertiary); color: var(--text-primary); font-weight: 600; }
+.sidebar-item .ico { width: 16px; height: 16px; opacity: 0.6; }
+.sidebar-item.active .ico { opacity: 1; }
+.sidebar-item .count {
+  margin-left: auto; font-family: var(--font-mono); font-size: 10px;
+  color: var(--text-tertiary);
+}
+.sidebar-item.active .count { color: var(--text-primary); }
+
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.main-header {
+  height: var(--header-height); border-bottom: 1px solid var(--border-light);
+  display: flex; align-items: center; padding: 0 24px; gap: 16px;
+  background: var(--bg-primary);
+}
+.main-header h1 { margin: 0; font-size: var(--font-size-lg); font-weight: 600; }
+.main-header .crumbs {
+  font-size: var(--font-size-sm); color: var(--text-tertiary);
+}
+.main-header .crumbs a { color: var(--text-secondary); text-decoration: none; }
+.main-header .crumbs a:hover { color: var(--text-primary); }
+.main-header .actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.btn {
+  font-size: var(--font-size-body); padding: 6px 14px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default); background: var(--bg-card); cursor: pointer;
+  font-weight: var(--font-weight-medium); transition: all var(--transition-fast);
+}
+.btn:hover { background: var(--bg-card-hover); }
+.btn-primary {
+  background: var(--accent-primary); color: var(--accent-primary-text);
+  border-color: var(--accent-primary);
+}
+.btn-primary:hover { background: var(--accent-primary-hover); border-color: var(--accent-primary-hover); }
+.btn-ghost { border-color: transparent; background: transparent; }
+.btn-ghost:hover { background: var(--bg-tertiary); }
+
+.main-body { flex: 1; overflow-y: auto; padding: 24px; background: var(--bg-primary); }
+
+/* === Form-Primitives === */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 32px; }
+.form-grid.full { grid-template-columns: 1fr; }
+.form-section {
+  background: var(--bg-card); border: 1px solid var(--border-light);
+  border-radius: var(--radius-md); padding: 20px; margin-bottom: 16px;
+}
+.form-section h3 {
+  margin: 0 0 14px; font-size: var(--font-size-sm); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary);
+}
+.field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.field label {
+  font-size: var(--font-size-xs); font-weight: 600; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.field input[type="text"], .field input[type="number"], .field input[type="date"],
+.field input[type="datetime-local"], .field select, .field textarea {
+  font-family: var(--font-sans); font-size: var(--font-size-body);
+  padding: 8px 10px; border: 1px solid var(--border-default); border-radius: var(--radius-sm);
+  background: var(--bg-input); color: var(--text-primary);
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none; border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(91, 122, 94, 0.12);
+}
+.field textarea { min-height: 80px; resize: vertical; font-family: var(--font-sans); }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field-row.three { grid-template-columns: 1fr 1fr 1fr; }
+.field-row.four { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.field-row.start-end { grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; }
+.field-row.start-end .arrow { color: var(--text-tertiary); }
+.checkbox-row {
+  display: flex; align-items: center; gap: 8px; padding: 10px 0;
+  font-size: var(--font-size-sm);
+}
+.checkbox-row input[type="checkbox"] { accent-color: var(--accent-primary); width: 14px; height: 14px; }
+
+.status-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: var(--radius-full);
+  background: var(--status-entwurf-bg); color: var(--status-entwurf);
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.status-pill.gesendet { background: var(--status-gesendet-bg); color: var(--status-gesendet); }
+.status-pill.beauftragt { background: var(--status-beauftragt-bg); color: var(--status-beauftragt); }
+.status-pill.abgelehnt { background: var(--status-abgelehnt-bg); color: var(--status-abgelehnt); }
+
+.help-hint { font-size: var(--font-size-xs); color: var(--text-tertiary); margin-top: 4px; }
+.computed { font-family: var(--font-mono); font-size: var(--font-size-sm); color: var(--text-secondary); }
+
+/* === Variante-A spezifisch (klassisches Long-Form) === */
+.va .doc-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+}
+.va .doc-header .doc-num {
+  font-family: var(--font-mono); font-weight: 700; font-size: var(--font-size-md); color: var(--text-tertiary);
+}
+.va .doc-header h2 { margin: 0; font-size: var(--font-size-lg); font-weight: 600; }
+.va .doc-header .meta {
+  font-size: var(--font-size-sm); color: var(--text-secondary);
+}
+.va .doc-header .spacer { flex: 1; }
+
+/* === Variante-B spezifisch (Wizard) === */
+.vb-wizard-stepper {
+  display: flex; align-items: center; padding: 0 0 24px;
+  border-bottom: 1px solid var(--border-light); margin-bottom: 24px;
+}
+.vb-step {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: var(--radius-full);
+  font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);
+  color: var(--text-tertiary);
+}
+.vb-step .num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--bg-tertiary); color: var(--text-tertiary);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+}
+.vb-step.done { color: var(--text-secondary); }
+.vb-step.done .num { background: var(--accent-primary); color: var(--accent-primary-text); }
+.vb-step.active { color: var(--text-primary); font-weight: 600; }
+.vb-step.active .num {
+  background: var(--accent-primary); color: var(--accent-primary-text);
+  box-shadow: 0 0 0 4px rgba(91, 122, 94, 0.15);
+}
+.vb-step-arrow { color: var(--text-tertiary); margin: 0 6px; font-size: 12px; }
+.vb-card {
+  background: var(--bg-card); border: 1px solid var(--border-light);
+  border-radius: var(--radius-md); padding: 28px; max-width: 720px; margin: 0 auto;
+}
+.vb-card h2 { margin: 0 0 6px; font-size: var(--font-size-xl); font-weight: 700; }
+.vb-card .lead { font-size: var(--font-size-md); color: var(--text-secondary); margin-bottom: 24px; }
+.vb-footer {
+  display: flex; gap: 8px; margin-top: 32px; padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+}
+.vb-footer .spacer { flex: 1; }
+
+/* === Variante-C spezifisch (Side-Panel) === */
+.vc .layout {
+  display: grid; grid-template-columns: 1fr 480px; height: 100%;
+}
+.vc .list-side { overflow-y: auto; padding: 24px; background: var(--bg-primary); }
+.vc .form-side {
+  background: var(--bg-secondary); border-left: 1px solid var(--border-default);
+  overflow-y: auto; padding: 24px; box-shadow: -4px 0 16px rgba(var(--color-shadow), 0.08);
+}
+.vc .form-side h2 { margin: 0 0 4px; font-size: var(--font-size-lg); font-weight: 600; }
+.vc .form-side .crumb { font-size: var(--font-size-xs); color: var(--text-tertiary); margin-bottom: 16px; }
+.vc .list-row {
+  display: grid; grid-template-columns: 80px 1fr 200px 120px 120px;
+  gap: 16px; align-items: center;
+  padding: 10px 14px; border-bottom: 1px solid var(--border-light); font-size: var(--font-size-sm);
+}
+.vc .list-row:hover { background: var(--bg-card-hover); }
+.vc .list-row .num { font-family: var(--font-mono); color: var(--text-tertiary); }
+.vc .list-row.sel { background: var(--bg-tertiary); }
+.vc .list-row .title { font-weight: 500; color: var(--text-primary); }
+.vc .list-row .client { color: var(--text-secondary); }
+.vc .list-row .date { font-family: var(--font-mono); color: var(--text-secondary); font-size: var(--font-size-xs); }
+
+.vc .new-card {
+  background: var(--bg-card); border: 2px dashed var(--accent-primary);
+  border-radius: var(--radius-md); padding: 18px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer; margin-bottom: 16px;
+  font-weight: 500; color: var(--accent-primary);
+}
+.vc .new-card .plus {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--accent-primary); color: var(--accent-primary-text);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 700;
+}
+
+/* === Toolbar in Variante-C List-Side === */
+.vc-toolbar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 14px; background: var(--bg-card);
+  border-radius: var(--radius-md); border: 1px solid var(--border-light);
+  margin-bottom: 12px;
+}
+.vc-toolbar input {
+  flex: 1; border: none; background: transparent; font-size: var(--font-size-sm);
+  padding: 4px 0;
+}
+.vc-toolbar input:focus { outline: none; }
+.vc-toolbar .filter-pill {
+  font-size: var(--font-size-xs); padding: 4px 10px; border-radius: var(--radius-full);
+  background: var(--bg-tertiary); color: var(--text-secondary); cursor: pointer;
+}
+.vc-toolbar .filter-pill.active {
+  background: var(--text-primary); color: var(--bg-primary);
+}
+
+/* Sticky Footer Action-Bar (Variante A) */
+.action-bar {
+  position: sticky; bottom: 0;
+  display: flex; gap: 8px; padding: 14px 0;
+  background: linear-gradient(to top, var(--bg-primary) 80%, transparent);
+  margin-top: 24px;
+}
+.action-bar .spacer { flex: 1; }
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>cueplex ops · Projekt anlegen — 3 Mockup-Varianten</h1>
+  <p>Alle 3 nutzen die echten cueplex-UI-Tokens, AppShell + SidebarShell, und realistische Felder aus der EventWorx-Recherche (Tour 27.04.2026 22:30–23:55). Die Felder-Inventur ist im Plan-File <code>~/.claude/plans/eventworx-projekte-tour-2026-04-27.md</code> dokumentiert. Datenmodell-Vorschlag liegt in <code>~/.claude/plans/cueplex-projects-datenmodell-2026-04-27.md</code>.</p>
+  <div class="toc">
+    <a href="#variant-a">▾ A · Klassisches Long-Form</a>
+    <a href="#variant-b">▾ B · Wizard (mehrstufig)</a>
+    <a href="#variant-c">▾ C · Side-Panel (Inline-Edit in Liste)</a>
+  </div>
+</div>
+
+<!-- ======================== VARIANTE A · LONG-FORM ======================== -->
+<a id="variant-a"></a>
+<div class="variant-banner">
+  <span class="pill">A</span>
+  <h2>Klassisches Long-Form (1-Page-Anlage, 2-Spalten-Grid)</h2>
+  <span class="desc">Alle Felder auf einer Seite, scrollbar. Wie EventWorx aber mit modernem Spacing, weniger Felder pro Seite, klar gruppiert.</span>
+</div>
+<div class="appshell">
+  <aside class="sidebar">
+    <div class="sidebar-logo"><span class="cx">⌖</span><span class="module">ops</span></div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Disposition</div>
+        <div class="sidebar-item"><span class="ico">⌂</span> Dashboard</div>
+        <div class="sidebar-item active"><span class="ico">▦</span> Projekte<span class="count">847</span></div>
+        <div class="sidebar-item"><span class="ico">⊟</span> Jobs<span class="count">3258</span></div>
+        <div class="sidebar-item"><span class="ico">⌗</span> Bestand</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Stammdaten</div>
+        <div class="sidebar-item"><span class="ico">⌸</span> Hersteller<span class="count">123</span></div>
+        <div class="sidebar-item"><span class="ico">⊞</span> Artikel<span class="count">2549</span></div>
+        <div class="sidebar-item"><span class="ico">◇</span> Cases</div>
+        <div class="sidebar-item"><span class="ico">☷</span> Kunden</div>
+      </div>
+    </nav>
+  </aside>
+  <main class="main va">
+    <div class="main-header">
+      <div class="crumbs"><a href="#">Projekte</a> <span style="color:var(--text-tertiary);">›</span> <span style="color:var(--text-primary);">Neu anlegen</span></div>
+      <span class="status-pill">Entwurf</span>
+      <div class="actions">
+        <button class="btn btn-ghost">Schließen</button>
+        <button class="btn">Zwischenspeichern</button>
+        <button class="btn btn-primary">Speichern + Auftrag erstellen</button>
+      </div>
+    </div>
+    <div class="main-body">
+      <div class="doc-header">
+        <span class="doc-num">26-1438</span>
+        <h2>Neues Projekt</h2>
+        <span class="meta">28.04. – 29.04.2026 · 2 Tage</span>
+        <span class="spacer"></span>
+        <span class="status-pill">Entwurf</span>
+      </div>
+
+      <div class="form-grid">
+        <!-- LEFT COLUMN -->
+        <div>
+          <div class="form-section">
+            <h3>Kunde</h3>
+            <div class="field">
+              <label>Kunde suchen</label>
+              <input type="text" placeholder="Name, Kundennummer, E-Mail …">
+              <div class="help-hint">Suche durchläuft alle Kontakte. Oder <a href="#" style="color:var(--accent-primary);">+ Neuer Kunde anlegen</a></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Ansprechpartner</label><input type="text" placeholder="—"></div>
+              <div class="field"><label>Externe Referenz</label><input type="text" placeholder="Kunden-PO-Nr."></div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Stamm</h3>
+            <div class="field">
+              <label>Titel</label>
+              <input type="text" value="Projekt vom 28.04.2026 — DH fränk Funk · Cameo Lampen" />
+              <div class="help-hint">Default-Format: „Projekt vom DD.MM.YYYY — Kunde · Anlass". Editierbar.</div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Projekt-Nr.</label><input type="text" value="26-1438" readonly style="font-family:var(--font-mono); color:var(--text-tertiary);"></div>
+              <div class="field">
+                <label>Kategorie</label>
+                <select><option>— wählen —</option><option>Veranstaltung</option><option>Dauermiete</option><option>Tour</option><option>Festival</option></select>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Sprache</label><select><option>Deutsch</option><option>English</option></select></div>
+              <div class="field"><label>Branche</label><select><option>—</option><option>Konzert</option><option>Corporate</option><option>Theater</option></select></div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Zeitraum</h3>
+            <div class="field">
+              <label>Mietzeitraum</label>
+              <div class="field-row start-end">
+                <input type="datetime-local" value="2026-04-28T09:00">
+                <span class="arrow">—</span>
+                <input type="datetime-local" value="2026-04-29T18:00">
+              </div>
+              <div class="help-hint">Computed: <span class="computed">2 Tage (Aufbau 0 / Show 2 / Abbau 0)</span></div>
+            </div>
+            <div class="field">
+              <label>Dispo-Zeitraum (Crew)</label>
+              <div class="field-row start-end">
+                <input type="datetime-local" value="2026-04-27T18:00">
+                <span class="arrow">—</span>
+                <input type="datetime-local" value="2026-04-30T08:00">
+              </div>
+              <div class="help-hint">Crew kann früher anreisen / später bleiben (Aufbau- / Abbau-Tag).</div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Location</h3>
+            <div class="checkbox-row">
+              <input type="checkbox" id="locsame" checked><label for="locsame" style="text-transform:none; letter-spacing:0;">Kundenadresse ist auch Veranstaltungsort</label>
+            </div>
+            <div class="field"><label>Veranstaltungsort</label><input type="text" placeholder="—"></div>
+            <div class="field-row"><div class="field"><label>PLZ</label><input type="text"></div><div class="field"><label>Stadt</label><input type="text"></div></div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div>
+          <div class="form-section">
+            <h3>Workflow</h3>
+            <div class="field-row">
+              <div class="field"><label>Status</label><select><option>Entwurf</option><option>Anfrage</option><option>Planung</option><option>Bestätigt</option><option>Abgesagt</option></select></div>
+              <div class="field"><label>Disposition</label><select><option>Artikel disponieren</option><option>Nur Sub-Rental</option><option>Nur Service</option></select></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Sachbearbeiter</label><select><option>Patrick Scharf</option><option>Florian Christof</option></select></div>
+              <div class="field"><label>Wiedervorlage</label><input type="date"></div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Lieferung</h3>
+            <div class="field-row">
+              <div class="field"><label>Anlieferung</label><select><option>Selbstabholung</option><option>Eigener LKW</option><option>Spedition</option></select></div>
+              <div class="field"><label>Rückgabe</label><select><option>Selbstrückgabe</option><option>Eigener LKW</option><option>Spedition</option></select></div>
+            </div>
+            <div class="field"><label>Hinweise</label><textarea placeholder="z.B. Kran erforderlich, Tor 3 nutzen …"></textarea></div>
+          </div>
+
+          <div class="form-section">
+            <h3>Abrechnung</h3>
+            <div class="field-row">
+              <div class="field"><label>Preisliste</label><select><option>Standard 19% MwSt</option><option>EU B2B (Reverse-Charge)</option></select></div>
+              <div class="field"><label>Zahlung</label><select><option>Sofort (7 Tage)</option><option>14 Tage netto</option><option>30 Tage netto</option></select></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Preise in</label><select><option>Netto</option><option>Brutto</option></select></div>
+              <div class="field"><label>Fibu-Konto</label><select><option>auswählen</option><option>8400 — Erlöse 19%</option><option>8336 — Erlöse EU</option></select></div>
+            </div>
+            <div class="checkbox-row">
+              <input type="checkbox" id="invsame" checked><label for="invsame" style="text-transform:none;letter-spacing:0;">Rechnungsadresse wie Kundenanschrift</label>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Notizen</h3>
+            <div class="field">
+              <label>Interne Notizen</label>
+              <textarea placeholder="Sind nur intern sichtbar, gehen NICHT auf Kunden-Dokumente."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn btn-ghost">Abbrechen</button>
+        <span class="spacer"></span>
+        <button class="btn">Zwischenspeichern</button>
+        <button class="btn btn-primary">Speichern + Angebot anlegen →</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ======================== VARIANTE B · WIZARD ======================== -->
+<a id="variant-b"></a>
+<div class="variant-banner">
+  <span class="pill">B</span>
+  <h2>Wizard (4 Schritte, geführt)</h2>
+  <span class="desc">Modern-Saas-Pattern (Linear/Stripe). Kunde → Stamm → Zeitraum → Abrechnung. Jeder Step nur die Felder die relevant sind. Keine Feld-Wand auf einmal.</span>
+</div>
+<div class="appshell">
+  <aside class="sidebar">
+    <div class="sidebar-logo"><span class="cx">⌖</span><span class="module">ops</span></div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Disposition</div>
+        <div class="sidebar-item"><span class="ico">⌂</span> Dashboard</div>
+        <div class="sidebar-item active"><span class="ico">▦</span> Projekte<span class="count">847</span></div>
+        <div class="sidebar-item"><span class="ico">⊟</span> Jobs<span class="count">3258</span></div>
+        <div class="sidebar-item"><span class="ico">⌗</span> Bestand</div>
+      </div>
+    </nav>
+  </aside>
+  <main class="main vb">
+    <div class="main-header">
+      <div class="crumbs"><a href="#">Projekte</a> <span style="color:var(--text-tertiary);">›</span> <span style="color:var(--text-primary);">Neues Projekt anlegen</span></div>
+      <div class="actions">
+        <button class="btn btn-ghost">Abbrechen</button>
+      </div>
+    </div>
+    <div class="main-body">
+      <!-- Stepper -->
+      <div class="vb-wizard-stepper">
+        <div class="vb-step done"><span class="num">✓</span> Kunde</div>
+        <span class="vb-step-arrow">›</span>
+        <div class="vb-step active"><span class="num">2</span> Stamm + Zeitraum</div>
+        <span class="vb-step-arrow">›</span>
+        <div class="vb-step"><span class="num">3</span> Lieferung</div>
+        <span class="vb-step-arrow">›</span>
+        <div class="vb-step"><span class="num">4</span> Abrechnung</div>
+      </div>
+
+      <!-- Active Step Card -->
+      <div class="vb-card">
+        <h2>Stamm + Zeitraum</h2>
+        <p class="lead">Wann findet das Event statt und worum geht's? Crew-Anreise kann separat geplant werden.</p>
+
+        <div class="field">
+          <label>Titel</label>
+          <input type="text" value="DH fränk Funk · Cameo Lampen — Tagung Frankfurt">
+          <div class="help-hint">Wird im Briefing + auf allen Folge-Dokumenten angezeigt.</div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Kategorie</label>
+            <select><option>Veranstaltung</option><option>Dauermiete</option><option>Tour</option><option>Festival</option></select>
+          </div>
+          <div class="field">
+            <label>Branche</label>
+            <select><option>—</option><option>Konzert</option><option>Corporate</option><option>Theater</option></select>
+          </div>
+        </div>
+
+        <div class="field" style="margin-top: 24px;">
+          <label>Mietzeitraum (Kunde zahlt für)</label>
+          <div class="field-row start-end">
+            <input type="datetime-local" value="2026-04-28T09:00">
+            <span class="arrow">—</span>
+            <input type="datetime-local" value="2026-04-29T18:00">
+          </div>
+          <div class="help-hint"><span class="computed">2 Tage</span> · Show beginnt Montag 09:00, endet Dienstag 18:00.</div>
+        </div>
+
+        <div class="field">
+          <label>Dispo-Zeitraum (Crew + Lager-Disposition)</label>
+          <div class="field-row start-end">
+            <input type="datetime-local" value="2026-04-27T18:00">
+            <span class="arrow">—</span>
+            <input type="datetime-local" value="2026-04-30T08:00">
+          </div>
+          <div class="help-hint">Crew kann früher anreisen + später zurück. Beeinflusst Verfügbarkeits-Check + Hotel-Buchung.</div>
+        </div>
+
+        <div class="field" style="margin-top: 24px;">
+          <label>Veranstaltungsort</label>
+          <div class="checkbox-row" style="padding: 4px 0;">
+            <input type="checkbox" id="b-loc" checked><label for="b-loc" style="text-transform:none; letter-spacing:0;">Wie Kundenadresse</label>
+          </div>
+        </div>
+
+        <div class="vb-footer">
+          <button class="btn btn-ghost">← Zurück</button>
+          <span class="spacer"></span>
+          <button class="btn">Zwischenspeichern</button>
+          <button class="btn btn-primary">Weiter: Lieferung →</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ======================== VARIANTE C · SIDE-PANEL ======================== -->
+<a id="variant-c"></a>
+<div class="variant-banner">
+  <span class="pill">C</span>
+  <h2>Side-Panel (Inline-Edit in Liste, kein Page-Wechsel)</h2>
+  <span class="desc">Linear/Notion-Style. Liste links bleibt sichtbar (Kontext + Quick-Switch zwischen Projekten). Form rechts schiebt rein. Schnell für Power-User die viele Projekte parallel managen.</span>
+</div>
+<div class="appshell">
+  <aside class="sidebar">
+    <div class="sidebar-logo"><span class="cx">⌖</span><span class="module">ops</span></div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Disposition</div>
+        <div class="sidebar-item"><span class="ico">⌂</span> Dashboard</div>
+        <div class="sidebar-item active"><span class="ico">▦</span> Projekte<span class="count">847</span></div>
+        <div class="sidebar-item"><span class="ico">⊟</span> Jobs<span class="count">3258</span></div>
+      </div>
+    </nav>
+  </aside>
+  <main class="main vc">
+    <div class="layout">
+      <div class="list-side">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div>
+            <h1 style="margin:0;font-size:var(--font-size-xl);font-weight:700;">Projekte</h1>
+            <div style="font-size:var(--font-size-sm);color:var(--text-secondary);">847 aktive · Filter: Q2 2026</div>
+          </div>
+          <button class="btn btn-primary">+ Neues Projekt</button>
+        </div>
+
+        <div class="vc-toolbar">
+          <span style="color:var(--text-tertiary);">⌕</span>
+          <input type="text" placeholder="Nummer, Titel, Kunde …">
+          <span class="filter-pill active">Aktiv</span>
+          <span class="filter-pill">Anfrage</span>
+          <span class="filter-pill">Geplant</span>
+          <span class="filter-pill">Archiv</span>
+        </div>
+
+        <div class="new-card">
+          <div class="plus">+</div>
+          <div>
+            <div style="font-weight:600;">Neues Projekt anlegen</div>
+            <div style="font-size:var(--font-size-xs);color:var(--text-tertiary);font-weight:400;">Wird im Side-Panel rechts geöffnet, Kontext bleibt sichtbar.</div>
+          </div>
+        </div>
+
+        <div class="list-row sel">
+          <span class="num">26-1438</span>
+          <span class="title"><span style="font-weight:300;color:var(--text-tertiary);">— neu —</span></span>
+          <span class="client">noch kein Kunde</span>
+          <span class="date">28.04.–29.04.</span>
+          <span class="status-pill">Entwurf</span>
+        </div>
+        <div class="list-row">
+          <span class="num">26-1437</span>
+          <span class="title"><span style="font-weight:300;color:var(--text-tertiary);">Cameo</span> Lampen-Premiere Mainstage</span>
+          <span class="client">Cameo GmbH</span>
+          <span class="date">12.05.–14.05.</span>
+          <span class="status-pill beauftragt">Bestätigt</span>
+        </div>
+        <div class="list-row">
+          <span class="num">26-1435</span>
+          <span class="title">Adorf Festsaal-Roadshow</span>
+          <span class="client">FRANK ADORF Entertainment</span>
+          <span class="date">30.01.–02.02.</span>
+          <span class="status-pill gesendet">Gesendet</span>
+        </div>
+        <div class="list-row">
+          <span class="num">26-1289</span>
+          <span class="title"><span style="font-weight:300;color:var(--text-tertiary);">DH</span> fränk Funk · Cameo Lampen</span>
+          <span class="client">fränk Funk GbR</span>
+          <span class="date">30.04.–04.05.</span>
+          <span class="status-pill beauftragt">Bestätigt</span>
+        </div>
+        <div class="list-row">
+          <span class="num">26-1170</span>
+          <span class="title"><span style="font-weight:300;color:var(--text-tertiary);">AL</span> Flashlight S-Bühne</span>
+          <span class="client">Alphatheta GmbH</span>
+          <span class="date">11.05.–13.05.</span>
+          <span class="status-pill gesendet">Gesendet</span>
+        </div>
+        <div class="list-row">
+          <span class="num">26-1164</span>
+          <span class="title"><span style="font-weight:300;color:var(--text-tertiary);">Toyota</span> 24h Rennen Boulevard</span>
+          <span class="client">Toyota Motorsport</span>
+          <span class="date">11.05.–18.05.</span>
+          <span class="status-pill">Entwurf</span>
+        </div>
+        <div class="list-row">
+          <span class="num">26-1502</span>
+          <span class="title">S&A Rohde · Schwarz Olympiastadion</span>
+          <span class="client">Rohde & Schwarz GmbH</span>
+          <span class="date">13.04.–19.04.</span>
+          <span class="status-pill abgelehnt">Abgesagt</span>
+        </div>
+      </div>
+
+      <div class="form-side">
+        <div class="crumb">Projekte › <span style="color:var(--text-secondary);">Neu anlegen</span></div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <span style="font-family:var(--font-mono);color:var(--text-tertiary);font-weight:700;">26-1438</span>
+          <span class="status-pill">Entwurf</span>
+        </div>
+        <h2>Neues Projekt</h2>
+        <div style="font-size:var(--font-size-sm);color:var(--text-secondary);margin-bottom:20px;">Pflichtfelder mit *. Optional kannst du später ergänzen.</div>
+
+        <div class="field">
+          <label>Kunde *</label>
+          <input type="text" placeholder="Name, Kundennummer …">
+        </div>
+        <div class="field">
+          <label>Titel</label>
+          <input type="text" value="Projekt vom 28.04.2026">
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Kategorie</label><select><option>—</option><option>Veranstaltung</option><option>Dauermiete</option><option>Tour</option></select></div>
+          <div class="field"><label>Sachbearbeiter</label><select><option>Patrick Scharf</option></select></div>
+        </div>
+
+        <div class="field">
+          <label>Mietzeitraum *</label>
+          <div class="field-row start-end">
+            <input type="datetime-local" value="2026-04-28T09:00">
+            <span class="arrow">—</span>
+            <input type="datetime-local" value="2026-04-29T18:00">
+          </div>
+          <div class="help-hint"><span class="computed">2 Tage</span> · Crew-Anreise später separat planbar</div>
+        </div>
+
+        <div class="field">
+          <label>Veranstaltungsort</label>
+          <div class="checkbox-row" style="padding:4px 0;">
+            <input type="checkbox" id="c-loc" checked><label for="c-loc" style="text-transform:none;letter-spacing:0;">Wie Kundenadresse</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Notiz (intern)</label>
+          <textarea placeholder="…"></textarea>
+        </div>
+
+        <div style="margin-top:20px;font-size:var(--font-size-xs);color:var(--text-tertiary);">
+          Erweiterte Felder (Lieferung, Abrechnung, Druckvorlage) erscheinen nach Speichern als ausklappbare Sektionen.
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:24px;padding-top:16px;border-top:1px solid var(--border-light);">
+          <button class="btn btn-ghost">Abbrechen</button>
+          <span style="flex:1;"></span>
+          <button class="btn">Zwischenspeichern</button>
+          <button class="btn btn-primary">Anlegen → Angebot</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div style="padding:32px 28px; background: var(--bg-secondary); border-top: 1px solid var(--border-default); margin-top:16px;">
+  <h3 style="margin:0 0 8px;font-size:var(--font-size-md);">Tradeoff-Vergleich</h3>
+  <table style="border-collapse:collapse;width:100%;font-size:var(--font-size-sm);">
+    <thead><tr style="border-bottom:1px solid var(--border-default);">
+      <th style="text-align:left;padding:8px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.04em;font-size:var(--font-size-xs);">Aspekt</th>
+      <th style="text-align:left;padding:8px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.04em;font-size:var(--font-size-xs);">A · Long-Form</th>
+      <th style="text-align:left;padding:8px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.04em;font-size:var(--font-size-xs);">B · Wizard</th>
+      <th style="text-align:left;padding:8px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.04em;font-size:var(--font-size-xs);">C · Side-Panel</th>
+    </tr></thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:8px;font-weight:500;">Schnellster Weg zum „Speichern"</td><td style="padding:8px;color:var(--text-secondary);">Mittel — viel Scrollen</td><td style="padding:8px;color:var(--text-secondary);">Langsam — 4 Klicks</td><td style="padding:8px;color:var(--text-primary);font-weight:500;">Schnell — Pflichtfelder only</td></tr>
+      <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:8px;font-weight:500;">Power-User-Effizienz (10+ Projekte/Tag)</td><td style="padding:8px;color:var(--text-secondary);">OK</td><td style="padding:8px;color:var(--text-secondary);">Schwach (zu viele Klicks)</td><td style="padding:8px;color:var(--text-primary);font-weight:500;">Sehr gut (Liste bleibt sichtbar)</td></tr>
+      <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:8px;font-weight:500;">Onboarding neuer User</td><td style="padding:8px;color:var(--text-secondary);">Schwach (Feld-Wand)</td><td style="padding:8px;color:var(--text-primary);font-weight:500;">Sehr gut (geführt)</td><td style="padding:8px;color:var(--text-secondary);">OK</td></tr>
+      <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:8px;font-weight:500;">Komplexe Projekte (alle Felder pflegen)</td><td style="padding:8px;color:var(--text-primary);font-weight:500;">Sehr gut (alles auf einen Blick)</td><td style="padding:8px;color:var(--text-secondary);">OK</td><td style="padding:8px;color:var(--text-secondary);">Schwach (kleines Panel)</td></tr>
+      <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:8px;font-weight:500;">Mobile-Ready</td><td style="padding:8px;color:var(--text-secondary);">Mittel</td><td style="padding:8px;color:var(--text-primary);font-weight:500;">Sehr gut</td><td style="padding:8px;color:var(--text-secondary);">Schwach</td></tr>
+      <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:8px;font-weight:500;">Implementierungs-Aufwand</td><td style="padding:8px;color:var(--text-primary);font-weight:500;">~2 Tage (1 Form-Komponente)</td><td style="padding:8px;color:var(--text-secondary);">~3 Tage (Stepper-State + 4 Sub-Forms)</td><td style="padding:8px;color:var(--text-secondary);">~3 Tage (Liste + Slide-Panel + Sync)</td></tr>
+      <tr><td style="padding:8px;font-weight:500;">Patrick-Match (Dispatch-Power-User)</td><td style="padding:8px;color:var(--text-secondary);">★★★</td><td style="padding:8px;color:var(--text-secondary);">★★ (zu viel Klicks)</td><td style="padding:8px;color:var(--text-primary);font-weight:500;">★★★★ (Power-flow)</td></tr>
+    </tbody>
+  </table>
+  <p style="margin:16px 0 0;font-size:var(--font-size-sm);color:var(--text-secondary);">
+    <strong style="color:var(--text-primary);">Empfehlung:</strong> <strong>C als Default</strong> für Power-User (Patrick), <strong>A als Erweiterung</strong> wenn alle Felder gepflegt werden müssen (z.B. komplexe Tour mit 5 Stops). <strong>B</strong> nur als Onboarding-Variante für neue User die das System noch nicht kennen — eher Skip.
+  </p>
+</div>
+
+</body>
+</html>
