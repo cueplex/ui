@@ -6,17 +6,15 @@ import type { CSSProperties } from 'react';
 import { Pill } from '../data/DataPrimitives';
 
 // Vereinigung aller Modul-spezifischen Status (crew + ops). Module nutzen ihre relevante Teilmenge.
+// 28.04.2026: aufbau/show/abbau zu 'veranstaltung' zusammengelegt, abgerechnet/aktiv/archiviert
+// raus (zu abgeschlossen). Neu: 'packen' zwischen bestaetigt und veranstaltung.
 export const STATUS_KEYS = [
   'anfrage',
   'planung',
   'bestaetigt',
-  'aufbau',
-  'show',
-  'abbau',
-  'aktiv',
-  'abgerechnet',
+  'packen',
+  'veranstaltung',
   'abgeschlossen',
-  'archiviert',
   'storniert',
 ] as const;
 
@@ -26,13 +24,9 @@ export const STATUS_LABELS: Record<StatusKey, string> = {
   anfrage: 'Anfrage',
   planung: 'Planung',
   bestaetigt: 'Bestätigt',
-  aufbau: 'Aufbau',
-  show: 'Show',
-  abbau: 'Abbau',
-  aktiv: 'Aktiv',
-  abgerechnet: 'Abgerechnet',
+  packen: 'Packen',
+  veranstaltung: 'Veranstaltung',
   abgeschlossen: 'Abgeschlossen',
-  archiviert: 'Archiviert',
   storniert: 'Storniert',
 };
 
@@ -41,13 +35,9 @@ export const STATUS_COLORS: Record<StatusKey, string> = {
   anfrage: 'var(--status-angefragt)',
   planung: 'var(--status-rueckfrage)',
   bestaetigt: 'var(--status-bestaetigt)',
-  aufbau: 'var(--accent-primary)',
-  show: 'var(--accent-primary)',
-  abbau: 'var(--accent-primary)',
-  aktiv: 'var(--status-bestaetigt)',
-  abgerechnet: 'var(--text-tertiary)',
+  packen: 'var(--status-rueckfrage)',
+  veranstaltung: 'var(--accent-primary)',
   abgeschlossen: 'var(--text-tertiary)',
-  archiviert: 'var(--text-tertiary)',
   storniert: 'var(--status-abgelehnt)',
 };
 
@@ -55,21 +45,15 @@ export const STATUS_BG: Record<StatusKey, string> = {
   anfrage: 'var(--status-angefragt-bg)',
   planung: 'var(--status-rueckfrage-bg, var(--bg-tertiary))',
   bestaetigt: 'var(--status-bestaetigt-bg)',
-  aufbau: 'var(--status-bestaetigt-bg)',
-  show: 'var(--status-bestaetigt-bg)',
-  abbau: 'var(--status-bestaetigt-bg)',
-  aktiv: 'var(--status-bestaetigt-bg)',
-  abgerechnet: 'var(--bg-tertiary)',
+  packen: 'var(--status-rueckfrage-bg, var(--bg-tertiary))',
+  veranstaltung: 'var(--status-bestaetigt-bg)',
   abgeschlossen: 'var(--bg-tertiary)',
-  archiviert: 'var(--bg-tertiary)',
   storniert: 'var(--status-abgelehnt-bg)',
 };
 
 // Items mit diesen Status werden im Gantt/Listen optisch zurueckgesetzt (transparenter).
 export const DIMMED_STATUSES: ReadonlyArray<StatusKey> = [
-  'abgerechnet',
   'abgeschlossen',
-  'archiviert',
   'storniert',
 ];
 
@@ -108,8 +92,9 @@ export function StatusPill({ status, label }: StatusPillProps) {
 
 // Backward-compat: erlaubt ad-hoc-Pill-Mapping fuer Konsumenten die noch Pill direkt nutzen.
 export function statusToPillIntent(status: StatusKey): 'neutral' | 'warn' | 'success' | 'danger' | 'accent' {
-  if (status === 'anfrage' || status === 'planung') return 'warn';
-  if (status === 'bestaetigt' || status === 'aufbau' || status === 'aktiv') return 'success';
+  if (status === 'anfrage' || status === 'planung' || status === 'packen') return 'warn';
+  if (status === 'bestaetigt' || status === 'veranstaltung') return 'success';
+  if (status === 'storniert') return 'danger';
   return 'neutral';
 }
 
