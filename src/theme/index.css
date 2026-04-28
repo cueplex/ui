@@ -122,6 +122,9 @@
   --status-abgelehnt-bg: #FAEFEF;
   --status-rueckfrage: #7A8AB8;
   --status-rueckfrage-bg: #EFF1F8;
+  /* 28.04.2026 (Patrick): helleres Grün für 'veranstaltung'-Status */
+  --status-veranstaltung: #7FBA82;
+  --status-veranstaltung-bg: #EAF5EB;
 
   /* Source badges */
   --source-gruppe: #6A7AAA;
@@ -172,6 +175,9 @@
   --status-abgelehnt-bg: rgba(204, 112, 112, 0.10);
   --status-rueckfrage: #8A9ACA;
   --status-rueckfrage-bg: rgba(138, 154, 202, 0.10);
+  /* 28.04.2026 helleres Grün für veranstaltung — dark-mode angepasst */
+  --status-veranstaltung: #6BC270;
+  --status-veranstaltung-bg: rgba(107, 194, 112, 0.10);
 
   /* Source badges — muted, distinct from status colors */
   --source-gruppe: #8A9ACA;
@@ -264,6 +270,9 @@ button, input, textarea, select {
   --status-abgelehnt-bg: #F5DCE0;
   --status-rueckfrage: #9C7BAD;       /* lavender-violett */
   --status-rueckfrage-bg: #EAE0F0;
+  /* 28.04.2026 veranstaltung in disco — helles minze-grün passt zu rosé */
+  --status-veranstaltung: #A8C8A2;
+  --status-veranstaltung-bg: #E8F0E5;
 
   /* Source badges — distinguishable in der rosé-Welt */
   --source-gruppe: #9C8FB8;           /* dustig-lavender */

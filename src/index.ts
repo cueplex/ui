@@ -52,6 +52,7 @@ export {
   type FilterSectionProps,
   type FilterRowProps,
 } from './feedback/Popover';
+export { ColorLegend, type ColorLegendProps, type ColorLegendItem } from './feedback/ColorLegend';
 
 // Status (Single Source of Truth fuer cueplex Status-Vokabular)
 export {

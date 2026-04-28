@@ -31,12 +31,16 @@ export const STATUS_LABELS: Record<StatusKey, string> = {
 };
 
 // CSS-Variablen-Referenzen (kein hardcoded Hex). Theme-Switch (light/dark/disco) greift automatisch.
+// 28.04.2026 Patrick: packen=orange, veranstaltung=helleres grün.
+// 'angefragt' ist warmes Amber/Gold — paßt für „Packen" (in-progress, achten!).
+// 'bestaetigt' ist standard sage-green — wir nehmen status-bestaetigt-soft für veranstaltung
+// (etwas heller via STATUS_BG-Token-Pattern, falls nicht: explicit lighter green).
 export const STATUS_COLORS: Record<StatusKey, string> = {
   anfrage: 'var(--status-angefragt)',
   planung: 'var(--status-rueckfrage)',
   bestaetigt: 'var(--status-bestaetigt)',
-  packen: 'var(--status-rueckfrage)',
-  veranstaltung: 'var(--accent-primary)',
+  packen: 'var(--status-angefragt)',          // orange/amber
+  veranstaltung: 'var(--status-veranstaltung)', // helleres Grün — Token unten ergänzt
   abgeschlossen: 'var(--text-tertiary)',
   storniert: 'var(--status-abgelehnt)',
 };
@@ -45,8 +49,8 @@ export const STATUS_BG: Record<StatusKey, string> = {
   anfrage: 'var(--status-angefragt-bg)',
   planung: 'var(--status-rueckfrage-bg, var(--bg-tertiary))',
   bestaetigt: 'var(--status-bestaetigt-bg)',
-  packen: 'var(--status-rueckfrage-bg, var(--bg-tertiary))',
-  veranstaltung: 'var(--status-bestaetigt-bg)',
+  packen: 'var(--status-angefragt-bg)',
+  veranstaltung: 'var(--status-veranstaltung-bg)',
   abgeschlossen: 'var(--bg-tertiary)',
   storniert: 'var(--status-abgelehnt-bg)',
 };
