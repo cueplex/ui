@@ -35,6 +35,16 @@ export interface GanttProps {
   /** Item-ID die mit Outline hervorgehoben wird (z.B. ausgewaehltes Projekt). */
   selectedId?: string | null;
   onItemClick?: (item: GanttItem) => void;
+  /**
+   * Doppelklick auf eine Bar — Industry-Standard fuer „Detail-/Edit-Page oeffnen"
+   * (Linear, Notion, Asana, Jira, EventWorx, EasyJob: Single = Select/Drawer,
+   * Double = Open/Edit). Implementierung: Click-Timing per Timeout (~250ms),
+   * weil native HTML `dblclick` IMMER nach `click` feuert — sauberer Single-OR-
+   * Double-Switch geht nur per Timing. Wenn `onItemDoubleClick` gesetzt ist,
+   * wird `onItemClick` um den Timeout verzoegert; bei zweitem Click innerhalb
+   * des Fensters wird der Timeout gecancelt und `onItemDoubleClick` gefeuert.
+   */
+  onItemDoubleClick?: (item: GanttItem) => void;
   /** Wenn keine Items vorhanden — wird ueber dem leeren Grid angezeigt. */
   emptyMessage?: string;
   /** Falls items gefiltert sind (z.B. Status), bleibt die Range stabil basierend auf
@@ -82,6 +92,7 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
     items,
     selectedId,
     onItemClick,
+    onItemDoubleClick,
     emptyMessage,
     rangeReference,
     hideLongTerm = false,
@@ -514,6 +525,7 @@ export const Gantt = forwardRef<GanttHandle, GanttProps>(function Gantt(
               compact={isLong}
               isSelected={isSelected}
               onClick={onItemClick ? () => onItemClick(it) : undefined}
+              onDoubleClick={onItemDoubleClick ? () => onItemDoubleClick(it) : undefined}
             />
           );
         })}
@@ -543,7 +555,15 @@ interface GanttBarProps {
   compact?: boolean;
   isSelected: boolean;
   onClick?: () => void;
+  onDoubleClick?: () => void;
 }
+
+/**
+ * Click-Timing-Window in ms. Linear/Notion/Asana liegen alle bei 250-300ms.
+ * Unter 200ms verpasst man echte Doppelklicks, ueber 350ms fuehlt sich der
+ * Single-Click traege an.
+ */
+const DOUBLE_CLICK_WINDOW_MS = 250;
 
 // Deterministischer Farbgenerator aus item.id: voll variabler Hue, sehr niedrige
 // Saturation (8-15%) damit nichts grell wirkt, Lightness 38-55%. Konsument-Override
@@ -558,7 +578,7 @@ function autoColor(id: string): string {
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
-function GanttBar({ item, left, top, width, height, compact, isSelected, onClick }: GanttBarProps) {
+function GanttBar({ item, left, top, width, height, compact, isSelected, onClick, onDoubleClick }: GanttBarProps) {
   // Default-Tooltip-Lines wenn item.tooltip nicht gesetzt
   const tooltipLines = item.tooltip ?? [
     item.sublabel ? `${item.label} — ${item.sublabel}` : item.label,
@@ -567,12 +587,39 @@ function GanttBar({ item, left, top, width, height, compact, isSelected, onClick
   const { triggerProps, portal } = useTooltip<HTMLDivElement>({ text: tooltipLines });
   const color = item.color || autoColor(item.id);
 
+  // Click-Timing-Logik fuer Single-vs-Double-Click. Nur aktiv wenn beide
+  // Handler gesetzt sind — sonst feuert onClick sofort wie bisher (kein
+  // Latenz-Tradeoff fuer Konsumenten ohne Doppelklick-Bedarf).
+  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+  }, []);
+  const handleClick = useCallback(() => {
+    if (!onClick && !onDoubleClick) return;
+    if (!onDoubleClick) {
+      onClick?.();
+      return;
+    }
+    if (clickTimerRef.current) {
+      clearTimeout(clickTimerRef.current);
+      clickTimerRef.current = null;
+      onDoubleClick();
+      return;
+    }
+    clickTimerRef.current = setTimeout(() => {
+      clickTimerRef.current = null;
+      onClick?.();
+    }, DOUBLE_CLICK_WINDOW_MS);
+  }, [onClick, onDoubleClick]);
+
+  const isClickable = !!(onClick || onDoubleClick);
+
   return (
     <>
       <div
         {...triggerProps}
         data-gantt-bar=""
-        onClick={onClick}
+        onClick={isClickable ? handleClick : undefined}
         style={{
           position: 'absolute',
           left,
@@ -581,7 +628,7 @@ function GanttBar({ item, left, top, width, height, compact, isSelected, onClick
           height,
           background: color,
           borderRadius: 'var(--radius-sm)',
-          cursor: onClick ? 'pointer' : 'default',
+          cursor: isClickable ? 'pointer' : 'default',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
