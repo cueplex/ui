@@ -74,6 +74,7 @@ export {
 } from './status/Status';
 
 // Forms
+export { Button, type ButtonProps, type ButtonVariant, type ButtonSize } from './forms/Button';
 export { SearchBar, type SearchBarProps, type SearchResult } from './forms/SearchBar';
 export {
   FormField,
