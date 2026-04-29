@@ -127,7 +127,8 @@ export function QtyEditPopover({
           if (open) setOpen(false);
           else openPopover();
         }}
-        style={{ display: 'contents' }}
+        // siehe HoverCard-Kommentar: display:contents bricht getBoundingClientRect.
+        style={{ display: 'inline-block' }}
       >
         {children}
       </span>

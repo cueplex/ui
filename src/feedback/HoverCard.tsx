@@ -82,7 +82,10 @@ export function HoverCard({
         onMouseLeave={onLeave}
         onFocus={onEnter}
         onBlur={onLeave}
-        style={{ display: 'contents' }}
+        // display:contents würde getBoundingClientRect() zu 0/0 machen — Patrick-Bug
+        // 29.04.: HoverCard erschien oben links statt am Trigger. inline-block hat
+        // ein eigenes Box-Modell und liefert korrekte Trigger-Position.
+        style={{ display: 'inline-block' }}
       >
         {children}
       </span>
