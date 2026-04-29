@@ -233,6 +233,13 @@ button, input, textarea, select {
   display: none;
 }
 
+/* Glow-Highlight Token (Patrick 29.04.2026): aktive Selection / DnD-Drop-Zone /
+ * Power-User-Focus. Verwendet Accent + 20% Opazitaet via color-mix.
+ * Crew/HotelPage und ops/SearchResult nutzen das gleich. */
+:root {
+  --shadow-glow: 0 0 0 3px color-mix(in srgb, var(--accent-primary) 22%, transparent);
+}
+
 /* Unicorn-Mode — gedecktes Pastell-Rosé, edel. Content satter als Sidebar (keine weisse Flaeche). */
 [data-theme="disco"] {
   /* Hierarchie Notion-Style: Page mittel-rosé, Sidebar/Spalten/Toolbar HELLER

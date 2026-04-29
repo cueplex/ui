@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useMemo, type ReactNode, type KeyboardEvent } from 'react';
 import { Search, X } from 'lucide-react';
+import { Tooltip } from '../feedback/Tooltip';
 
 export interface SearchResult {
   id: string;
@@ -162,9 +163,9 @@ export function SearchBar({
         }}
       >
         {!expanded ? (
-          <button
+          <Tooltip text="Suchen">
+            <button
             onClick={expand}
-            title="Suchen"
             style={{
               width: COLLAPSED_WIDTH,
               height: 32,
@@ -180,6 +181,7 @@ export function SearchBar({
           >
             <Search size={16} />
           </button>
+          </Tooltip>
         ) : (
           <>
             <Search size={14} style={{ color: 'var(--text-tertiary)', flexShrink: 0 }} />
@@ -202,25 +204,26 @@ export function SearchBar({
               }}
             />
             {query.length > 0 && (
-              <button
-                onClick={clearQuery}
-                title="Loeschen"
-                style={{
-                  width: 18,
-                  height: 18,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 'var(--radius-full)',
-                  border: 'none',
-                  background: 'var(--bg-tertiary)',
-                  color: 'var(--text-secondary)',
-                  cursor: 'pointer',
-                  flexShrink: 0,
-                }}
-              >
-                <X size={12} />
-              </button>
+              <Tooltip text="Löschen">
+                <button
+                  onClick={clearQuery}
+                  style={{
+                    width: 18,
+                    height: 18,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 'var(--radius-full)',
+                    border: 'none',
+                    background: 'var(--bg-tertiary)',
+                    color: 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    flexShrink: 0,
+                  }}
+                >
+                  <X size={12} />
+                </button>
+              </Tooltip>
             )}
           </>
         )}

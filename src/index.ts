@@ -53,6 +53,11 @@ export {
   type FilterRowProps,
 } from './feedback/Popover';
 export { ColorLegend, type ColorLegendProps, type ColorLegendItem } from './feedback/ColorLegend';
+export {
+  HoverCard, HoverCardHeader, HoverCardRow, HoverCardNote,
+  type HoverCardProps,
+} from './feedback/HoverCard';
+export { QtyEditPopover, type QtyEditPopoverProps } from './feedback/QtyEditPopover';
 
 // Status (Single Source of Truth fuer cueplex Status-Vokabular)
 export {
