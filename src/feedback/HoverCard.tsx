@@ -38,9 +38,9 @@ export interface HoverCardProps {
 export function HoverCard({
   content,
   children,
-  delayMs = 300,
-  minWidth = 280,
-  maxWidth = 360,
+  delayMs = 200,
+  minWidth = 240,
+  maxWidth = 300,
   disabled = false,
 }: HoverCardProps) {
   const [open, setOpen] = useState(false);
@@ -54,11 +54,14 @@ export function HoverCard({
     timerRef.current = setTimeout(() => {
       const r = triggerRef.current?.getBoundingClientRect();
       if (!r) return;
-      // Default rechts vom Trigger; flip nach links wenn nicht genug Platz
-      const wantLeft = r.right + 8;
-      const fitsRight = wantLeft + maxWidth < window.innerWidth - 8;
-      const left = fitsRight ? wantLeft : Math.max(8, r.left - maxWidth - 8);
-      const top = Math.min(window.innerHeight - 16, Math.max(16, r.top));
+      // Patrick 29.04.2026: Position bottom-right direkt am Trigger.
+      // Default unter dem Trigger; nach oben flippen wenn unten kein Platz.
+      // Horizontal: right-aligned mit Trigger; nach links flippen wenn rechts nicht passt.
+      const padding = 6;
+      const fitsBelow = r.bottom + padding + 240 < window.innerHeight;
+      const top = fitsBelow ? r.bottom + padding : Math.max(8, r.top - 240 - padding);
+      const wantLeft = r.right - maxWidth;
+      const left = Math.max(8, Math.min(window.innerWidth - maxWidth - 8, wantLeft));
       setPos({ left, top });
       setOpen(true);
     }, delayMs);
@@ -96,11 +99,11 @@ export function HoverCard({
             border: '1px solid var(--border-default)',
             borderRadius: 'var(--radius-md)',
             boxShadow: 'var(--shadow-lg)',
-            padding: '12px 14px',
+            padding: '10px 12px',
             zIndex: 1400,
             display: 'flex',
             flexDirection: 'column',
-            gap: 8,
+            gap: 6,
             pointerEvents: 'none',
           }}
         >

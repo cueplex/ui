@@ -60,10 +60,18 @@ export function QtyEditPopover({
     const r = triggerRef.current?.getBoundingClientRect();
     if (!r) return;
     setValue(String(defaultQty));
-    setPos({
-      left: Math.min(window.innerWidth - 220, r.right + 6),
-      top: Math.max(8, r.top - 4),
-    });
+    // Patrick 29.04.2026: Popover direkt am Plus-Anker, NICHT fixed-top-corner.
+    // Default rechts vom Trigger; flip nach links wenn nicht genug Platz.
+    // Vertikal mit Trigger-Center alignen.
+    const POPOVER_W = 200;
+    const POPOVER_H = 40;
+    const fitsRight = r.right + 6 + POPOVER_W < window.innerWidth - 8;
+    const left = fitsRight ? r.right + 6 : Math.max(8, r.left - POPOVER_W - 6);
+    const top = Math.max(8, Math.min(
+      window.innerHeight - POPOVER_H - 8,
+      r.top + r.height / 2 - POPOVER_H / 2,
+    ));
+    setPos({ left, top });
     setOpen(true);
   };
 
