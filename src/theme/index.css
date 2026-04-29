@@ -240,6 +240,14 @@ button, input, textarea, select {
   --shadow-glow: 0 0 0 3px color-mix(in srgb, var(--accent-primary) 22%, transparent);
 }
 
+/* HoverCard Einblend-Animation (Patrick 29.04.2026):
+ * sanfter Fade+Slide. Wird via inline-style auf das Panel angewandt;
+ * bei Trigger-Wechsel innerhalb 200ms via skipAnim=true unterdrueckt. */
+@keyframes cxl-hovercard-in {
+  from { opacity: 0; transform: translateY(2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* Unicorn-Mode — gedecktes Pastell-Rosé, edel. Content satter als Sidebar (keine weisse Flaeche). */
 [data-theme="disco"] {
   /* Hierarchie Notion-Style: Page mittel-rosé, Sidebar/Spalten/Toolbar HELLER

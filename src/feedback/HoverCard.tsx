@@ -20,6 +20,11 @@ import {
   type CSSProperties,
 } from 'react';
 
+// Modul-globale "Bridge": wenn ein HoverCard innerhalb von 200ms nach Schließen
+// eines anderen aufgeht, ueberspringen wir die Einblend-Animation. So wirkt das
+// Wechseln zwischen Triggern nahtlos statt zappelig.
+let _lastClosedAt = 0;
+
 export interface HoverCardProps {
   /** Card-Inhalt — typischerweise eine Komposition aus HoverCardHeader/Body/Note */
   content: ReactNode;
@@ -44,6 +49,7 @@ export function HoverCard({
   disabled = false,
 }: HoverCardProps) {
   const [open, setOpen] = useState(false);
+  const [skipAnim, setSkipAnim] = useState(false);
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
   const triggerRef = useRef<HTMLSpanElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -54,14 +60,14 @@ export function HoverCard({
     timerRef.current = setTimeout(() => {
       const r = triggerRef.current?.getBoundingClientRect();
       if (!r) return;
-      // Patrick 29.04.2026: Position bottom-right direkt am Trigger.
-      // Default unter dem Trigger; nach oben flippen wenn unten kein Platz.
-      // Horizontal: right-aligned mit Trigger; nach links flippen wenn rechts nicht passt.
-      const padding = 6;
-      const fitsBelow = r.bottom + padding + 240 < window.innerHeight;
-      const top = fitsBelow ? r.bottom + padding : Math.max(8, r.top - 240 - padding);
-      const wantLeft = r.right - maxWidth;
-      const left = Math.max(8, Math.min(window.innerWidth - maxWidth - 8, wantLeft));
+      // Patrick 29.04.2026 v2: rechts vom Trigger, top-bündig.
+      // Flip nach links wenn rechts nicht genug Platz; vertical clamp im Viewport.
+      const padding = 8;
+      const fitsRight = r.right + padding + maxWidth < window.innerWidth - 8;
+      const left = fitsRight ? r.right + padding : Math.max(8, r.left - maxWidth - padding);
+      const top = Math.max(8, Math.min(window.innerHeight - 100, r.top));
+      // Wenn binnen 200ms nach letztem Close: skip animation (Wechsel zwischen Triggern)
+      setSkipAnim(Date.now() - _lastClosedAt < 200);
       setPos({ left, top });
       setOpen(true);
     }, delayMs);
@@ -69,6 +75,7 @@ export function HoverCard({
 
   const onLeave = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
+    if (open) _lastClosedAt = Date.now();
     setOpen(false);
   };
 
@@ -108,6 +115,8 @@ export function HoverCard({
             flexDirection: 'column',
             gap: 6,
             pointerEvents: 'none',
+            // Animation nur beim ersten Show, nicht bei Trigger-Wechsel.
+            animation: skipAnim ? 'none' : 'cxl-hovercard-in 120ms ease-out',
           }}
         >
           {content}
