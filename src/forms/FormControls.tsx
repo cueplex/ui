@@ -42,16 +42,26 @@ export interface FormInputProps extends Omit<InputHTMLAttributes<HTMLInputElemen
   required?: boolean;
   hint?: string;
   error?: string;
+  /**
+   * Pessimistic-Lock-Indikator: wenn gesetzt → disabled + "(wird bearbeitet von X)"
+   * Hint, native title-Tooltip. Additiv, optional.
+   */
+  lockedBy?: string;
 }
 
-export function FormInput({ label, value, onChange, required, hint, error, ...rest }: FormInputProps) {
+export function FormInput({ label, value, onChange, required, hint, error, lockedBy, disabled, title, ...rest }: FormInputProps) {
+  const isLocked = Boolean(lockedBy);
+  const lockHint = isLocked ? `wird bearbeitet von ${lockedBy}` : hint;
   return (
-    <FormField label={label} required={required} hint={hint} error={error}>
+    <FormField label={label} required={required} hint={lockHint} error={error}>
       <input
         {...rest}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         required={required}
+        disabled={disabled || isLocked}
+        title={isLocked ? `wird bearbeitet von ${lockedBy}` : title}
+        aria-disabled={(disabled || isLocked) || undefined}
         style={inputStyle}
       />
     </FormField>

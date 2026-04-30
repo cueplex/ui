@@ -58,6 +58,16 @@ export {
   type HoverCardProps,
 } from './feedback/HoverCard';
 export { QtyEditPopover, type QtyEditPopoverProps } from './feedback/QtyEditPopover';
+export { ConflictDialog, type ConflictDialogProps } from './feedback/ConflictDialog';
+
+// Hooks
+export {
+  useOptimisticUpdate,
+  ConflictError,
+  type OptimisticUpdateResult,
+  type UseOptimisticUpdateOptions,
+  type UseOptimisticUpdateApi,
+} from './hooks/useOptimisticUpdate';
 
 // Status (Single Source of Truth fuer cueplex Status-Vokabular)
 export {
