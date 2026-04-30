@@ -32,6 +32,13 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   rightIcon?: ReactNode;
   /** Loading-Spinner statt Icon, disabled = true */
   loading?: boolean;
+  /**
+   * Pessimistic-Lock-Indikator: wenn gesetzt → Button disabled, Schloss-Icon links,
+   * native Tooltip "wird bearbeitet von {lockedBy}". Additiv, optional.
+   * Komplementaer zu Optimistic-Locks (ETag) — schliesst die UX-Luecke
+   * "jemand tippt gerade, ich seh's bevor ich klicke".
+   */
+  lockedBy?: string;
 }
 
 export function Button({
@@ -40,11 +47,15 @@ export function Button({
   leftIcon,
   rightIcon,
   loading,
+  lockedBy,
   children,
   disabled,
   style,
+  title,
   ...rest
 }: ButtonProps) {
+  const isLocked = Boolean(lockedBy);
+  const effectiveDisabled = disabled || loading || isLocked;
   const sizeStyle = SIZE_STYLES[size];
   const variantStyle = VARIANT_STYLES[variant];
   const finalStyle: CSSProperties = {
@@ -54,8 +65,8 @@ export function Button({
     gap: 6,
     fontFamily: 'inherit',
     fontWeight: 600,
-    cursor: disabled || loading ? 'not-allowed' : 'pointer',
-    opacity: disabled || loading ? 0.55 : 1,
+    cursor: effectiveDisabled ? 'not-allowed' : 'pointer',
+    opacity: effectiveDisabled ? 0.55 : 1,
     transition: 'background 120ms ease, border-color 120ms ease, color 120ms ease',
     whiteSpace: 'nowrap',
     ...sizeStyle,
@@ -63,27 +74,58 @@ export function Button({
     ...style,
   };
 
+  const lockTitle = isLocked ? `wird bearbeitet von ${lockedBy}` : title;
+  const iconSize = size === 'sm' ? 11 : size === 'lg' ? 16 : 13;
+  const leftSlot = loading
+    ? <Spinner size={iconSize} />
+    : isLocked
+    ? <LockIcon size={iconSize} />
+    : leftIcon;
+
   return (
     <button
       {...rest}
-      disabled={disabled || loading}
+      disabled={effectiveDisabled}
+      title={lockTitle}
+      aria-disabled={effectiveDisabled || undefined}
       style={finalStyle}
       onMouseEnter={(e) => {
-        if (disabled || loading) return;
+        if (effectiveDisabled) return;
         const hover = HOVER_STYLES[variant];
         Object.assign(e.currentTarget.style, hover);
         rest.onMouseEnter?.(e);
       }}
       onMouseLeave={(e) => {
-        if (disabled || loading) return;
+        if (effectiveDisabled) return;
         Object.assign(e.currentTarget.style, variantStyle);
         rest.onMouseLeave?.(e);
       }}
     >
-      {loading ? <Spinner size={size === 'sm' ? 11 : size === 'lg' ? 16 : 13} /> : leftIcon}
+      {leftSlot}
       {children}
-      {!loading && rightIcon}
+      {!loading && !isLocked && rightIcon}
     </button>
+  );
+}
+
+function LockIcon({ size }: { size: number }) {
+  // Inline-SVG (kein lucide-react peer-dep zwingend hier).
+  return (
+    <svg
+      aria-hidden
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ flexShrink: 0 }}
+    >
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
   );
 }
 
