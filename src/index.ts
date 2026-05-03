@@ -32,6 +32,9 @@ export { UserMenu } from './auth/UserMenu';
 
 // Visuals
 export { Gantt, type GanttItem, type GanttProps, type GanttHandle } from './visuals/Gantt';
+export { KpiCard, type KpiCardProps, type KpiIntent } from './visuals/KpiCard';
+export { ProgressBar, type ProgressBarProps } from './visuals/ProgressBar';
+export { TrendChart, type TrendChartProps } from './visuals/TrendChart';
 
 // Feedback
 export { Tooltip, useTooltip, type TooltipProps, type UseTooltipOptions } from './feedback/Tooltip';
