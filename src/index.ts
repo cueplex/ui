@@ -35,6 +35,10 @@ export { Gantt, type GanttItem, type GanttProps, type GanttHandle } from './visu
 export { KpiCard, type KpiCardProps, type KpiIntent } from './visuals/KpiCard';
 export { ProgressBar, type ProgressBarProps } from './visuals/ProgressBar';
 export { TrendChart, type TrendChartProps } from './visuals/TrendChart';
+export { DayTile, type DayTileProps, type DayTileVariant } from './visuals/DayTile';
+export { StampAnchor, type StampAnchorProps, type StampAnchorKind } from './visuals/StampAnchor';
+export { EntryRow, type EntryRowProps, type EntryRowKind } from './visuals/EntryRow';
+export { DayRail, type DayRailProps, type RailSegment } from './visuals/DayRail';
 
 // Feedback
 export { Tooltip, useTooltip, type TooltipProps, type UseTooltipOptions } from './feedback/Tooltip';
