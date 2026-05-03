@@ -60,7 +60,9 @@ export function ProgressBar({
           top: -2, bottom: -2,
           left: `${markerPct}%`,
           width: 2,
-          background: 'var(--accent-primary)',
+          // Marker folgt der Bar-Farbe — sonst hätten wir bei Gewerk-Bars (z.B. Ton-blau)
+          // einen orangen Marker, was visuell falsch wäre
+          background: color,
           borderRadius: 1,
         }} />
       )}

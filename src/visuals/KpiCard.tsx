@@ -28,7 +28,10 @@ export interface KpiCardProps {
 const intentColors: Record<KpiIntent, string> = {
   default: 'var(--text-primary)',
   positive: 'var(--accent-primary)',
-  negative: 'var(--status-abgelehnt)',
+  // negative ist NICHT --status-abgelehnt (Emergency-Rot, nur für Errors).
+  // Fallback auf --text-secondary über --status-negative damit Realm-Themes
+  // einen dezenten Negativ-Ton (z.B. abgedunkeltes Sage) definieren können.
+  negative: 'var(--status-negative, var(--text-secondary))',
   neutral: 'var(--text-secondary)',
 };
 

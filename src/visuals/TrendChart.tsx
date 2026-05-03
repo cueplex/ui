@@ -1,4 +1,4 @@
-import { useRef, useState, type CSSProperties } from 'react';
+import { useId, useRef, useState, type CSSProperties } from 'react';
 
 /**
  * TrendChart — kumulatives Liniendiagramm mit Bezier-Smoothing, Hover-Tooltip,
@@ -52,6 +52,8 @@ export function TrendChart({
 }: TrendChartProps) {
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
+  // Eindeutige Gradient-ID — verhindert Kollision wenn mehrere TrendCharts gleichzeitig rendern
+  const gradId = `trendchart-grad-${useId().replace(/:/g, '')}`;
 
   if (buckets.length === 0) return null;
 
@@ -106,7 +108,7 @@ export function TrendChart({
         preserveAspectRatio="xMidYMid meet"
       >
         <defs>
-          <linearGradient id="trendchart-grad" x1="0" x2="0" y1="0" y2="1">
+          <linearGradient id={gradId} x1="0" x2="0" y1="0" y2="1">
             <stop offset="0%" stopColor="var(--accent-primary)" stopOpacity="0.22" />
             <stop offset="100%" stopColor="var(--accent-primary)" stopOpacity="0" />
           </linearGradient>
@@ -133,7 +135,7 @@ export function TrendChart({
             style={axisTextStyle}
           >{it.label}</text>
         ))}
-        <path d={fillPath} fill="url(#trendchart-grad)" />
+        <path d={fillPath} fill={`url(#${gradId})`} />
         <path
           d={curvePath}
           fill="none"
