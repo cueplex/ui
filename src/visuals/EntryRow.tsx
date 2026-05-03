@@ -1,4 +1,4 @@
-import type { ReactNode, CSSProperties, MouseEvent } from 'react';
+import { useState, useRef, useEffect, type ReactNode, type CSSProperties, type MouseEvent } from 'react';
 
 /**
  * EntryRow — Einzeilige Daten-Reihe mit Slot-Variante (project / pause / empty / travel / school).
@@ -31,11 +31,23 @@ export interface EntryRowProps {
   /** Optional: Menu/Action-Slot rechts (z.B. <MoreHorizontal />). */
   menu?: ReactNode;
   onClick?: (e: MouseEvent) => void;
+  /** Aktueller Notiz-Wert für Inline-Edit. Aktiviert die Notiz-Edit-Mechanik. */
+  noteValue?: string;
+  /** Callback beim onBlur des Notiz-Inputs. Wird nur gerufen wenn sich der Wert geändert hat. */
+  onNoteSave?: (value: string) => void;
+  /** Placeholder für leeres Notiz-Feld. Default "Notiz hinzufügen…". */
+  notePlaceholder?: string;
 }
 
-export function EntryRow({ kind, icon, label, sublabel, proj, span, duration, color, menu, onClick }: EntryRowProps) {
+export function EntryRow({ kind, icon, label, sublabel, proj, span, duration, color, menu, onClick, noteValue, onNoteSave, notePlaceholder = 'Notiz hinzufügen…' }: EntryRowProps) {
   const isPause = kind === 'pause';
   const isEmpty = kind === 'empty';
+  const noteEditable = onNoteSave !== undefined;
+  const [noteEditing, setNoteEditing] = useState(false);
+  const noteInputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (noteEditing) noteInputRef.current?.focus();
+  }, [noteEditing]);
 
   const rowStyle: CSSProperties = {
     display: 'grid',
@@ -150,6 +162,8 @@ export function EntryRow({ kind, icon, label, sublabel, proj, span, duration, co
         }
         const m = (e.currentTarget as HTMLElement).querySelector<HTMLElement>('.cxl-entry-row-menu');
         if (m) m.style.opacity = '0.7';
+        const n = (e.currentTarget as HTMLElement).querySelector<HTMLElement>('.cxl-entry-row-note');
+        if (n && !noteValue) n.style.opacity = '0.6';
       }}
       onMouseLeave={(e) => {
         if (!isPause) {
@@ -157,12 +171,53 @@ export function EntryRow({ kind, icon, label, sublabel, proj, span, duration, co
         }
         const m = (e.currentTarget as HTMLElement).querySelector<HTMLElement>('.cxl-entry-row-menu');
         if (m) m.style.opacity = '0';
+        const n = (e.currentTarget as HTMLElement).querySelector<HTMLElement>('.cxl-entry-row-note');
+        if (n && !noteValue) n.style.opacity = '0';
       }}
     >
       <div style={iconWrapStyle}>{icon}</div>
       <div style={descStyle}>
         <div style={labelStyle}>{label}</div>
-        {sublabel && <div style={sublabelStyle}>{sublabel}</div>}
+        {noteEditable ? (
+          noteEditing ? (
+            <input
+              ref={noteInputRef}
+              defaultValue={noteValue ?? ''}
+              placeholder={notePlaceholder}
+              onClick={(e) => e.stopPropagation()}
+              onBlur={(e) => {
+                const v = e.currentTarget.value;
+                if (v !== (noteValue ?? '')) onNoteSave!(v);
+                setNoteEditing(false);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') (e.currentTarget as HTMLInputElement).blur();
+                if (e.key === 'Escape') { setNoteEditing(false); }
+              }}
+              style={{
+                ...sublabelStyle,
+                background: 'var(--bg-input, var(--bg-secondary))',
+                border: '1px solid var(--accent-primary)',
+                borderRadius: 'var(--radius-sm, 8px)',
+                padding: '2px 6px',
+                fontStyle: 'normal',
+                width: '100%',
+                outline: 'none',
+                color: 'var(--text-primary)',
+              }}
+            />
+          ) : (
+            <div
+              style={{ ...sublabelStyle, cursor: 'text', opacity: noteValue ? 1 : 0 }}
+              className="cxl-entry-row-note"
+              onClick={(e) => { e.stopPropagation(); setNoteEditing(true); }}
+            >
+              {noteValue || notePlaceholder}
+            </div>
+          )
+        ) : (
+          sublabel && <div style={sublabelStyle}>{sublabel}</div>
+        )}
       </div>
       <div style={projStyle}>
         {kind === 'project' && color && (
