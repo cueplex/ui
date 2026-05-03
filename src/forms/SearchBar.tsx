@@ -37,6 +37,24 @@ export interface SearchBarProps {
   onExpandedChange?: (expanded: boolean) => void;
   /** Max-Hoehe des Dropdowns in px. Default 360. */
   maxDropdownHeight?: number;
+  /**
+   * Layout-Variante.
+   * - `collapsible-icon` (default): Lupe-Icon, expandiert per Klick. Header-Use-Case.
+   * - `inline`: always expanded, kein Lupe-Icon. Editor/Form-Use-Case.
+   */
+  layout?: 'collapsible-icon' | 'inline';
+  /**
+   * Breite. Default: undefined → 280px (collapsible-icon expanded).
+   * - number: feste Breite in px
+   * - 'full': nimmt volle Breite des Container (100%)
+   */
+  width?: number | 'full';
+  /**
+   * Wenn true und `dropdownOpen`-Bedingung sonst: zeigt Dropdown auch ohne Query.
+   * Nützlich für Inline-Picker wo der User den ersten Klick auf das Feld macht und
+   * sofort eine Liste sehen will (ohne tippen zu müssen).
+   */
+  showDropdownEmpty?: boolean;
 }
 
 const COLLAPSED_WIDTH = 32;
@@ -60,18 +78,35 @@ export function SearchBar({
   expanded: expandedProp,
   onExpandedChange,
   maxDropdownHeight = 360,
+  layout = 'collapsible-icon',
+  width,
+  showDropdownEmpty = false,
 }: SearchBarProps) {
-  const [expandedInternal, setExpandedInternal] = useState(defaultExpanded);
-  const expanded = expandedProp ?? expandedInternal;
+  const isInline = layout === 'inline';
+  // Im inline-Modus IMMER expanded — der Lupe-Toggle entfällt
+  const [expandedInternal, setExpandedInternal] = useState(isInline ? true : defaultExpanded);
+  const expanded = isInline ? true : (expandedProp ?? expandedInternal);
   const setExpanded = (v: boolean) => {
+    if (isInline) return; // inline-Modus kann nicht collapsen
     if (expandedProp === undefined) setExpandedInternal(v);
     onExpandedChange?.(v);
   };
   const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [hasFocus, setHasFocus] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const dropdownOpen = expanded && query.length > 0;
+  // Dropdown öffnet wenn:
+  //  - expanded UND Query nicht leer (klassisch), ODER
+  //  - showDropdownEmpty UND focused (für Inline-Picker)
+  const dropdownOpen = expanded && (query.length > 0 || (showDropdownEmpty && hasFocus));
+
+  // Effektive Container-Breite
+  const containerWidth: number | string =
+    !expanded ? COLLAPSED_WIDTH
+      : width === 'full' ? '100%'
+        : typeof width === 'number' ? width
+          : EXPANDED_WIDTH;
 
   // Click-outside collapsed Dropdown (aber Input bleibt expanded mit query)
   useEffect(() => {
@@ -146,10 +181,10 @@ export function SearchBar({
   }, [results]);
 
   return (
-    <div ref={containerRef} style={{ position: 'relative' }}>
+    <div ref={containerRef} style={{ position: 'relative', width: width === 'full' ? '100%' : undefined }}>
       <div
         style={{
-          width: expanded ? EXPANDED_WIDTH : COLLAPSED_WIDTH,
+          width: containerWidth,
           height: 32,
           display: 'flex',
           alignItems: 'center',
@@ -158,7 +193,7 @@ export function SearchBar({
           borderRadius: 'var(--radius-sm)',
           border: expanded ? '1px solid var(--border-default)' : '1px solid transparent',
           background: expanded ? 'var(--bg-input)' : 'transparent',
-          transition: `width ${TRANSITION_MS}ms ease, border-color ${TRANSITION_MS}ms ease, background ${TRANSITION_MS}ms ease, padding ${TRANSITION_MS}ms ease`,
+          transition: isInline ? undefined : `width ${TRANSITION_MS}ms ease, border-color ${TRANSITION_MS}ms ease, background ${TRANSITION_MS}ms ease, padding ${TRANSITION_MS}ms ease`,
           overflow: 'hidden',
         }}
       >
@@ -191,6 +226,8 @@ export function SearchBar({
               value={query}
               onChange={(e) => onQueryChange(e.target.value)}
               onKeyDown={handleKeyDown}
+              onFocus={() => setHasFocus(true)}
+              onBlur={() => setTimeout(() => setHasFocus(false), 150)}
               placeholder={placeholder}
               style={{
                 flex: 1,
@@ -229,15 +266,16 @@ export function SearchBar({
         )}
       </div>
 
-      {/* Dropdown: nur wenn expanded UND query nicht leer */}
+      {/* Dropdown: nur wenn expanded UND query nicht leer (oder showDropdownEmpty) */}
       {dropdownOpen && (
         <div
           style={{
             position: 'absolute',
             top: '100%',
-            right: 0,
+            // inline-Layout: Dropdown linksbündig (folgt Input). Header-Layout: rechtsbündig.
+            ...(isInline ? { left: 0, right: 0 } : { right: 0 }),
             marginTop: 6,
-            width: EXPANDED_WIDTH,
+            width: isInline ? '100%' : (typeof width === 'number' ? width : EXPANDED_WIDTH),
             maxHeight: maxDropdownHeight,
             overflowY: 'auto',
             background: 'var(--bg-card)',
