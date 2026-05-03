@@ -39,6 +39,7 @@ export { DayTile, type DayTileProps, type DayTileVariant } from './visuals/DayTi
 export { StampAnchor, type StampAnchorProps, type StampAnchorKind } from './visuals/StampAnchor';
 export { EntryRow, type EntryRowProps, type EntryRowKind } from './visuals/EntryRow';
 export { DayRail, type DayRailProps, type RailSegment } from './visuals/DayRail';
+export { DonutGauge, type DonutGaugeProps, type DonutSegment } from './visuals/DonutGauge';
 
 // Feedback
 export { Tooltip, useTooltip, type TooltipProps, type UseTooltipOptions } from './feedback/Tooltip';
