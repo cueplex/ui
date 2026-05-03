@@ -98,8 +98,10 @@ export function SearchBar({
 
   // Dropdown öffnet wenn:
   //  - expanded UND Query nicht leer (klassisch), ODER
-  //  - showDropdownEmpty UND focused (für Inline-Picker)
-  const dropdownOpen = expanded && (query.length > 0 || (showDropdownEmpty && hasFocus));
+  //  - showDropdownEmpty: immer (für Inline-Picker im Popover-Container)
+  const dropdownOpen = expanded && (query.length > 0 || showDropdownEmpty);
+  // hasFocus bleibt aus historischen Gründen erhalten (für Header-Use-Case ohne showDropdownEmpty)
+  void hasFocus;
 
   // Effektive Container-Breite
   const containerWidth: number | string =
@@ -124,6 +126,13 @@ export function SearchBar({
   useEffect(() => {
     setFocusedIndex(-1);
   }, [results]);
+
+  // Inline-Mode: Input automatisch fokussieren beim Mount (Popover/Picker-Use-Case)
+  useEffect(() => {
+    if (isInline) {
+      requestAnimationFrame(() => inputRef.current?.focus());
+    }
+  }, [isInline]);
 
   const expand = () => {
     setExpanded(true);
