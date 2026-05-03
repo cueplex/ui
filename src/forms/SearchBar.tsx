@@ -252,11 +252,14 @@ export function SearchBar({
                     justifyContent: 'center',
                     borderRadius: 'var(--radius-full)',
                     border: 'none',
-                    background: 'var(--bg-tertiary)',
-                    color: 'var(--text-secondary)',
+                    background: 'transparent',
+                    color: 'var(--text-tertiary)',
                     cursor: 'pointer',
                     flexShrink: 0,
+                    transition: 'color var(--transition-fast)',
                   }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-primary)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-tertiary)')}
                 >
                   <X size={12} />
                 </button>
@@ -269,6 +272,7 @@ export function SearchBar({
       {/* Dropdown: nur wenn expanded UND query nicht leer (oder showDropdownEmpty) */}
       {dropdownOpen && (
         <div
+          className="cxl-hide-scrollbar"
           style={{
             position: 'absolute',
             top: '100%',
